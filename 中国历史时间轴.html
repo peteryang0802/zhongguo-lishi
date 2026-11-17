@@ -437,6 +437,23 @@ html{scroll-behavior:smooth}
 .ev-feedback.show{display:block;animation:fade .2s ease}
 .ev-feedback.ok{background:#e7f0e9;color:#33503a;border:1px solid #b3cdb8}
 .ev-feedback.no{background:#f6e3de;color:#8a3a2a;border:1px solid #e0b3a8}
+/* 迁移关 */
+.transfer{border-radius:15px;border:2px solid #cfe0d2;background:#f3f8f4;padding:15px;margin-bottom:14px}
+.transfer h4{margin:0 0 12px;font-size:15.5px;color:#33503a}
+.t-card{display:flex;gap:11px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:10px;margin-bottom:13px}
+.t-card img{flex:0 0 104px;width:104px;height:82px;object-fit:cover;border-radius:9px;background:#efe8d9}
+.t-meta{min-width:0}
+.t-meta b{font-size:14.5px;color:#332c24;display:block;margin-bottom:5px}
+.t-q{margin-bottom:11px}
+.t-ask{font-size:14.5px;font-weight:700;color:#3a3228;margin:0 0 9px}
+.t-answers{display:flex;flex-direction:column;gap:8px}
+.t-answer{min-height:48px;border-radius:12px;border:2px solid var(--line);background:var(--card);font-size:14px;font-weight:700;color:#5a5145;text-align:left;padding:8px 12px}
+.t-answer.right{border-color:#4a7a52;background:#e7f0e9;color:#33503a}
+.t-answer.wrong{border-color:#b5533c;background:#f6e3de;color:#8a3a2a}
+.t-feedback{display:none;font-size:13.5px;line-height:1.6;border-radius:11px;padding:11px 13px}
+.t-feedback.show{display:block;animation:fade .2s ease}
+.t-feedback.ok{background:#e7f0e9;color:#33503a;border:1px solid #b3cdb8}
+.t-feedback.no{background:#f6e3de;color:#8a3a2a;border:1px solid #e0b3a8}
 .cailun-deep{display:none;border-radius:15px;background:#fbf7ee;border:1px solid var(--line);padding:15px;margin-bottom:14px}
 .cailun-deep.show{display:block;animation:fade .25s ease}
 .cailun-deep h4{font-size:16px;color:#4a7a52;margin:0 0 11px}
@@ -1005,6 +1022,34 @@ button:focus:not(:focus-visible){outline:none}
         </div>
 
         <div class="verdict">记住这是三个不同的问题：什么时候有纸、能不能写字、什么时候广泛使用。年代、书写、推广，别混成一句“西汉的纸粗糙不能用”。</div>
+      </div>
+
+      <!-- 迁移关：换一张没见过的古纸，把推理用到新材料上 -->
+      <div class="transfer" id="paperTransfer">
+        <h4>换一张没见过的古纸，你能判断吗？</h4>
+        <div class="t-card">
+          <img src="assets/jinguan.jpg" alt="肩水金关纸残片" loading="lazy">
+          <div class="t-meta">
+            <b>肩水金关纸残片</b>
+            <small>西汉（汉宣帝时期），甘肃金塔肩水金关出土，麻纸残片。这张纸前面没出现过。</small>
+          </div>
+        </div>
+        <div class="t-q" id="tq1">
+          <p class="t-ask">1. 凭这张纸，你能确定什么？</p>
+          <div class="t-answers">
+            <button class="t-answer" data-q="1" data-ok="1" type="button">西汉那个时候，已经有纸了</button>
+            <button class="t-answer" data-q="1" data-ok="0" type="button">西汉时全国人都在用纸</button>
+            <button class="t-answer" data-q="1" data-ok="0" type="button">纸是蔡伦一个人发明的</button>
+          </div>
+        </div>
+        <div class="t-q" id="tq2" hidden>
+          <p class="t-ask">2. 那凭这一张纸，还判断不了什么？</p>
+          <div class="t-answers">
+            <button class="t-answer" data-q="2" data-ok="1" type="button">当时有多少人在用纸、普不普及</button>
+            <button class="t-answer" data-q="2" data-ok="0" type="button">这东西到底是不是纸</button>
+          </div>
+        </div>
+        <div class="t-feedback" id="tFeedback"></div>
       </div>
 
       <!-- 热身：三材料携带 -->
@@ -2919,7 +2964,41 @@ document.getElementById('paperReset').addEventListener('click',()=>{
   cailunDeep.classList.remove('show');
   document.querySelectorAll('.ev-answer').forEach(x=>x.classList.remove('right','wrong'));
   document.getElementById('paperWarmup').open=false;
+  tFeedback.classList.remove('show');
+  tq2.hidden=true;
+  document.querySelectorAll('.t-answer').forEach(x=>x.classList.remove('right','wrong'));
   beep(360);
+});
+/* 迁移关：把"看年代→判断能证明什么"用到没见过的新纸上 */
+const tFeedback=document.getElementById('tFeedback');
+const tq2=document.getElementById('tq2');
+document.querySelectorAll('.t-answer').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const q=b.getAttribute('data-q');
+    const ok=b.getAttribute('data-ok')==='1';
+    b.parentNode.querySelectorAll('.t-answer').forEach(x=>x.classList.remove('right','wrong'));
+    b.classList.add(ok?'right':'wrong');
+    tFeedback.classList.add('show');
+    tFeedback.className='t-feedback show '+(ok?'ok':'no');
+    if(q==='1'){
+      if(ok){
+        tFeedback.textContent='对。这张纸是西汉的，年代比蔡伦早，又是麻纸——所以它能证明西汉那个时候已经有纸。你不是记住了“放马滩”这个名字，是靠“年代更早、又是纸”自己推出来的。';
+        tq2.hidden=false;beep(560);
+        setTimeout(()=>tq2.scrollIntoView({behavior:'auto',block:'nearest'}),80);
+      }else if(b.textContent.indexOf('全国')>=0){
+        tFeedback.textContent='再想想：一张纸只能证明“有纸”，证明不了“人人都在用”。';beep(280);
+      }else{
+        tFeedback.textContent='再想想：西汉的纸比蔡伦还早，说明纸不是蔡伦发明的，他是改进。';beep(280);
+      }
+    }else{
+      if(ok){
+        tFeedback.textContent='没错。一张纸躺在墓里，看不出当时有多少人在用、普不普及。要知道这个，得看多不多地方出土、工艺便不便宜。“有没有”和“普不普及”，是两回事。';
+        beep(560);
+      }else{
+        tFeedback.textContent='再想想：它就是麻纸残片，“是不是纸”这一点已经能确定了。';beep(280);
+      }
+    }
+  });
 });
 document.getElementById('sImgFail').addEventListener('click',function(){
   const n=NODES[currentIndex];
