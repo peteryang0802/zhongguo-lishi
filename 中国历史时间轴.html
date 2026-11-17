@@ -2289,16 +2289,27 @@ renderHeroThreads();
 /* ===== 底部短卡 ===== */
 const sheet=document.getElementById('sheet'),backdrop=document.getElementById('backdrop');
 /* 图片内存缓存：预加载过的 src 直接复用，切换零等待 */
-const imgMemory={};
-function fetchImage(src){
-  if(imgMemory[src])return imgMemory[src];
-  imgMemory[src]=new Promise((res,rej)=>{
-    const probe=new Image();
-    probe.onload=()=>{imgMemory[src]=true;res(true);};
-    probe.onerror=()=>{imgMemory[src]=null;rej(new Error('img fail '+src));};
-    probe.src=src;
-  });
-  return imgMemory[src];
+const imgMemory={}; /* src:true 已加载可即时显示；Image 对象=进行中；null=失败 */
+function preloadImage(src){
+  if(imgMemory[src]===true)return;
+  const p=new Image();
+  p.onload=()=>{imgMemory[src]=true;};
+  p.onerror=()=>{imgMemory[src]=null;};
+  p.src=src;
+  imgMemory[src]=p;
+}
+/* 当前图加载完后，空闲再预加载相邻，保证不抢当前图带宽 */
+function schedulePreload(i){
+  const run=()=>{
+    [i-1,i+1].forEach(j=>{
+      if(j>=0&&j<NODES.length){
+        const pim=IMG_META[NODES[j].id];
+        if(pim)preloadImage(pim.img);
+      }
+    });
+  };
+  if(window.requestIdleCallback){requestIdleCallback(run,{timeout:2000});}
+  else{setTimeout(run,400);}
 }
 function openSheet(i){
   currentIndex=i;store.last=i;
@@ -2321,18 +2332,26 @@ function openSheet(i){
     document.getElementById('capSource').textContent=im.source;
     document.getElementById('capKind').textContent=im.kind;
     if(imgMemory[im.img]===true){
-      /* 已缓存：直接显示，不闪加载态 */
+      /* 已缓存：直接显示，不闪加载态；随后空闲预加载相邻 */
       sFigure.classList.remove('loading');
+      sImg.onload=null;sImg.onerror=null;
       sImg.src=im.img;
+      schedulePreload(i);
     }else{
-      /* 先遮住旧图，后台加载完再替换；__curImg 防止用户已切走后误更新 */
+      /* 单请求：sImg 自己加载，loading 遮旧图，完成/失败都有归宿 */
       sImg.removeAttribute('src');
       sFigure.classList.add('loading');
-      fetchImage(im.img).then(()=>{
-        if(window.__curImg===im.img){sFigure.classList.remove('loading');sImg.src=im.img;}
-      }).catch(()=>{
+      sImg.onload=()=>{
+        if(window.__curImg===im.img){
+          sFigure.classList.remove('loading','fail');
+          imgMemory[im.img]=true;
+          schedulePreload(i);
+        }
+      };
+      sImg.onerror=()=>{
         if(window.__curImg===im.img){sFigure.classList.remove('loading');sFigure.classList.add('fail');}
-      });
+      };
+      sImg.src=im.img;
     }
   }else{
     sImg.removeAttribute('src');
@@ -2368,15 +2387,6 @@ function openSheet(i){
   if(!store.seen.includes(n.id)){const s=store.seen;s.push(n.id);store.seen=s;renderJourney();}
   document.getElementById('prevNode').disabled=(i===0);
   document.getElementById('nextNode').disabled=(i===NODES.length-1);
-  /* 延迟预加载相邻节点，线性切换时直接命中缓存；不抢当前图带宽 */
-  setTimeout(()=>{
-    [i-1,i+1].forEach(j=>{
-      if(j>=0&&j<NODES.length){
-        const pim=IMG_META[NODES[j].id];
-        if(pim)fetchImage(pim.img);
-      }
-    });
-  },350);
 }
 function closeSheet(){sheet.classList.remove('show');backdrop.classList.remove('show');if(lastTrigger){lastTrigger.focus();lastTrigger=null;}}
 let lastTrigger=null;
@@ -2838,16 +2848,19 @@ document.getElementById('paperReset').addEventListener('click',()=>{
 });
 document.getElementById('sImgFail').addEventListener('click',function(){
   const sFigure=document.getElementById('sFigure');
+  const sImg=document.getElementById('sImg');
   const src=window.__curImg;
   if(!src)return;
   imgMemory[src]=null; /* 清失败标记，允许重新加载 */
   sFigure.classList.remove('fail');
   sFigure.classList.add('loading');
-  fetchImage(src).then(()=>{
-    if(window.__curImg===src){sFigure.classList.remove('loading');document.getElementById('sImg').src=src;}
-  }).catch(()=>{
+  sImg.onload=()=>{
+    if(window.__curImg===src){sFigure.classList.remove('loading','fail');imgMemory[src]=true;schedulePreload(currentIndex);}
+  };
+  sImg.onerror=()=>{
     if(window.__curImg===src){sFigure.classList.remove('loading');sFigure.classList.add('fail');}
-  });
+  };
+  sImg.src=src;
 });
 sheet.addEventListener('transitionend',function(){
   const sImg=document.getElementById('sImg');
