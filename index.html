@@ -2288,9 +2288,19 @@ renderHeroThreads();
 
 /* ===== 底部短卡 ===== */
 const sheet=document.getElementById('sheet'),backdrop=document.getElementById('backdrop');
-/* 图片内存缓存：预加载过的 src 直接复用，切换零等待 */
-const imgMemory={}; /* src:true 已加载可即时显示；Image 对象=进行中；null=失败 */
+/* WebP 同步特性检测：支持则用更小的 .webp，否则回退 .jpg */
+let supportsWebP=false;
+(function(){
+  const c=document.createElement('canvas');c.width=1;c.height=1;
+  supportsWebP=c.toDataURL('image/webp').indexOf('data:image/webp')===0;
+  document.documentElement.setAttribute('data-webp',supportsWebP?'1':'0');
+})();
+function toWebp(src){
+  return (supportsWebP&&/\.jpg$/i.test(src))?src.replace(/\.jpg$/i,'.webp'):src;
+}
+const imgMemory={}; /* 实际路径:true 已加载可即时显示；Image 对象=进行中；null=失败 */
 function preloadImage(src){
+  src=toWebp(src);
   if(imgMemory[src]===true)return;
   const p=new Image();
   p.onload=()=>{imgMemory[src]=true;};
@@ -2311,6 +2321,40 @@ function schedulePreload(i){
   if(window.requestIdleCallback){requestIdleCallback(run,{timeout:2000});}
   else{setTimeout(run,400);}
 }
+let imgLoadTimer=null;
+function clearImgTimer(){if(imgLoadTimer){clearTimeout(imgLoadTimer);imgLoadTimer=null;}}
+/* 统一加载详情卡图片：带 8 秒超时，成功/失败/超时都有归宿，不永久转圈 */
+function loadFigure(im,i){
+  const sImg=document.getElementById('sImg');
+  const sFigure=document.getElementById('sFigure');
+  const realSrc=toWebp(im.img);
+  clearImgTimer();
+  sImg.removeAttribute('src');
+  sFigure.classList.add('loading');
+  sImg.onload=()=>{
+    if(window.__curImg===realSrc){
+      clearImgTimer();
+      sFigure.classList.remove('loading','fail');
+      imgMemory[realSrc]=true;
+      schedulePreload(i);
+    }
+  };
+  sImg.onerror=()=>{
+    if(window.__curImg===realSrc){
+      clearImgTimer();
+      sFigure.classList.remove('loading');
+      sFigure.classList.add('fail');
+    }
+  };
+  imgLoadTimer=setTimeout(()=>{
+    if(window.__curImg===realSrc){
+      sFigure.classList.remove('loading');
+      sFigure.classList.add('fail');
+      imgMemory[realSrc]=null;
+    }
+  },8000);
+  sImg.src=realSrc;
+}
 function openSheet(i){
   currentIndex=i;store.last=i;
   lastTrigger=document.activeElement;
@@ -2325,33 +2369,22 @@ function openSheet(i){
   sFigure.classList.remove('fail','placeholder','loading');
   sheet.scrollTop=0;
   if(im){
+    const realSrc=toWebp(im.img);
     sImg.alt=im.name;
-    window.__curImg=im.img;
+    window.__curImg=realSrc;
     document.getElementById('capName').textContent=im.name;
     document.getElementById('capEra').textContent=im.era;
     document.getElementById('capSource').textContent=im.source;
     document.getElementById('capKind').textContent=im.kind;
-    if(imgMemory[im.img]===true){
+    if(imgMemory[realSrc]===true){
       /* 已缓存：直接显示，不闪加载态；随后空闲预加载相邻 */
+      clearImgTimer();
       sFigure.classList.remove('loading');
       sImg.onload=null;sImg.onerror=null;
-      sImg.src=im.img;
+      sImg.src=realSrc;
       schedulePreload(i);
     }else{
-      /* 单请求：sImg 自己加载，loading 遮旧图，完成/失败都有归宿 */
-      sImg.removeAttribute('src');
-      sFigure.classList.add('loading');
-      sImg.onload=()=>{
-        if(window.__curImg===im.img){
-          sFigure.classList.remove('loading','fail');
-          imgMemory[im.img]=true;
-          schedulePreload(i);
-        }
-      };
-      sImg.onerror=()=>{
-        if(window.__curImg===im.img){sFigure.classList.remove('loading');sFigure.classList.add('fail');}
-      };
-      sImg.src=im.img;
+      loadFigure(im,i);
     }
   }else{
     sImg.removeAttribute('src');
@@ -2388,7 +2421,7 @@ function openSheet(i){
   document.getElementById('prevNode').disabled=(i===0);
   document.getElementById('nextNode').disabled=(i===NODES.length-1);
 }
-function closeSheet(){sheet.classList.remove('show');backdrop.classList.remove('show');if(lastTrigger){lastTrigger.focus();lastTrigger=null;}}
+function closeSheet(){clearImgTimer();sheet.classList.remove('show');backdrop.classList.remove('show');if(lastTrigger){lastTrigger.focus();lastTrigger=null;}}
 let lastTrigger=null;
 document.getElementById('sheetClose').addEventListener('click',closeSheet);
 backdrop.addEventListener('click',closeSheet);
@@ -2847,20 +2880,11 @@ document.getElementById('paperReset').addEventListener('click',()=>{
   beep(360);
 });
 document.getElementById('sImgFail').addEventListener('click',function(){
-  const sFigure=document.getElementById('sFigure');
-  const sImg=document.getElementById('sImg');
-  const src=window.__curImg;
-  if(!src)return;
-  imgMemory[src]=null; /* 清失败标记，允许重新加载 */
-  sFigure.classList.remove('fail');
-  sFigure.classList.add('loading');
-  sImg.onload=()=>{
-    if(window.__curImg===src){sFigure.classList.remove('loading','fail');imgMemory[src]=true;schedulePreload(currentIndex);}
-  };
-  sImg.onerror=()=>{
-    if(window.__curImg===src){sFigure.classList.remove('loading');sFigure.classList.add('fail');}
-  };
-  sImg.src=src;
+  const n=NODES[currentIndex];
+  const im=IMG_META[n.id];
+  if(!im)return;
+  imgMemory[toWebp(im.img)]=null; /* 清失败标记，允许重新加载 */
+  loadFigure(im,currentIndex);
 });
 sheet.addEventListener('transitionend',function(){
   const sImg=document.getElementById('sImg');
