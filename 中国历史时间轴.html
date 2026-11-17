@@ -140,6 +140,19 @@ html{scroll-behavior:smooth}
 .rc-feedback{font-size:13.5px;margin-top:10px;line-height:1.55;display:none}
 .rc-feedback.show{display:block;animation:fade .2s ease}
 
+/* 滚雪球：侯国儿子代代再分 */
+.snowball{margin-top:20px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+.snowball h3{margin:0 0 6px;font-size:17px}
+.sb-lead{font-size:14px;color:var(--sub);margin:0 0 12px;line-height:1.55}
+.sb-stage{display:grid;gap:3px;background:var(--paper);border-radius:12px;padding:10px;min-height:120px}
+.sb-cell{display:block;aspect-ratio:1;border-radius:4px}
+.sb-cell.king{background:var(--state)}
+.sb-cell.hou{background:#c9b896}
+.sb-controls{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.sb-controls .btn{min-height:44px;flex:1}
+.sb-controls .btn:disabled{opacity:.45}
+.sb-note{margin-top:12px;font-size:14px;font-weight:700;color:var(--state);line-height:1.55}
+
 /* 分封后引导 */
 .hint-after{
   margin-top:12px;background:#eef3f0;border-radius:14px;padding:12px 16px;
@@ -336,6 +349,8 @@ html{scroll-behavior:smooth}
 }
 .silk-hold svg{width:12px;height:12px}
 .silk-schematic{font-size:12.5px;color:var(--sub);background:#f1ece1;border-radius:9px;padding:7px 11px;margin-bottom:11px}
+.silk-orient{background:#f4ede0;border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-bottom:14px}
+.silk-orient svg{display:block}
 /* 两趟对照 */
 .silk-compare{display:none;border-radius:14px;padding:13px 14px;background:#eef3f7;border:1px solid #b9d2dd;margin-top:12px}
 .silk-compare.show{display:block;animation:fade .25s ease}
@@ -462,17 +477,6 @@ button:focus:not(:focus-visible){outline:none}
 }
 .hero-banner h2{font-size:22px;margin-bottom:9px}
 .hero-banner p{font-size:14.5px;line-height:1.65;margin:0 0 15px;color:#e7ddcb}
-.hero-banner .seg-row{display:flex;gap:9px}
-.hero-banner .seg-pill{
-  flex:1;min-height:50px;border-radius:13px;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:2px;background:rgba(255,253,248,.1);
-  border:1px solid rgba(255,255,255,.18);color:#f3ead8;font-size:14px;font-weight:700
-}
-.hero-banner .seg-pill small{font-size:12px;font-weight:400;color:#cabfa9}
-.hero-banner .seg-pill.p1{border-top:3px solid #5b97b5}
-.hero-banner .seg-pill.p2{border-top:3px solid #c9a24b}
-.hero-banner .seg-pill.p3{border-top:3px solid #7ba884}
-.hero-banner .seg-pill:active{background:rgba(255,253,248,.22)}
 .hero-continue{
   margin-top:12px;width:100%;min-height:48px;border-radius:13px;background:#c2691f;color:#fff;
   font-size:15px;font-weight:700;display:none
@@ -481,15 +485,13 @@ button:focus:not(:focus-visible){outline:none}
 
 /* hero 双轴切换 */
 .view-switch{
- display:flex;gap:8px;background:rgba(0,0,0,.22);border-radius:13px;padding:5px;margin-bottom:14px
+ display:flex;gap:6px;background:transparent;padding:0;margin-bottom:12px
 }
 .vs-btn{
- flex:1;min-height:44px;border-radius:10px;font-size:15px;font-weight:800;
- color:#d8cdb9;background:transparent
+ flex:1;min-height:44px;border-radius:10px;font-size:13.5px;font-weight:700;
+ color:#cdc2ad;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14)
 }
-.vs-btn.active{background:#f7f3ea;color:#3a2f22;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-.hero-banner .seg-row{display:flex;flex-wrap:wrap;gap:8px}
-.hero-banner .seg-pill{flex:1 1 30%;min-width:92px}
+.vs-btn.active{background:rgba(255,255,255,.16);color:#f3ead8;box-shadow:none;font-weight:800}
 #threadEntry{display:none}
 #threadEntry.show{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .hero-thread-card{
@@ -512,6 +514,7 @@ button:focus:not(:focus-visible){outline:none}
   border:1px solid rgba(255,255,255,.25)
 }
 .mystery-entry:active{transform:scale(.985)}
+.mystery-entry.hide{display:none}
 .mystery-tag{
   align-self:flex-start;font-size:12px;font-weight:800;background:rgba(0,0,0,.25);
   padding:3px 10px;border-radius:11px
@@ -598,6 +601,11 @@ button:focus:not(:focus-visible){outline:none}
   color:#fff;background:var(--c);border-radius:9px;padding:3px 9px;margin-top:7px
 }
 .topic-badge svg{width:12px;height:12px}
+.s3d-badge{
+  display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;
+  color:#fff;background:#3a4a6b;border-radius:9px;padding:3px 9px;margin-top:7px;margin-left:6px
+}
+.s3d-badge::before{content:"";width:9px;height:9px;border-radius:2px;background:var(--gold)}
 
 /* ===== 节点上的话题标签 ===== */
 .thread-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
@@ -638,42 +646,51 @@ button:focus:not(:focus-visible){outline:none}
  background:var(--card);border:1px solid var(--line);border-radius:14px;
  padding:12px 14px;box-shadow:var(--shadow)
 }
+.bead-head{display:flex;gap:11px;align-items:flex-start}
+.bead-img{width:68px;height:68px;flex:0 0 68px;object-fit:cover;border-radius:11px;border:1px solid var(--line);background:var(--paper)}
+.bead-info{flex:1;min-width:0}
 .bead-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px}
 .bead-year{font-size:12px;font-weight:700;color:var(--sub)}
 .bead-title{font-size:16.5px;font-weight:800;color:#332c24}
 .bead-change{font-size:14px;color:#4a4238;line-height:1.55;margin-top:4px}
 .bead-change b{color:var(--th-color)}
-.bead-jump{
- margin-top:9px;display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;
- color:var(--th-color);min-height:36px;padding:0 12px;border-radius:10px;
- border:1px solid var(--th-color);background:transparent
-}
-.bead-jump svg{width:14px;height:14px}
 
-/* 战争分类玩法 */
-.cat-tip{font-size:13.5px;color:#fff;margin:0 0 12px;opacity:.95}
-.cat-board{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:16px}
-.cat-bin{
- border:2px dashed var(--th-color);border-radius:14px;padding:10px 12px;min-height:58px;
- background:rgba(168,60,46,.05)
-}
-.cat-bin h4{margin:0 0 4px;font-size:14.5px;color:var(--th-color);display:flex;justify-content:space-between}
-.cat-bin h4 small{font-weight:500;color:var(--sub)}
-.cat-bin .bin-items{display:flex;flex-wrap:wrap;gap:6px}
-.cat-pill{
- font-size:12.5px;font-weight:700;color:#fff;background:var(--th-color);
- border-radius:18px;padding:5px 11px;min-height:28px
-}
-.cat-pool{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
-.cat-pool .cat-pill{background:#8a8074}
-.cat-actions{display:flex;gap:10px;flex-wrap:wrap}
-.cat-actions .btn{min-height:44px;border-radius:12px;padding:0 18px;font-size:14.5px;font-weight:700}
-.cat-actions .btn.primary{background:var(--th-color);color:#fff}
-.cat-actions .btn.ghost{background:var(--card);border:1px solid var(--line);color:var(--ink)}
-.cat-feedback{font-size:14px;font-weight:700;margin-top:12px;line-height:1.5}
-.cat-feedback.ok{color:var(--state)}
-.cat-feedback.no{color:#a83c2e}
-@media(min-width:560px){.cat-board{grid-template-columns:1fr 1fr}}
+/* 战争分类：一屏一案，先读材料再判断 */
+.wc-lead{font-size:14px;line-height:1.6;color:var(--ink);margin:0 0 12px}
+.wc-brief{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+.wc-cats{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:8px}
+.wc-cats li{display:flex;flex-direction:column;gap:2px;padding:10px 12px;background:var(--paper);border-radius:12px}
+.wc-cats b{font-size:14.5px;color:var(--th-color)}
+.wc-cats span{font-size:13px;color:var(--sub)}
+.wc-start{width:100%;min-height:48px;font-size:15px}
+.wc-progress{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.wc-progress span{font-size:13px;font-weight:700;color:var(--sub);white-space:nowrap}
+.wc-bar{flex:1;height:8px;background:var(--line);border-radius:8px;overflow:hidden}
+.wc-bar i{display:block;height:100%;background:var(--th-color);border-radius:8px}
+.wc-case{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+.wc-case h3{margin:0 0 10px;font-size:19px}
+.wc-ev{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:8px}
+.wc-ev li{position:relative;padding:10px 12px 10px 34px;background:var(--paper);border-left:4px solid var(--th-color);border-radius:10px;font-size:14px;line-height:1.55}
+.wc-ev li::before{content:"";position:absolute;left:12px;top:14px;width:10px;height:10px;border-radius:50%;background:var(--th-color)}
+.wc-q{font-size:14.5px;font-weight:700;margin:0 0 10px;color:var(--ink)}
+.wc-bins{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.wc-bin{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:52px;padding:10px 12px;border:2px solid var(--line);border-radius:13px;background:var(--card);text-align:left;cursor:pointer}
+.wc-bin b{font-size:14.5px;color:var(--ink)}
+.wc-bin small{font-size:12px;color:var(--sub);line-height:1.35}
+.wc-bin.picked{border-color:var(--state);background:rgba(74,122,82,.1)}
+.wc-bin.picked b{color:var(--state)}
+.wc-bin.wrong{border-color:#a83c2e;background:rgba(168,60,46,.08)}
+.wc-bin.wrong b{color:#a83c2e}
+.wc-fb{margin-top:12px;font-size:14px;line-height:1.6}
+.wc-fb.ok{color:var(--state);font-weight:700}
+.wc-fb.no{color:#a83c2e;font-weight:700}
+.wc-next{display:block;margin-top:10px;min-height:46px}
+.wc-done .wc-group{margin-bottom:14px}
+.wc-done h4{margin:0 0 8px;font-size:15px;color:var(--th-color)}
+.wc-members{display:flex;flex-wrap:wrap;gap:7px}
+.wc-chip{font-size:13px;font-weight:700;color:#fff;background:var(--th-color);padding:7px 12px;border-radius:16px;min-height:32px;display:inline-flex;align-items:center}
+.wc-reset{min-height:46px}
+@media(min-width:560px){.wc-bins{grid-template-columns:repeat(3,1fr)}}
 
 /* ===== 专题视图头部 ===== */
 .topic-topbar{
@@ -682,7 +699,7 @@ button:focus:not(:focus-visible){outline:none}
   padding:10px 0;margin-bottom:10px;border-bottom:1px solid var(--line)
 }
 .back-btn{
-  display:flex;align-items:center;gap:5px;min-height:44px;border-radius:12px;
+  display:flex;align-items:center;gap:5px;min-height:44px;border-radius:12px;white-space:nowrap;
   background:var(--card);border:1px solid var(--line);padding:0 14px;font-size:14.5px;font-weight:700
 }
 .topic-crumb{font-size:13.5px;color:var(--sub);font-weight:600}
@@ -770,14 +787,6 @@ button:focus:not(:focus-visible){outline:none}
       <button class="vs-btn" id="vsThread" type="button">按话题看</button>
     </div>
     <div id="timeEntry">
-      <div class="seg-row">
-        <button class="seg-pill" data-jump="shiqian" type="button">史前<small>约170万—4000年前</small></button>
-        <button class="seg-pill" data-jump="xianshangzhou" type="button">夏商周<small>前2070—前221</small></button>
-        <button class="seg-pill" data-jump="qin" type="button">秦<small>前221—前207</small></button>
-        <button class="seg-pill" data-jump="xihan" type="button">西汉<small>前202—公元9</small></button>
-        <button class="seg-pill" data-jump="xinchao" type="button">新朝<small>9—23</small></button>
-        <button class="seg-pill" data-jump="donghan" type="button">东汉<small>25—220</small></button>
-      </div>
       <button class="hero-continue" id="heroContinue" type="button">继续上次</button>
     </div>
     <div id="threadEntry" class="hero-thread-grid"></div>
@@ -798,7 +807,7 @@ button:focus:not(:focus-visible){outline:none}
   <div class="topic-topbar">
     <button class="back-btn" id="backBtn" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-      回到时间轴
+      时间轴
     </button>
     <span class="topic-crumb" id="topicCrumb"></span>
   </div>
@@ -883,6 +892,18 @@ button:focus:not(:focus-visible){outline:none}
         </div>
         <div class="rc-feedback" id="rcFeedback"></div>
       </div>
+
+      <!-- 滚雪球：侯国的儿子还能再分，代代累积越分越小 -->
+      <div class="snowball" id="snowball">
+        <h3>还没完：侯国的儿子，也会接着分</h3>
+        <p class="sb-lead">侯国也是一块封地，侯的儿子照样分。点一下“过一代”，看看地怎么变。</p>
+        <div class="sb-stage" id="sbStage"></div>
+        <div class="sb-controls">
+          <button class="btn primary" id="sbNext" type="button">过一代</button>
+          <button class="btn ghost" id="sbReset" type="button">回到第一代</button>
+        </div>
+        <div class="sb-note" id="sbNote"></div>
+      </div>
     </div>
   </div>
 
@@ -894,6 +915,24 @@ button:focus:not(:focus-visible){outline:none}
       <p>你从长安出发，手里有一匹丝绸。这匹丝绸可能经不同商人多次转手，每到一站，就把货交给下一段的人。主干路一站接一站，遇到分岔，往哪走由你选。</p>
 
       <div class="silk-schematic">站点、路线和货物组合是教学示意，帮你看懂“接力”。真实的丝路是长期形成的路网，物产和文化的传播跨了不同时期，也不是同一个商人从头走到尾。</div>
+
+      <!-- 东西走向示意：先立住“一路向西”的方向 -->
+      <div class="silk-orient">
+        <svg viewBox="0 0 320 96" width="100%" role="img" aria-label="丝绸之路东西走向示意：长安在东，大秦在西，一路向西">
+          <defs><marker id="soArrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#a8642b"/></marker></defs>
+          <text x="14" y="16" font-size="12" font-weight="700" fill="#7a7064">东</text>
+          <text x="298" y="16" font-size="12" font-weight="700" fill="#7a7064">西</text>
+          <line x1="24" y1="34" x2="298" y2="34" stroke="#a8642b" stroke-width="2.5" marker-end="url(#soArrow)"/>
+          <g fill="#fffdf8" stroke="#a8642b" stroke-width="2.5">
+            <circle cx="34" cy="34" r="6.5"/><circle cx="99" cy="34" r="6.5"/><circle cx="164" cy="34" r="6.5"/><circle cx="229" cy="34" r="6.5"/><circle cx="290" cy="34" r="6.5"/>
+          </g>
+          <g font-size="11.5" font-weight="700" fill="#2b2620" text-anchor="middle">
+            <text x="34" y="60">长安</text><text x="99" y="60">河西走廊</text><text x="164" y="60">西域</text><text x="229" y="60">中亚·西亚</text><text x="290" y="60">大秦</text>
+          </g>
+          <text x="160" y="82" font-size="11" fill="#7a7064" text-anchor="middle">从东往西，一路穿过沙漠和绿洲</text>
+        </svg>
+      </div>
+
       <div class="silk-map" id="silkMap"></div>
       <div class="silk-now" id="silkNow"></div>
       <div class="silk-choices" id="silkChoices"></div>
@@ -1007,7 +1046,7 @@ button:focus:not(:focus-visible){outline:none}
   <div class="topic-topbar">
     <button class="back-btn" id="threadBack" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y12="12"/><polyline points="12 19 5 12 12 5"/></svg>
-      回到时间轴
+      时间轴
     </button>
     <span class="topic-crumb" id="threadCrumb"></span>
   </div>
@@ -1019,7 +1058,7 @@ button:focus:not(:focus-visible){outline:none}
   <div class="topic-topbar">
     <button class="back-btn" id="back3d" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-      回到时间轴
+      时间轴
     </button>
     <span class="topic-crumb" id="crumb3d"></span>
   </div>
@@ -1028,7 +1067,10 @@ button:focus:not(:focus-visible){outline:none}
       <div class="s3d-loading" id="loading3d"><span class="s3d-spinner"></span><p id="loading3dText">正在调出 3D……</p></div>
       <div class="s3d-fail" id="fail3d">
         <p id="fail3dText">这台设备暂时跑不动 3D。</p>
-        <button class="btn ghost" id="fail3dBack" type="button">回到时间轴</button>
+        <div class="fail3d-actions">
+          <button class="btn" id="fail3dRetry" type="button">再试一次</button>
+          <button class="btn ghost" id="fail3dBack" type="button">回到时间轴</button>
+        </div>
       </div>
     </div>
     <div class="s3d-hint" id="hint3d">
@@ -1099,7 +1141,7 @@ const NODES=[
  /* ===== 第一单元 史前 ===== */
  {id:1,year:-1700000,yearLabel:'约170万年前',approx:true,type:'site',title:'元谋人',
   story:'这是我国目前已知最早的古人类之一，已经知道用火。',
-  points:['在云南元谋发现，距今约170万年','会制造和使用打制石器，知道用火','光会用火这一条，就把人和动物分开了']},
+  points:['在云南元谋发现，距今约170万年','会制造和使用打制石器，知道用火','能不能制造工具，才是人和动物最根本的区别']},
  {id:2,year:-700000,yearLabel:'约70万—20万年前',approx:true,type:'site',title:'北京人',
   story:'他们成群住在一起，会打石头做工具，还会把火保存下来。',
   points:['在北京周口店龙骨山发现，距今约70万到20万年','用打制石器，属于旧石器时代','会使用火，还会长时间保存火种，用火烤食物、取暖、赶野兽','过群居生活，一起干活、一起对付猛兽']},
@@ -1214,6 +1256,9 @@ const NODES=[
  {id:38,year:-119,yearLabel:'公元前119年',approx:false,type:'event',title:'漠北战役',
   story:'这一年卫青穿越大漠包围单于，霍去病挥师北进，是反击匈奴的高潮。',
   points:['卫青、霍去病率精骑深入漠北，卫青包围单于，单于逃走','匈奴遭到沉重打击，再无力与西汉对抗，部分匈奴人开始西迁']},
+ {id:52,year:-119,yearLabel:'公元前119年',approx:false,type:'event',title:'张骞第二次出使',
+  story:'这一次人多、带的丝绸也多，回来时还带回了西域各国的使者。',
+  points:['公元前119年，张骞带着三百多人、大量金币和丝绸再次出使西域，想联络乌孙','他派出副使，分别访问大宛、康居、大月氏、大夏、安息等国','此后汉朝和西域的使者、商人往来不断，通往西域的路真正走顺了']},
  {id:39,year:-115,yearLabel:'前118—前113年',approx:true,type:'event',title:'五铢钱',
   story:'从此私人不能铸钱，国家把经济命脉攥在了自己手里。',
   points:['公元前118年，郡国开始铸造五铢钱','公元前113年，汉武帝把铸币权收归中央，由上林三官统一铸造','同时实行盐铁官营专卖，国家财政大为改善']},
@@ -1223,6 +1268,12 @@ const NODES=[
  {id:41,year:-60,yearLabel:'公元前60年',approx:false,type:'event',title:'西域都护',
   story:'从这一年起，今新疆一带正式纳入中央管辖。',
   points:['西汉设置西域都护，管理西域36国，府治在乌垒城','西域都护颁行号令、调遣军队、征发粮草','标志着西域正式归属中央政权']},
+ {id:53,year:-50,yearLabel:'西汉以来',approx:true,type:'event',title:'丝绸之路',
+  story:'这条路不是一次走成的，是一代代使者、商人慢慢踩出来的。',
+  points:['路线从长安出发，经河西走廊、出西域，再到中亚、西亚，最远到达大秦（罗马）','往西去的有丝绸、漆器，还有铸铁、凿井等技术','往东来的有核桃、葡萄、苜蓿、石榴、香料和乐器，后来佛教也沿这条路传入','因为中国的丝绸最有名、运得最多，这条路就叫“丝绸之路”']},
+ {id:54,year:-40,yearLabel:'汉代',approx:true,type:'event',title:'海上丝绸之路',
+  story:'除了走西北的沙漠，汉人还驾船从海上往南走。',
+  points:['汉代的船从东南沿海的徐闻、合浦出发，沿南海航行','一路经过东南亚，最远到达印度半岛南端，《汉书·地理志》里记下了这条航线','它和陆上丝绸之路一海一陆，把中国和外面连起来']},
  {id:42,year:9,yearLabel:'公元9年',approx:false,type:'event',title:'王莽篡汉',
   story:'王莽是太后的亲戚，靠“禅让”当上了皇帝。',
   points:['外戚王莽夺取政权，建立新朝，西汉灭亡','王莽改制加剧社会动荡，激起各地农民起义']},
@@ -1322,7 +1373,9 @@ const store={
   get topic(){try{return JSON.parse(localStorage.getItem('zg_topic')||'null')}catch(e){return null}},
   set topic(v){if(v===null)localStorage.removeItem('zg_topic');else localStorage.setItem('zg_topic',JSON.stringify(v))},
   get topicStep(){try{return JSON.parse(localStorage.getItem('zg_topic_step')||'null')}catch(e){return null}},
-  set topicStep(v){if(v===null)localStorage.removeItem('zg_topic_step');else localStorage.setItem('zg_topic_step',JSON.stringify(v))}
+  set topicStep(v){if(v===null)localStorage.removeItem('zg_topic_step');else localStorage.setItem('zg_topic_step',JSON.stringify(v))},
+  get topicDone(){try{return JSON.parse(localStorage.getItem('zg_topic_done')||'[]')}catch(e){return[]}},
+  set topicDone(v){localStorage.setItem('zg_topic_done',JSON.stringify(v))}
 };
 let currentIndex=0;
 
@@ -1331,18 +1384,18 @@ const PERIODS=[
   {key:'shiqian',name:'史前',range:'约170万—约4000年前',from:0,to:8},
   {key:'xianshangzhou',name:'夏商周',range:'约前2070—前221',from:9,to:25},
   {key:'qin',name:'秦',range:'前221—前207',from:26,to:30},
-  {key:'xihan',name:'西汉',range:'前202—公元9',from:31,to:40},
-  {key:'xinchao',name:'新朝',range:'9—23',from:41,to:42},
-  {key:'donghan',name:'东汉',range:'25—220',from:43,to:50}
+  {key:'xihan',name:'西汉',range:'前202—公元9',from:31,to:43},
+  {key:'xinchao',name:'新朝',range:'9—23',from:44,to:45},
+  {key:'donghan',name:'东汉',range:'25—220',from:46,to:53}
 ];
 /* 数组索引（0起）→ 专题：张骞=35、推恩令=36、蔡伦=45 */
-const TOPIC_MAP={35:'silk',36:'tuen',45:'paper'};
+const TOPIC_MAP={35:'silk',36:'tuen',48:'paper'};
 const TOPIC_PANE={silk:'pane-silk',tuen:'pane-tuen',paper:'pane-paper'};
 const TOPIC_NAME={silk:'丝绸之路',tuen:'推恩令',paper:'造纸术'};
 const NODE_META={
  31:'西汉建立前的背景',
- 47:'东汉末年，与华佗同一时期',
- 48:'东汉末年，与张仲景同一时期'
+ 50:'东汉末年，与华佗同一时期',
+ 51:'东汉末年，与张仲景同一时期'
 };
 
 /* ===== 话题线（跨年代串珠，可跨册追加）===== */
@@ -1358,22 +1411,43 @@ const THREADS=[
   ask:'这些仗为什么打？你能按“为什么动手”给它们分分类吗？',
   classify:true,
   cats:[
-   {id:'unify',name:'兼并统一',hint:'为了把别的国家吞掉、把天下合成一个'},
-   {id:'fight',name:'争霸',hint:'都想当老大，谁也不服谁'},
+   {id:'unify',name:'兼并统一',hint:'把别的国家吞掉，把天下合成一个'},
+   {id:'fight',name:'争霸',hint:'谁都想当老大，谁也不服谁'},
    {id:'rebel',name:'农民起义',hint:'百姓活不下去，被逼反了'},
-   {id:'nation',name:'民族冲突',hint:'不同部族、政权之间的较量'}
+   {id:'nation',name:'民族冲突',hint:'不同部族、政权之间的较量'},
+   {id:'overthrow',name:'改朝换代',hint:'推翻旧王朝，另立新王朝'}
   ],
   beads:[
-   {node:8,cat:'nation',change:'炎黄部落和蚩尤在涿鹿打，是传说里部落之间的较量。'},
-   {node:15,cat:'unify',change:'周武王牧野伐商，商军倒戈，商亡周立。'},
-   {node:19,cat:'fight',change:'春秋诸侯打着“尊王攘夷”旗号，争当霸主。'},
-   {node:22,cat:'unify',change:'战国桂陵、马陵、长平，大国兼并，越打越大。'},
-   {node:26,cat:'unify',change:'秦灭六国，几百年分裂合成一个国家。'},
-   {node:29,cat:'rebel',change:'大泽乡揭竿而起，第一次农民大起义。'},
-   {node:30,cat:'rebel',change:'巨鹿之战项羽破釜沉舟，打垮秦军主力。'},
-   {node:31,cat:'fight',change:'楚汉之争，刘邦项羽争天下。'},
-   {node:38,cat:'nation',change:'漠北战役，西汉大举反击匈奴。'},
-   {node:50,cat:'rebel',change:'黄巾起义，头裹黄巾的农民大起义。'}
+   {node:8,cat:'nation',
+    ev:['传说里炎黄部落，和东边的蚩尤部落打','是不同部落之间的较量，谁也没要建立王朝'],
+    change:'炎黄部落和蚩尤在涿鹿打，是传说里部落之间的较量。'},
+   {node:15,cat:'overthrow',
+    ev:['周军打败商军，商军阵前倒戈','商王朝结束，周建立了自己的统治'],
+    change:'周武王牧野伐商，商军倒戈，商亡周立。'},
+   {node:19,cat:'fight',
+    ev:['诸侯打着“尊王攘夷”的旗号，争当霸主','谁都没灭掉周天子，只是争谁当老大'],
+    change:'春秋诸侯打着“尊王攘夷”旗号，争当霸主。'},
+   {node:22,cat:'unify',
+    ev:['桂陵、马陵、长平，大国把小国一个个吞掉','仗越打越大，国家越并越少'],
+    change:'战国桂陵、马陵、长平，大国兼并，越打越大。'},
+   {node:26,cat:'unify',
+    ev:['秦国一个接一个灭掉六国','几百年的分裂，合成了一个国家'],
+    change:'秦灭六国，几百年分裂合成一个国家。'},
+   {node:29,cat:'rebel',
+    ev:['戍边的农民遇雨误期，被逼揭竿而起','是底层百姓活不下去，自己起来反秦'],
+    change:'大泽乡揭竿而起，第一次农民大起义。'},
+   {node:30,cat:'rebel',
+    ev:['项羽带着起义军，破釜沉舟打垮秦军主力','它是反秦起义里最关键的一仗，不是起义的爆发'],
+    change:'巨鹿之战项羽破釜沉舟，打垮秦军主力。'},
+   {node:31,cat:'fight',
+    ev:['秦朝亡了，刘邦和项羽争谁当皇帝','两人争天下，最后刘邦赢了建立汉朝'],
+    change:'楚汉之争，刘邦项羽争天下。'},
+   {node:38,cat:'nation',
+    ev:['西汉大军深入漠北，反击匈奴','是中原王朝和北方游牧政权之间的较量'],
+    change:'漠北战役，西汉大举反击匈奴。'},
+   {node:50,cat:'rebel',
+    ev:['头裹黄巾的农民，起来反抗东汉朝廷','百姓被压榨得活不下去，揭竿而起'],
+    change:'黄巾起义，头裹黄巾的农民大起义。'}
   ]},
  {id:'reform',name:'制度',color:'#5a6bb0',icon:'scroll',
   ask:'制度怎么一步步变，权力怎么往中央收？',
@@ -1424,6 +1498,7 @@ function renderJourney(){
         '<span class="j-title">'+n.title+'</span>';
       if(NODE_META[i]){html+='<div class="j-meta">'+NODE_META[i]+'</div>';}
       if(topic){html+='<span class="topic-badge">动手专题 · '+TOPIC_NAME[topic]+'</span>';}
+      if(NODE_3D_MAP[i]){html+='<span class="s3d-badge">3D 立体看</span>';}
       const thIds=THREAD_MAP[n.id];
       if(thIds&&thIds.length){
        html+='<span class="thread-tags">';
@@ -1459,6 +1534,15 @@ function showView(v){
   topicView.classList.toggle('active',v==='topic');
   threadViewEl.classList.toggle('active',v==='thread');
   view3dEl.classList.toggle('active',v==='3d');
+  /* 焦点管理：进新视图把焦点放到顶部返回按钮，键盘和读屏不会迷路；preventScroll 不抢滚动 */
+  const focusMap={topic:'backBtn',thread:'threadBack','3d':'back3d'};
+  const fid=focusMap[v];
+  if(fid){
+    setTimeout(()=>{
+      const el=document.getElementById(fid);
+      if(el)el.focus({preventScroll:true});
+    },0);
+  }
 }
 function saveTopicStep(){
   if(currentTopic==='silk'){
@@ -1480,11 +1564,7 @@ function restoreTopicStep(key){
     if(Array.isArray(s.trials))s.trials.forEach(t=>silkTrials.push(t));
     renderSilk();
   }else if(key==='tuen'){
-    if(s.seenKing||s.seenHou){
-      renderSplit();
-      if(s.seenKing){const k=kingdomEl.querySelector('.plot[data-king]');if(k)k.click();}
-      if(s.seenHou){const h=kingdomEl.querySelector('.plot[data-hou="0"]');if(h)h.click();}
-    }
+    applyTuenRestore(s);
   }else if(key==='paper'){
     if(s.cailunDeep)cailunDeep.classList.add('show');
   }
@@ -1502,10 +1582,14 @@ function openTopic(key,resume){
 }
 function closeTopic(){
   const key=currentTopic;
-  store.topic=null;store.topicStep=null;
+  saveTopicStep();
+  if(store.topicDone.includes(key)){
+    store.topic=null;store.topicStep=null;
+  }
   showView('home');
   renderJourney();
   initContinue();
+  renderMystery();
   const nodeIdx=Object.keys(TOPIC_MAP).find(i=>TOPIC_MAP[i]===key);
   setTimeout(()=>{
     const node=nodeIdx?document.querySelectorAll('.j-node')[nodeIdx]:null;
@@ -1516,16 +1600,18 @@ function closeTopic(){
 document.getElementById('backBtn').addEventListener('click',closeTopic);
 
 /* ===================== 3D 模块（three.js r160，按需动态 import） ===================== */
-const THREE_URL='https://fastly.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+const THREE_URL='./vendor/three.module.js';
 /* 节点索引 -> 3D 场景：都江堰 id24(索引23)；钱币 id28(索引27)、id39(索引38) */
-const NODE_3D_MAP={23:'dujiangyan',27:'coins',38:'coins'};
+const NODE_3D_MAP={23:'dujiangyan',27:'coins',39:'coins'};
 const S3D_META={
   coins:{name:'翻看秦半两与汉五铢',crumb:'时间轴 → 3D 钱币'},
   dujiangyan:{name:'3D 看都江堰',crumb:'时间轴 → 3D 都江堰'}
 };
 let __threePromise=null;
 function loadThree(){
-  if(!__threePromise)__threePromise=import(THREE_URL);
+  if(!__threePromise){
+    __threePromise=import(THREE_URL).catch(err=>{__threePromise=null;throw err;});
+  }
   return __threePromise;
 }
 function s3dClamp(v,a,b){return Math.min(b,Math.max(a,v));}
@@ -1928,9 +2014,10 @@ const S3D_UI={
     ]
   }
 };
-let current3d=null,fromNode3d=null,s3dToken=0;
+let current3d=null,current3dKey=null,fromNode3d=null,s3dToken=0;
 async function open3D(key,fromIdx){
   const myToken=++s3dToken;
+  current3dKey=key;
   fromNode3d=fromIdx;
   const stage=document.getElementById('stage3d');
   stage.classList.remove('is-fail');
@@ -1957,7 +2044,14 @@ async function open3D(key,fromIdx){
     if(myToken!==s3dToken)return;
     current3d=key==='coins'?buildCoins(THREE,stage):buildDujiangyan(THREE,stage);
   }catch(err){
-    if(myToken===s3dToken)stage.classList.add('is-fail');
+    if(myToken!==s3dToken)return;
+    const msg=(err&&err.message)||'';
+    const isDevice=/webgl|context|shader|gpu|graphics/i.test(msg)||/webgl|context/i.test((err&&err.name)||'');
+    document.getElementById('fail3dText').textContent=isDevice
+      ? '这台设备的浏览器暂时不支持 WebGL，看不了 3D。可以回到时间轴，用文字和图片学。'
+      : '3D 文件这次没加载好。可以再试一次，或先回到时间轴。';
+    document.getElementById('fail3dRetry').style.display=isDevice?'none':'';
+    stage.classList.add('is-fail');
   }
 }
 function close3D(){
@@ -1974,6 +2068,7 @@ function close3D(){
 }
 document.getElementById('back3d').addEventListener('click',close3D);
 document.getElementById('fail3dBack').addEventListener('click',close3D);
+document.getElementById('fail3dRetry').addEventListener('click',()=>open3D(current3dKey,fromNode3d));
 
 /* ===== 话题图标 ===== */
 const THREAD_ICONS={
@@ -2008,30 +2103,18 @@ function renderBeads(t){
   '<div class="th-name">'+THREAD_ICONS[t.icon]+t.name+'</div><p>'+t.ask+'</p></div>';
  html+='<div class="bead-track" style="--th-color:'+t.color+'">';
  t.beads.forEach((b,i)=>{
-  const n=NODES[nodeIndexById(b.node)];
+  const n=NODES[nodeIndexById(b.node)],im=IMG_META[b.node];
   html+='<div class="bead">'+beadDot(b.node)+
-   '<div class="bead-card"><div class="bead-top"><span class="bead-year">'+n.yearLabel+'</span>'+
+   '<div class="bead-card">'+
+   (im?'<div class="bead-head"><img class="bead-img" src="'+im.img+'" alt="'+im.name+'" loading="lazy"><div class="bead-info">':'')+
+   '<div class="bead-top"><span class="bead-year">'+n.yearLabel+'</span>'+
    '<span class="bead-title">'+n.title+'</span></div>'+
    '<div class="bead-change">'+(i===0?'<b>起点：</b>':'<b>变了：</b>')+b.change+'</div>'+
-   '<button class="bead-jump" type="button" data-jump-node="'+b.node+'">回到这个年代 '+
-   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></button>'+
+   (im?'</div></div>':'')+
    '</div></div>';
  });
  html+='</div>';
  threadBody.innerHTML=html;
- threadBody.querySelectorAll('[data-jump-node]').forEach(btn=>{
-  btn.addEventListener('click',()=>jumpToNode(parseInt(btn.getAttribute('data-jump-node'))));
- });
-}
-function jumpToNode(nodeId){
- const idx=nodeIndexById(nodeId);
- const topic=TOPIC_MAP[idx];
- showView('home');
- renderJourney();
- setTimeout(()=>{
-  const node=document.querySelectorAll('.j-node')[idx];
-  if(node){node.scrollIntoView({block:'center'});openSheet(idx);}
- },0);
 }
 function closeThread(){
  showView('home');
@@ -2045,79 +2128,70 @@ function closeThread(){
 }
 document.getElementById('threadBack').addEventListener('click',closeThread);
 
-/* ===== 战争分类玩法（只判对错，不直接给答案）===== */
-let warPool=[],warBins={},warSelected=null;
+/* ===== 战争分类：一屏一案，先读材料再判断，错了只改当前这一场 ===== */
+let warBeads=[],warIdx=0,warStage='brief';
 function renderClassify(t){
- warPool=t.beads.map(b=>b.node);
- warBins={};t.cats.forEach(c=>warBins[c.id]=[]);
- warSelected=null;
+ warBeads=t.beads;warIdx=0;warStage='brief';
  paintClassify(t);
 }
 function paintClassify(t){
  let html='<div class="thread-ask" style="background:'+t.color+'">'+
   '<div class="th-name">'+THREAD_ICONS[t.icon]+t.name+'</div><p>'+t.ask+'</p></div>';
- html+='<p class="cat-tip">先点下面一颗“珠子”，再点一个筐把它放进去。点筐里的珠子可以拿回来。</p>';
- html+='<div class="cat-pool" id="catPool">';
- if(warPool.length===0){html+='<span class="cat-tip" style="color:var(--sub)">珠子都放进筐里了</span>';}
- warPool.forEach(nid=>{
-  const n=NODES[nodeIndexById(nid)];
-  html+='<button class="cat-pill" type="button" data-pool="'+nid+'">'+n.title+'</button>';
- });
- html+='</div>';
- html+='<div class="cat-board" style="--th-color:'+t.color+'">';
+ if(warStage==='brief'){
+  html+='<div class="wc-brief" style="--th-color:'+t.color+'"><p class="wc-lead">这次不着急一次分完。一次只看一场仗：先读两条材料，再判断它属于哪一类。先认识这五个筐——</p><ul class="wc-cats">';
+  t.cats.forEach(c=>{html+='<li><b>'+c.name+'</b><span>'+c.hint+'</span></li>';});
+  html+='</ul><button class="btn primary wc-start" type="button">开始看第一场</button></div>';
+  threadBody.innerHTML=html;
+  document.querySelector('.wc-start').addEventListener('click',()=>{warStage='cases';warIdx=0;beep(500);paintClassify(t);});
+  return;
+ }
+ if(warStage==='cases'){
+  const b=warBeads[warIdx],n=NODES[nodeIndexById(b.node)];
+  html+='<div class="wc-progress"><span>第 '+(warIdx+1)+' / '+warBeads.length+' 场</span>'+
+   '<div class="wc-bar"><i style="width:'+Math.round(warIdx/warBeads.length*100)+'%"></i></div></div>';
+  html+='<div class="wc-case" style="--th-color:'+t.color+'"><h3>'+n.title+'</h3><ul class="wc-ev">';
+  b.ev.forEach(e=>{html+='<li>'+e+'</li>';});
+  html+='</ul><p class="wc-q">这场仗最直接改变了什么？选一个筐：</p><div class="wc-bins">';
+  t.cats.forEach(c=>{html+='<button class="wc-bin" type="button" data-cat="'+c.id+'"><b>'+c.name+'</b><small>'+c.hint+'</small></button>';});
+  html+='</div><div class="wc-fb" id="wcFb"></div></div>';
+  threadBody.innerHTML=html;
+  threadBody.querySelectorAll('[data-cat]').forEach(btn=>btn.addEventListener('click',()=>{
+   const cid=btn.getAttribute('data-cat'),fb=document.getElementById('wcFb');
+   threadBody.querySelectorAll('.wc-bin').forEach(x=>x.classList.remove('picked','wrong'));
+   if(cid===b.cat){
+    btn.classList.add('picked');
+    const catName=t.cats.find(c=>c.id===cid).name;
+    fb.className='wc-fb ok';
+    fb.innerHTML='对了！材料里“'+b.ev[1]+'”，正好说明它是<b>'+catName+'</b>。';
+    const isLast=warIdx===warBeads.length-1;
+    const nx=document.createElement('button');nx.type='button';nx.className='btn primary wc-next';
+    nx.textContent=isLast?'看分类总览':'下一场';
+    nx.addEventListener('click',()=>{warIdx++;if(warIdx>=warBeads.length)warStage='done';beep(600);paintClassify(t);});
+    fb.appendChild(nx);
+   }else{
+    btn.classList.add('wrong');
+    fb.className='wc-fb no';
+    fb.textContent='再读一遍两条材料，看看这场仗为了什么、改变了什么，然后换一个筐试试。';
+    beep(260);
+   }
+  }));
+  return;
+ }
+ html+='<div class="wc-done" style="--th-color:'+t.color+'"><p class="wc-lead">十场仗都分好了，看看它们各归哪一类——</p>';
  t.cats.forEach(c=>{
-  html+='<div class="cat-bin" data-bin="'+c.id+'"><h4>'+c.name+
-   '<small>'+c.hint+'</small></h4><div class="bin-items">';
-  warBins[c.id].forEach(nid=>{
-   const n=NODES[nodeIndexById(nid)];
-   html+='<button class="cat-pill" type="button" data-binpick="'+nid+'">'+n.title+'</button>';
-  });
+  const members=warBeads.filter(b=>b.cat===c.id);
+  if(!members.length)return;
+  html+='<div class="wc-group"><h4>'+c.name+'</h4><div class="wc-members">';
+  members.forEach(b=>{html+='<span class="wc-chip">'+NODES[nodeIndexById(b.node)].title+'</span>';});
   html+='</div></div>';
  });
- html+='</div>';
- html+='<div class="cat-actions"><button class="btn primary" id="catCheck" type="button">检查</button>'+
-  '<button class="btn ghost" id="catReset" type="button">重新来</button></div>';
- html+='<div class="cat-feedback" id="catFeedback"></div>';
+ html+='<p class="wc-lead">你能不看材料，自己讲出每一类为什么这么分吗？</p>';
+ html+='<button class="btn ghost wc-reset" type="button">重新玩一次</button></div>';
  threadBody.innerHTML=html;
- threadBody.querySelectorAll('[data-pool]').forEach(b=>b.addEventListener('click',()=>{
-  warSelected=parseInt(b.getAttribute('data-pool'));toast('选好了，点一个筐');beep(440);
- }));
- threadBody.querySelectorAll('[data-bin]').forEach(bin=>bin.addEventListener('click',()=>{
-  if(warSelected===null){toast('先点上面一颗珠子');return;}
-  const cid=bin.getAttribute('data-bin');
-  warPool=warPool.filter(x=>x!==warSelected);
-  Object.keys(warBins).forEach(k=>warBins[k]=warBins[k].filter(x=>x!==warSelected));
-  warBins[cid].push(warSelected);warSelected=null;
-  document.getElementById('catFeedback').textContent='';
-  paintClassify(t);
- }));
- threadBody.querySelectorAll('[data-binpick]').forEach(b=>b.addEventListener('click',()=>{
-  const nid=parseInt(b.getAttribute('data-binpick'));
-  Object.keys(warBins).forEach(k=>warBins[k]=warBins[k].filter(x=>x!==nid));
-  warPool.push(nid);paintClassify(t);
- }));
- document.getElementById('catCheck').addEventListener('click',()=>{
-  if(warPool.length>0){toast('还有珠子没放进筐');return;}
-  let wrong=0;
-  t.beads.forEach(b=>{
-   const placed=Object.keys(warBins).find(k=>warBins[k].includes(b.node));
-   if(placed!==b.cat)wrong++;
-  });
-  const fb=document.getElementById('catFeedback');
-  if(wrong===0){fb.className='cat-feedback ok';fb.textContent='全对！你能讲出每一类为什么这么分吗？';beep(700);}
-  else{fb.className='cat-feedback no';fb.textContent='还不对，有 '+wrong+' 颗放错了，再想想为什么打这仗。';beep(260);}
- });
- document.getElementById('catReset').addEventListener('click',()=>renderClassify(t));
+ document.querySelector('.wc-reset').addEventListener('click',()=>renderClassify(t));
 }
 
 /* 首屏分段跳转 */
-document.querySelectorAll('.seg-pill').forEach(b=>{
-  b.addEventListener('click',()=>{
-    const seg=document.querySelector('.j-seg[data-seg="'+b.getAttribute('data-jump')+'"]');
-    if(seg){seg.scrollIntoView({behavior:'auto',block:'start'});beep(460);}
-  });
-});
-
 /* 吸顶朝代导航：位置对齐 header，跳转复用分段 */
 const headerEl=document.querySelector('header');
 const quicknav=document.getElementById('quicknav');
@@ -2138,8 +2212,27 @@ function onScroll(){
 window.addEventListener('scroll',onScroll,{passive:true});onScroll();
 toTop.addEventListener('click',()=>{window.scrollTo({top:0,behavior:'smooth'});beep(440);});
 
-/* 首页谜入口：直接进造纸专题 */
-document.getElementById('mysteryEntry').addEventListener('click',()=>openTopic('paper'));
+/* 首页谜入口：挑一个还没做完的专题，做完一个换下一个，全做完就藏起来 */
+const MYSTERIES=[
+  {key:'paper',q:'蔡伦以前，有人用过纸吗？'},
+  {key:'tuen',q:'诸侯的地，怎么自己就变小了？'},
+  {key:'silk',q:'一匹丝绸，怎么走到欧洲的？'}
+];
+let mysteryKey=null;
+const mysteryEntryEl=document.getElementById('mysteryEntry');
+function markTopicDone(key){
+  const done=store.topicDone;
+  if(!done.includes(key)){done.push(key);store.topicDone=done;}
+}
+function renderMystery(){
+  const done=store.topicDone;
+  const next=MYSTERIES.find(m=>!done.includes(m.key));
+  if(!next){mysteryEntryEl.classList.add('hide');mysteryKey=null;return;}
+  mysteryKey=next.key;
+  mysteryEntryEl.querySelector('.mystery-q').textContent=next.q;
+  mysteryEntryEl.classList.remove('hide');
+}
+mysteryEntryEl.addEventListener('click',()=>{if(mysteryKey)openTopic(mysteryKey);});
 
 /* 继续上次 */
 const heroContinue=document.getElementById('heroContinue');
@@ -2343,7 +2436,7 @@ function bindPlots(){
       belongEl.classList.add('show');
       hintAfterEl.classList.remove('show');
       beep(440);
-      if(seenKing&&seenHou){revealEl.classList.add('show');revealEl.classList.remove('open');}
+      if(seenKing&&seenHou){revealEl.classList.add('show');revealEl.classList.remove('open');markTopicDone('tuen');}
       saveTopicStep();
       setTimeout(()=>belongEl.scrollIntoView({behavior:'auto',block:'nearest'}),60);
     });
@@ -2359,6 +2452,37 @@ function renderSplit(){
   const houst=HOU.map((h,i)=>'<button class="plot '+h.cls+'" data-hou="'+i+'">'+houSVG+'<div>'+h.name+'</div></button>').join('');
   kingdomEl.innerHTML='<button class="plot king" data-king="1">'+crownSVG+'<div>国王（长子）</div></button><div class="hou-col">'+houst+'</div>';
   bindPlots();
+}
+/* 续读：不经过点击，直接把分封后的画面和选中态恢复出来，不发声、不滚动 */
+function applyTuenRestore(s){
+  seenKing=!!s.seenKing;seenHou=!!s.seenHou;
+  if(!seenKing&&!seenHou)return;
+  renderSplit();
+  stageLabel.textContent='分封后 · 点一块看看';
+  beforeChip.textContent='1 王国 + 3 侯国（大小示意）';
+  splitBtn.disabled=true;
+  btnRowEl.classList.add('split-on');
+  ruleCompare.classList.add('show');
+  if(seenKing){const k=kingdomEl.querySelector('.plot[data-king]');if(k)k.classList.add('picked');}
+  if(seenHou){const h=kingdomEl.querySelector('.plot[data-hou="0"]');if(h)h.classList.add('picked');}
+  let head;
+  if(seenKing){
+    head='<b>王位还在，地变小了。</b><div class="line2">长子继承王位，可他能直接管的地，比父亲那时小了一大块。</div>';
+  }else{
+    head='<b>纳入汉郡管辖。</b><div class="line2">这块"次子 · 侯国"归汉郡和朝廷管，原来的诸侯王不能直接管。</div>';
+  }
+  let tail;
+  if(seenKing&&seenHou){
+    tail='<div class="compare-done">比出来了：长子还是国王，可新分出去的侯国归汉郡和朝廷管，他能直接管的地就少了——这就是推恩令。</div>';
+  }else if(seenKing){
+    tail='<div class="go-next">再点一个侯国，看看有什么不同。</div>';
+  }else{
+    tail='<div class="go-next">再点长子的地，看看有什么不同。</div>';
+  }
+  belongText.innerHTML=head+tail;
+  belongEl.classList.add('show');
+  hintAfterEl.classList.remove('show');
+  if(seenKing&&seenHou){revealEl.classList.add('show');revealEl.classList.remove('open');}
 }
 splitBtn.addEventListener('click',()=>{
   renderSplit();
@@ -2420,6 +2544,29 @@ document.querySelectorAll('.rc-answer').forEach(a=>{
     }
   });
 });
+
+/* ===== 滚雪球：侯国的儿子代代再分，越分越小 ===== */
+const sbStage=document.getElementById('sbStage');
+const sbNote=document.getElementById('sbNote');
+const SB_NOTES=[
+ '一开始，整块地都归王管。',
+ '分一次，王直接管的只剩四分之一，另外三块是侯国。',
+ '再过一代，侯国的儿子也分。王直接管的只剩十六分之一，侯国碎成一大片。',
+ '代代分下去，王能直接管的只剩一点点，诸侯就算想造反，也没那个力气了。'
+];
+let sbGen=1;
+function renderSB(){
+ const side=Math.pow(2,sbGen-1),total=side*side;
+ sbStage.style.gridTemplateColumns='repeat('+side+',1fr)';
+ let h='';
+ for(let k=0;k<total;k++){h+='<span class="sb-cell '+(k===0?'king':'hou')+'"></span>';}
+ sbStage.innerHTML=h;
+ sbNote.textContent=SB_NOTES[sbGen-1];
+ document.getElementById('sbNext').disabled=(sbGen>=4);
+}
+document.getElementById('sbNext').addEventListener('click',()=>{if(sbGen<4){sbGen++;renderSB();beep(520);}});
+document.getElementById('sbReset').addEventListener('click',()=>{sbGen=1;renderSB();beep(400);});
+renderSB();
 
 /* ===== 丝绸之路实验 ===== */
 /* type: main 主干按先后、全部经过；fork 分岔只经过选中的一个 */
@@ -2563,6 +2710,7 @@ function showSilkReturn(){
     '<p class="conclude">货靠人接力才走那么远。你选的路不同，带回的东西也不一样。</p>'+
     '<button class="choice" id="silkAlt" type="button">试另一条走法，保留这趟对照</button>';
   silkReturn.classList.add('show');beep(420);
+  markTopicDone('silk');
   showGan();renderCompare();
   setTimeout(()=>silkReturn.scrollIntoView({behavior:'auto',block:'nearest'}),60);
   document.getElementById('silkAlt').addEventListener('click',resetForAnother);
@@ -2621,6 +2769,7 @@ document.querySelectorAll('.ev-answer').forEach(b=>{
     if(ok){
       evFeedback.textContent='对了。放马滩纸是西汉的，比蔡伦早两百多年，它一出现，“蔡伦以前没有纸”这句话就被推翻了。';
       cailunDeep.classList.add('show');
+      markTopicDone('paper');
       saveTopicStep();
       beep(560);
       setTimeout(()=>cailunDeep.scrollIntoView({behavior:'auto',block:'nearest'}),60);
@@ -2673,6 +2822,7 @@ sheet.addEventListener('transitionend',function(){
 });
 renderJourney();
 initContinue();
+renderMystery();
 
 </script>
 </body>
