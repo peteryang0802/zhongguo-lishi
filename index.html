@@ -1444,7 +1444,10 @@ const IMG_META={
  48:{img:'assets/node17.jpg',name:'医圣张仲景木刻像',era:'清代木刻',source:'Wellcome 图书馆藏',kind:'古版画（后世）'},
  49:{img:'assets/node18.jpg',name:'五禽戏图',era:'古画（后世）',source:'虎、鹿、熊、猿、鸟五式',kind:'古画·养生图'},
  50:{img:'assets/node19.jpg',name:'张角像',era:'古版画（后世）',source:'《三国志演义》全图',kind:'古画·人物像'},
- 51:{img:'assets/node20.jpg',name:'魏文帝曹丕像',era:'唐代',source:'阎立本《历代帝王图》',kind:'古画真迹·人物像'}
+ 51:{img:'assets/node20.jpg',name:'魏文帝曹丕像',era:'唐代',source:'阎立本《历代帝王图》',kind:'古画真迹·人物像'},
+ 52:{img:'assets/zhangqian.jpg',name:'张骞出使西域路线图（两次路线）',era:'西汉·前138年与前119年',source:'据敦煌研究院路线图整理，现代绘制，非当时地图',kind:'历史地图·现代绘制'},
+ 53:{img:'assets/silkroad.jpg',name:'丝绸之路路线图',era:'西汉以来',source:'汉代陆上丝路，现代整理绘制，非当时地图',kind:'历史地图·现代绘制'},
+ 54:{img:'assets/seasilk.jpg',name:'汉代海上丝绸之路路线图',era:'汉代',source:'据《汉书·地理志》整理，现代绘制，非当时地图',kind:'历史地图·现代绘制'}
 };
 
 /* ===== 进度与设置 ===== */
@@ -2092,6 +2095,8 @@ function s3dHideLoading(){
 }
 function s3dClearTimer(){if(s3dTimer){clearTimeout(s3dTimer);s3dTimer=null;}}
 async function open3D(key,fromIdx){
+  /* 重试时已在 3D 视图，不重复计数，保证与 close3D 的 resume 配对 */
+  if(!view3dEl.classList.contains('active'))pauseWarmup();
   const myToken=++s3dToken;
   current3dKey=key;
   fromNode3d=fromIdx;
@@ -2157,6 +2162,7 @@ function close3D(){
       if(node)node.scrollIntoView({block:'center'});
     }else window.scrollTo(0,0);
   },0);
+  resumeWarmup();
 }
 document.getElementById('back3d').addEventListener('click',close3D);
 document.getElementById('fail3dBack').addEventListener('click',close3D);
@@ -2509,7 +2515,7 @@ function buildWarmList(){
 }
 function warmAdvance(){
   warmWait=false;
-  if(document.hidden){warmBusy=false;return;}
+  if(document.hidden||warmHold>0){warmBusy=false;return;}
   const list=buildWarmList();
   while(warmPos<list.length&&imgMemory[list[warmPos]]===true){warmPos++;}
   if(warmPos>=list.length){warmBusy=false;return;}
@@ -2530,6 +2536,13 @@ function startWarmup(){
   if(warmBusy)return;
   warmBusy=true;
   scheduleWarm();
+}
+/* 高优先级动作（看详情、开 3D）期间暂停全量预热，把带宽让给眼前的图和 three；用计数支持嵌套 */
+let warmHold=0;
+function pauseWarmup(){warmHold++;}
+function resumeWarmup(){
+ if(warmHold>0)warmHold--;
+ if(warmHold===0&&!document.hidden)startWarmup();
 }
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)startWarmup();});
 window.addEventListener('load',()=>{setTimeout(startWarmup,1200);});
@@ -2586,6 +2599,7 @@ function setEvBadge(ev){
 }
 function openSheet(i){
   const wasOpen=sheet.classList.contains('show');
+  if(!wasOpen)pauseWarmup();
   currentIndex=i;store.last=i;
   /* 记录关闭后回到哪张卡：首次打开记下，翻页时保持；用索引而非 DOM 引用，避免重建后失效 */
   if(!wasOpen)returnNodeIndex=i;
@@ -2670,6 +2684,7 @@ function closeSheet(){
   if(target){target.focus({preventScroll:true});}
  }
  returnNodeIndex=null;
+ resumeWarmup();
 }
 let returnNodeIndex=null;
 document.getElementById('sheetClose').addEventListener('click',closeSheet);
