@@ -267,6 +267,27 @@ html{scroll-behavior:smooth}
 .s-cap .cap-row.k-source .cap-k{background:#5d7a86}
 .s-cap .cap-row.k-kind .cap-k{background:#6b8a67}
 .s-real-note{margin:0 0 13px;font-size:12.5px;color:var(--sub);background:#f1ece1;border-radius:10px;padding:8px 12px}
+/* 详情卡内 2D 动手观察 */
+.observe{display:none;margin:0 0 14px}
+.observe.show{display:block}
+.ob-head{margin-bottom:8px}
+.ob-kind{display:inline-block;font-size:11.5px;font-weight:800;color:#2f6d8f;background:#e2f0f7;border-radius:8px;padding:3px 9px;margin-bottom:7px}
+.ob-head h4{margin:0;font-size:17px;font-weight:800;color:var(--ink)}
+.ob-ask{margin:0 0 10px;font-size:13.5px;color:var(--sub);line-height:1.55}
+.ob-tasks{display:flex;gap:10px;flex-wrap:wrap}
+.ob-task{flex:1;min-height:46px;min-width:120px;border:1.5px solid #c9d6dd;background:#f4f9fc;border-radius:12px;font-size:15px;font-weight:700;color:#2f6d8f;padding:8px 12px;cursor:pointer}
+.ob-task.active{background:#2f6d8f;color:#fff;border-color:#2f6d8f}
+.ob-feedback{display:none;margin-top:11px;background:#eaf4ec;border:1px solid #c4e0cb;border-radius:12px;padding:11px 13px;font-size:14px;line-height:1.6;color:#2c5e3a}
+.ob-feedback.show{display:block}
+.ob-mark{margin:9px 0 0;font-size:12px;color:var(--sub)}
+.ob-dj{border:1px solid #d6e0d2;border-radius:14px;overflow:hidden;background:#e9eedd;margin-bottom:11px}
+.ob-dj svg{display:block;width:100%;height:auto}
+.ob-dj .water{fill:#5b9bc4;transition:fill .3s}
+.ob-dj .wt{font-size:11px;font-weight:800;fill:#fff}
+.ob-dj .dt{font-size:11px;font-weight:800;fill:#4a463c}
+.ob-dj .spill-flow{display:none}
+.ob-dj.is-high .spill-flow{display:block}
+.ob-dj.is-high .water{fill:#3f7fae}
 .sheet .s-nav{display:flex;gap:10px;margin-top:18px}
 .sheet .s-nav .btn{min-height:48px;font-size:15px}
 .sheet-actions{display:flex;flex-direction:column;gap:10px;margin-top:16px}
@@ -772,8 +793,9 @@ button:focus:not(:focus-visible){outline:none}
 .s3d-note .cmp span{font-size:12.5px;font-weight:700;padding:5px 10px;border-radius:10px;background:#f0ebe1;color:var(--ink)}
 /* 详情卡里的 3D 入口按钮 */
 .sheet-action-btn.model3d{
-  background:linear-gradient(135deg,#2f6f8f,#4a93a8);border-color:transparent;color:#fff
+  background:var(--card);border:1.5px dashed #9fb8c2;color:#2f6d8f
 }
+.sheet-action-btn.model3d .sa-label{background:#e2f0f7;color:#2f6d8f}
 /* 横屏低高度：舞台收矮，按钮和说明能往下滚动看到，不都堆在屏幕上方 */
 @media (orientation:landscape) and (max-height:520px){
   #view3d{padding:0 12px 20px}
@@ -1152,6 +1174,7 @@ button:focus:not(:focus-visible){outline:none}
     </figcaption>
   </figure>
   <p class="s-real-note">古代没有照片，也没有真人写真。下面这些是真实的出土文物、古画或遗址，不是想象出来的。</p>
+  <div class="observe" id="sObserve"></div>
   <ul id="sPoints"></ul>
   <div class="sheet-actions" id="sheetActions"></div>
   <div class="s-nav">
@@ -2139,6 +2162,80 @@ document.getElementById('back3d').addEventListener('click',close3D);
 document.getElementById('fail3dBack').addEventListener('click',close3D);
 document.getElementById('fail3dRetry').addEventListener('click',()=>open3D(current3dKey,fromNode3d));
 
+/* ===== 详情卡内 2D 动手观察：先看实物证据，3D 作为补充 ===== */
+const OBSERVE_MAP={23:'dujiangyan',27:'coins',39:'coins'};
+function buildCoinsObserve(){
+  return '<div class="ob-head"><span class="ob-kind">动手观察 · 实物就在上面</span><h4>找一找：方孔和钱文</h4></div>'+
+   '<p class="ob-ask">对照上面的实物图，点下面两个任务，看自己找对没有。</p>'+
+   '<div class="ob-tasks">'+
+     '<button type="button" class="ob-task" data-ob="hole">中间的方孔</button>'+
+     '<button type="button" class="ob-task" data-ob="text">上面的钱文</button>'+
+   '</div><div class="ob-feedback" id="obFeedback"></div>';
+}
+function buildDujiangyanObserve(){
+  return '<div class="ob-head"><span class="ob-kind">动手观察 · 俯视示意图</span><h4>水小、水大，看飞沙堰怎么干活</h4></div>'+
+   '<div class="ob-dj" id="obDj">'+
+     '<svg viewBox="0 0 320 205" role="img" aria-label="都江堰俯视示意">'+
+       '<rect width="320" height="205" fill="#e9eedd"/>'+
+       '<path class="water" d="M108 0h26V72h-26Z"/>'+
+       '<path class="water" d="M100 118 70 120 60 205h42Z"/>'+
+       '<path class="water" d="M142 118 172 120 178 162h-8L168 205h-30Z"/>'+
+       '<path d="M121 68 100 118h42Z" fill="#d9d0b6" stroke="#c2b896"/>'+
+       '<g class="spill-flow"><path d="M150 136 108 136" stroke="#8fcdee" stroke-width="9" stroke-linecap="round"/><path d="M150 131l-9 5 9 5" fill="#fff"/></g>'+
+       '<rect x="134" y="126" width="9" height="18" fill="#d98a3d" rx="2"/>'+
+       '<path d="M178 150h28l8 55h-36Z" fill="#a8957a"/>'+
+       '<path d="M186 182h134v23H186Z" fill="#cfe0c2"/>'+
+       '<text x="121" y="16" text-anchor="middle" class="wt">岷江</text>'+
+       '<text x="121" y="106" text-anchor="middle" class="dt">鱼嘴</text>'+
+       '<text x="74" y="155" text-anchor="middle" class="dt">外江</text>'+
+       '<text x="156" y="150" text-anchor="middle" class="dt">内江</text>'+
+       '<text x="130" y="140" text-anchor="end" class="dt">飞沙堰</text>'+
+       '<text x="200" y="176" class="dt">宝瓶口</text>'+
+       '<text x="252" y="199" text-anchor="middle" class="dt">成都平原</text>'+
+     '</svg>'+
+   '</div>'+
+   '<div class="ob-tasks two">'+
+     '<button type="button" class="ob-task active" data-water="low">水小</button>'+
+     '<button type="button" class="ob-task" data-water="high">水大</button>'+
+   '</div><div class="ob-feedback" id="obFeedback"></div>'+
+   '<p class="ob-mark">这是教学示意，真实航拍在上面；三大件位置经过简化，帮助先看懂关系。</p>';
+}
+function renderObserve(i,el){
+  const key=OBSERVE_MAP[i];
+  el.innerHTML='';el.classList.remove('show');
+  if(!key)return;
+  el.innerHTML=(key==='coins')?buildCoinsObserve():buildDujiangyanObserve();
+  el.classList.add('show');
+  const fb=el.querySelector('#obFeedback');
+  el.querySelectorAll('.ob-task').forEach(b=>{
+    b.addEventListener('click',()=>{
+      if(b.hasAttribute('data-ob')){
+        el.querySelectorAll('.ob-task').forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        if(b.getAttribute('data-ob')==='hole'){
+          fb.textContent='对，钱中间是个方形的孔，所以叫方孔钱。古人用一根绳子把钱串起来，好带也好数。';
+        }else{
+          fb.textContent='对，钱上的字是篆体。秦半两写“半两”，汉五铢写“五铢”，标的是一枚钱的分量。';
+        }
+        fb.classList.add('show');beep(520);
+      }else{
+        const w=b.getAttribute('data-water');
+        el.querySelectorAll('.ob-task').forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        const dj=el.querySelector('#obDj');
+        dj.classList.toggle('is-high',w==='high');
+        fb.classList.add('show');
+        if(w==='low'){
+          fb.textContent='水小的时候，飞沙堰露出水面，内江的水被挡住，只让需要的水经宝瓶口进平原。';
+        }else{
+          fb.textContent='水大的时候，多余的水漫过飞沙堰泄回外江（看蓝色箭头），泥沙也跟着排走，内江不会被淹、宝瓶口不会堵。';
+        }
+        beep(520);
+      }
+    });
+  });
+}
+
 /* ===== 话题图标 ===== */
 const THREAD_ICONS={
  coin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><rect x="10" y="10" width="4" height="4"/></svg>',
@@ -2506,6 +2603,7 @@ function openSheet(i){
     if(ci<0)return '<li>'+p+'</li>';
     return '<li><span class="pt-term">'+p.slice(0,ci)+'：</span>'+p.slice(ci+1)+'</li>';
   }).join('');
+  renderObserve(i,document.getElementById('sObserve'));
   /* 动手入口：专题 / 3D（统一从详情卡进） */
   const actionsEl=document.getElementById('sheetActions');
   actionsEl.innerHTML='';
@@ -2521,7 +2619,7 @@ function openSheet(i){
   if(s3d){
     const b=document.createElement('button');
     b.type='button';b.className='sheet-action-btn model3d';
-    b.innerHTML='<span class="sa-label">3D 看</span><span class="sa-title">'+S3D_META[s3d].name+'</span><span class="sa-go">›</span>';
+    b.innerHTML='<span class="sa-label">还想看 3D（可选）</span><span class="sa-title">'+S3D_META[s3d].name+'</span><span class="sa-go">›</span>';
     b.addEventListener('click',()=>{closeSheet();open3D(s3d,i);});
     actionsEl.appendChild(b);
   }
