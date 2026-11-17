@@ -576,6 +576,19 @@ button:focus:not(:focus-visible){outline:none}
 }
 .qn-btn:active{background:#efe7d6}
 
+/* ===== 窄屏：首屏紧凑尽快露出第一张卡，朝代栏均分不横滑 ===== */
+@media (max-width:480px){
+  .hero-banner{padding:16px 15px 15px;margin:10px 0 12px;border-radius:16px}
+  .hero-banner h2{font-size:20px;margin-bottom:7px}
+  .hero-banner p{font-size:13.5px;line-height:1.55;margin-bottom:12px}
+  .mystery-entry{padding:12px 13px;margin-bottom:11px;gap:5px;border-radius:13px}
+  .mystery-q{font-size:16px}
+  .view-switch{margin-bottom:10px}
+  .hero-continue{margin-top:10px;min-height:46px}
+  .quicknav{padding:8px 10px;margin:0 -16px 10px;gap:6px}
+  .qn-btn{flex:1 1 0;min-width:0;padding:0 2px;font-size:13px;min-height:40px;border-radius:16px;white-space:nowrap;overflow:hidden}
+}
+
 /* ===== 回顶部浮标 ===== */
 .to-top{
   position:fixed;right:18px;bottom:22px;width:50px;height:50px;border-radius:50%;
@@ -1153,7 +1166,7 @@ button:focus:not(:focus-visible){outline:none}
 </div>
 
 <div class="backdrop" id="backdrop"></div>
-<div class="sheet" id="sheet">
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sTitle" tabindex="-1">
   <div class="sheet-grip"></div>
   <button class="close" id="sheetClose" aria-label="关闭">
     <svg viewBox="0 0 24 24" fill="none" stroke="#2b2620" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
@@ -1447,7 +1460,9 @@ const store={
   get topicStep(){try{return JSON.parse(localStorage.getItem('zg_topic_step')||'null')}catch(e){return null}},
   set topicStep(v){if(v===null)localStorage.removeItem('zg_topic_step');else localStorage.setItem('zg_topic_step',JSON.stringify(v))},
   get topicDone(){try{return JSON.parse(localStorage.getItem('zg_topic_done')||'[]')}catch(e){return[]}},
-  set topicDone(v){localStorage.setItem('zg_topic_done',JSON.stringify(v))}
+  set topicDone(v){localStorage.setItem('zg_topic_done',JSON.stringify(v))},
+  get warStep(){try{return JSON.parse(localStorage.getItem('zg_war_step')||'null')}catch(e){return null}},
+  set warStep(v){if(v===null)localStorage.removeItem('zg_war_step');else localStorage.setItem('zg_war_step',JSON.stringify(v))}
 };
 let currentIndex=0;
 
@@ -2281,8 +2296,18 @@ document.getElementById('threadBack').addEventListener('click',closeThread);
 
 /* ===== 战争分类：一屏一案，先读材料再判断，错了只改当前这一场 ===== */
 let warBeads=[],warIdx=0,warStage='brief';
+function saveWarStep(){
+ store.warStep={stage:warStage,idx:warIdx,beadCount:warBeads.length};
+}
 function renderClassify(t){
- warBeads=t.beads;warIdx=0;warStage='brief';
+ warBeads=t.beads;
+ const saved=store.warStep;
+ if(saved&&saved.beadCount===t.beads.length&&(saved.stage==='cases'||saved.stage==='done')){
+  warStage=saved.stage;
+  warIdx=Math.min(saved.idx||0,t.beads.length-1);
+ }else{
+  warIdx=0;warStage='brief';
+ }
  paintClassify(t);
 }
 function paintClassify(t){
@@ -2293,7 +2318,7 @@ function paintClassify(t){
   t.cats.forEach(c=>{html+='<li><b>'+c.name+'</b><span>'+c.hint+'</span></li>';});
   html+='</ul><button class="btn primary wc-start" type="button">开始看第一场</button></div>';
   threadBody.innerHTML=html;
-  document.querySelector('.wc-start').addEventListener('click',()=>{warStage='cases';warIdx=0;beep(500);paintClassify(t);});
+  document.querySelector('.wc-start').addEventListener('click',()=>{warStage='cases';warIdx=0;saveWarStep();beep(500);paintClassify(t);});
   return;
  }
  if(warStage==='cases'){
@@ -2317,7 +2342,7 @@ function paintClassify(t){
     const isLast=warIdx===warBeads.length-1;
     const nx=document.createElement('button');nx.type='button';nx.className='btn primary wc-next';
     nx.textContent=isLast?'看分类总览':'下一场';
-    nx.addEventListener('click',()=>{warIdx++;if(warIdx>=warBeads.length)warStage='done';beep(600);paintClassify(t);});
+    nx.addEventListener('click',()=>{warIdx++;if(warIdx>=warBeads.length)warStage='done';saveWarStep();beep(600);paintClassify(t);});
     fb.appendChild(nx);
    }else{
     btn.classList.add('wrong');
@@ -2339,7 +2364,7 @@ function paintClassify(t){
  html+='<p class="wc-lead">你能不看材料，自己讲出每一类为什么这么分吗？</p>';
  html+='<button class="btn ghost wc-reset" type="button">重新玩一次</button></div>';
  threadBody.innerHTML=html;
- document.querySelector('.wc-reset').addEventListener('click',()=>renderClassify(t));
+ document.querySelector('.wc-reset').addEventListener('click',()=>{store.warStep=null;renderClassify(t);});
 }
 
 /* 首屏分段跳转 */
@@ -2560,8 +2585,10 @@ function setEvBadge(ev){
   badge.className='ev-badge '+ev.cls;
 }
 function openSheet(i){
+  const wasOpen=sheet.classList.contains('show');
   currentIndex=i;store.last=i;
-  lastTrigger=document.activeElement;
+  /* 记录关闭后回到哪张卡：首次打开记下，翻页时保持；用索引而非 DOM 引用，避免重建后失效 */
+  if(!wasOpen)returnNodeIndex=i;
   const n=NODES[i],meta=TYPE_META[n.type];
   document.getElementById('sTag').textContent=meta.label;
   document.getElementById('sTag').style.background=meta.color;
@@ -2631,13 +2658,42 @@ function openSheet(i){
   if(!store.seen.includes(n.id)){const s=store.seen;s.push(n.id);store.seen=s;renderJourney();}
   document.getElementById('prevNode').disabled=(i===0);
   document.getElementById('nextNode').disabled=(i===NODES.length-1);
+  /* 焦点移入详情卡，键盘不再落到背后卡片 */
+  setTimeout(()=>{document.getElementById('sheetClose').focus({preventScroll:true});},60);
 }
-function closeSheet(){clearImgTimer();sheet.classList.remove('show');backdrop.classList.remove('show');if(lastTrigger){lastTrigger.focus();lastTrigger=null;}}
-let lastTrigger=null;
+function closeSheet(){
+ clearImgTimer();sheet.classList.remove('show');backdrop.classList.remove('show');
+ /* 实时在当前 DOM 找对应卡片，renderJourney 重建后也能准确回到原卡 */
+ const ri=returnNodeIndex;
+ if(ri!==null){
+  const target=document.querySelectorAll('.j-node')[ri];
+  if(target){target.focus({preventScroll:true});}
+ }
+ returnNodeIndex=null;
+}
+let returnNodeIndex=null;
 document.getElementById('sheetClose').addEventListener('click',closeSheet);
 backdrop.addEventListener('click',closeSheet);
 document.getElementById('prevNode').addEventListener('click',()=>{if(currentIndex>0)openSheet(currentIndex-1);});
 document.getElementById('nextNode').addEventListener('click',()=>{if(currentIndex<NODES.length-1)openSheet(currentIndex+1);});
+/* Esc 关闭 + Tab 焦点圈在详情卡内，不跑到背后 */
+function sheetFocusable(){
+ return Array.from(sheet.querySelectorAll('button,a[href],input,select,textarea,[tabindex]:not([tabindex="-1"])'))
+  .filter(el=>!el.disabled&&!el.hidden&&el.offsetParent!==null);
+}
+document.addEventListener('keydown',e=>{
+ if(!sheet.classList.contains('show'))return;
+ if(e.key==='Escape'){e.preventDefault();closeSheet();return;}
+ if(e.key!=='Tab')return;
+ const els=sheetFocusable();
+ if(!els.length)return;
+ const first=els[0],last=els[els.length-1],ae=document.activeElement;
+ if(e.shiftKey){
+  if(ae===first||!sheet.contains(ae)){e.preventDefault();last.focus();}
+ }else{
+  if(ae===last||!sheet.contains(ae)){e.preventDefault();first.focus();}
+ }
+});
 
 /* ===== toast ===== */
 let toastTimer;
@@ -3116,6 +3172,10 @@ sheet.addEventListener('transitionend',function(){
 renderJourney();
 initContinue();
 renderMystery();
+/* 专题进行中：刷新后回到原专题，左上角返回仍可自然回首页 */
+if(store.topic&&TOPIC_NAME[store.topic]){
+ openTopic(store.topic);
+}
 setTimeout(startWarmup,1500);
 
 </script>
