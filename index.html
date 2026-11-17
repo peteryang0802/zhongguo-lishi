@@ -8,7 +8,7 @@
 <style>
 :root{
   --paper:#f7f3ea; --card:#fffdf8; --ink:#2b2620; --sub:#7a7064;
-  --person:#c2691f; --event:#2f6f8f; --state:#4a7a52; --gold:#b8860b;
+  --person:#c2691f; --event:#2f6f8f; --state:#4a7a52; --site:#9c6b43; --gold:#b8860b;
   --line:#e3dccb; --shadow:0 6px 20px rgba(60,45,20,.10);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -120,7 +120,7 @@ html{scroll-behavior:smooth}
 .rc-cover.left{inset:0 calc(50% + 3px) 0 0}
 .rc-cover.right{inset:0 0 0 calc(50% + 3px)}
 .rc-cover .rc-tag{
-  position:absolute;top:-13px;left:8px;font-size:11.5px;font-weight:700;color:#fff;
+  position:absolute;top:-13px;left:8px;font-size:12.5px;font-weight:700;color:#fff;
   background:var(--person);border-radius:8px;padding:2px 9px;white-space:nowrap
 }
 .rc-cover.jun{border-color:#4a7a52}
@@ -197,46 +197,7 @@ html{scroll-behavior:smooth}
 .reveal li{margin-bottom:6px}
 .reveal .term{display:inline-block;background:var(--gold);color:#fff;font-size:13px;padding:2px 9px;border-radius:14px;margin-bottom:8px}
 
-/* ===== 时间轴 ===== */
-.tl-scroll{
-  display:flex;overflow-x:auto;gap:0;padding:8px 4px 14px;
-  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
-  border-radius:16px;background:var(--card);border:1px solid var(--line);
-}
-.tl-scroll::-webkit-scrollbar{height:6px}
-.tl-scroll::-webkit-scrollbar-thumb{background:#d8cdb8;border-radius:3px}
-.tl-node{
-  flex:0 0 auto;width:96px;scroll-snap-align:center;
-  display:flex;flex-direction:column;align-items:center;padding:8px 4px;
-}
-.tl-dot{
-  width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  color:#fff;box-shadow:var(--shadow);transition:transform .2s;position:relative;
-}
-.tl-dot:active{transform:scale(.92)}
-.tl-node.event .tl-dot{border-radius:12px}
-.tl-node.state .tl-dot{border-radius:50% 50% 12px 12px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);border-radius:0}
-.tl-dot svg{width:24px;height:24px}
-.tl-node.person{--c:var(--person)} .tl-node.event{--c:var(--event)} .tl-node.state{--c:var(--state)}
-.tl-dot{background:var(--c)}
-.tl-node.approx .tl-dot{background:var(--card);border:2px dashed var(--c);color:var(--c)}
-.tl-year{font-size:12px;color:var(--sub);margin-top:7px;font-weight:600}
-.tl-name{font-size:12.5px;text-align:center;margin-top:2px;color:#3d362c;min-height:32px}
-.tl-check{position:absolute;top:-4px;right:-4px;width:20px;height:20px;border-radius:50%;background:var(--state);display:none;align-items:center;justify-content:center}
-.tl-check svg{width:13px;height:13px}
-.tl-node.seen .tl-check{display:flex}
-.tl-node.flash .tl-dot{box-shadow:0 0 0 4px rgba(184,134,11,.35),var(--shadow)}
-.tl-connector{width:14px;height:3px;background:var(--line);align-self:flex-start;margin-top:31px;flex:0 0 14px}
-.tl-dynasty{font-size:11px;color:var(--card);background:var(--sub);padding:2px 8px;border-radius:10px;margin:14px 0 4px;align-self:center}
-/* 朝代导航 */
-.dynasty-bar{display:flex;gap:9px;margin-bottom:10px}
-.dyn{flex:1;border-radius:14px;padding:9px 6px;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;align-items:center;gap:2px;min-height:54px}
-.dyn b{font-size:15.5px;color:#3a3228}
-.dyn small{font-size:11.5px;color:var(--sub)}
-.dyn:active{background:#f0e9da}
-.dyn[data-dyn="1"]{border-top:3px solid #2f6f8f}
-.dyn[data-dyn="10"]{border-top:3px solid #b8860b}
-.dyn[data-dyn="12"]{border-top:3px solid #4a7a52}
+/* 旧水平时间轴与朝代导航已移除，改用纵向 .j-node 与吸顶导航 */
 /* 回到上次 */
 .last-btn{display:none;align-items:center;gap:8px;width:100%;min-height:48px;border-radius:14px;border:1px solid #d8c28a;background:#fdf6e6;color:#8a6d3b;font-size:14px;font-weight:600;padding:8px 14px;margin-bottom:10px;text-align:left}
 .last-btn.show{display:flex}
@@ -299,6 +260,22 @@ html{scroll-behavior:smooth}
 .s-real-note{margin:0 0 13px;font-size:12.5px;color:var(--sub);background:#f1ece1;border-radius:10px;padding:8px 12px}
 .sheet .s-nav{display:flex;gap:10px;margin-top:18px}
 .sheet .s-nav .btn{min-height:48px;font-size:15px}
+.sheet-actions{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.sheet-action-btn{
+  width:100%;min-height:56px;border-radius:14px;padding:10px 14px;
+  display:flex;align-items:center;gap:12px;text-align:left;
+  border:1px solid var(--line);background:var(--card)
+}
+.sheet-action-btn.topic{
+  background:linear-gradient(135deg,#c2691f,#d98a3d);border-color:transparent;color:#fff
+}
+.sheet-action-btn:active{transform:scale(.985)}
+.sheet-action-btn .sa-label{
+  font-size:12px;font-weight:800;background:rgba(0,0,0,.22);
+  padding:3px 9px;border-radius:10px;flex:0 0 auto
+}
+.sheet-action-btn .sa-title{flex:1;font-size:16px;font-weight:800}
+.sheet-action-btn .sa-go{font-size:22px;font-weight:800}
 
 /* toast */
 .toast{
@@ -320,7 +297,7 @@ html{scroll-behavior:smooth}
 .silk-level{display:flex;justify-content:center;gap:12px}
 .silk-node{flex:1;max-width:150px;text-align:center;border-radius:14px;padding:10px 6px;background:#fffdf8;border:2px solid var(--line);min-height:62px;display:flex;flex-direction:column;justify-content:center;gap:3px}
 .silk-node b{font-size:14.5px;color:#3a3228}
-.silk-node small{font-size:11.5px;color:var(--sub)}
+.silk-node small{font-size:12.5px;color:var(--sub)}
 .silk-node.done{border-color:#2f6f8f;background:#e8f1f5}
 .silk-node.done b{color:#2f6f8f}
 .silk-node.current{border-color:#2f6f8f;background:#2f6f8f;box-shadow:0 6px 16px rgba(47,111,143,.3)}
@@ -329,7 +306,7 @@ html{scroll-behavior:smooth}
 .silk-link.done{background:#2f6f8f}
 .silk-node.skip{border-style:dashed;border-color:#c9bfa9;background:#f2eee5;opacity:.85}
 .silk-node.skip b{color:#9a9082}
-.silk-node.skip .skip-tag{color:#a89a80;font-size:10.5px}
+.silk-node.skip .skip-tag{color:#a89a80;font-size:12px}
 .silk-node.locked{border-color:#e4ddcd;background:#faf7f0;opacity:.6}
 .silk-node.locked b{color:#b3a997}
 .silk-node.locked small{color:#c3b9a6}
@@ -354,11 +331,11 @@ html{scroll-behavior:smooth}
 .silk-return .conclude{font-size:14px;color:#5a5145;line-height:1.6;margin:10px 0 0}
 /* 丝绸当前持有标记 */
 .silk-hold{
-  display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:10.5px;font-weight:700;
+  display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:12px;font-weight:700;
   color:#a8442c;background:#fff;border-radius:8px;padding:2px 7px
 }
 .silk-hold svg{width:12px;height:12px}
-.silk-schematic{font-size:11.5px;color:var(--sub);background:#f1ece1;border-radius:9px;padding:7px 11px;margin-bottom:11px}
+.silk-schematic{font-size:12.5px;color:var(--sub);background:#f1ece1;border-radius:9px;padding:7px 11px;margin-bottom:11px}
 /* 两趟对照 */
 .silk-compare{display:none;border-radius:14px;padding:13px 14px;background:#eef3f7;border:1px solid #b9d2dd;margin-top:12px}
 .silk-compare.show{display:block;animation:fade .25s ease}
@@ -367,7 +344,7 @@ html{scroll-behavior:smooth}
 .silk-trial .t-name{font-size:13.5px;font-weight:700;color:#2f6f8f;margin-bottom:6px}
 .silk-trial .t-route{font-size:12.5px;color:#5a5145;line-height:1.5;margin-bottom:6px}
 .silk-trial .goods{display:flex;flex-wrap:wrap;gap:5px}
-.silk-trial .chip{font-size:11.5px;background:#eef3f7;color:#2f6f8f;border:1px solid #b9d2dd;padding:2px 8px;border-radius:10px}
+.silk-trial .chip{font-size:12.5px;background:#eef3f7;color:#2f6f8f;border:1px solid #b9d2dd;padding:2px 8px;border-radius:10px}
 .silk-compare .c-note{font-size:13px;color:#5a5145;line-height:1.55;margin-top:4px}
 /* 甘英追问 */
 .silk-gan{display:none;border-radius:14px;padding:13px 14px;background:#fbf3e3;border:1px solid #e6d3a8;margin-top:12px}
@@ -390,7 +367,7 @@ html{scroll-behavior:smooth}
 .demo{flex:1;text-align:center;min-width:0}
 .demo-art{height:112px;border-radius:12px;margin-bottom:7px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .demo b{font-size:14.5px;display:block;color:#3a3228}
-.demo small{font-size:11.5px;color:var(--sub)}
+.demo small{font-size:12.5px;color:var(--sub)}
 .demo-art.jian{background:#e7d6ac;gap:3px;padding:10px 12px;border:1px solid #cbb582}
 .demo-art.jian span{flex:1;background:linear-gradient(#dcc28a,#cfb176);border:1px solid #b3985c;border-radius:2px;height:100%;position:relative}
 .demo-art.jian span::after{content:'';position:absolute;left:50%;top:8px;bottom:8px;width:1px;background:rgba(120,95,40,.35)}
@@ -464,7 +441,6 @@ html{scroll-behavior:smooth}
 
 @media (min-width:768px){
   .kingdom{min-height:280px}
-  .tl-node{width:110px}
 }
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
@@ -492,7 +468,7 @@ button:focus:not(:focus-visible){outline:none}
   align-items:center;justify-content:center;gap:2px;background:rgba(255,253,248,.1);
   border:1px solid rgba(255,255,255,.18);color:#f3ead8;font-size:14px;font-weight:700
 }
-.hero-banner .seg-pill small{font-size:10.5px;font-weight:400;color:#cabfa9}
+.hero-banner .seg-pill small{font-size:12px;font-weight:400;color:#cabfa9}
 .hero-banner .seg-pill.p1{border-top:3px solid #5b97b5}
 .hero-banner .seg-pill.p2{border-top:3px solid #c9a24b}
 .hero-banner .seg-pill.p3{border-top:3px solid #7ba884}
@@ -528,6 +504,49 @@ button:focus:not(:focus-visible){outline:none}
 .hero-thread-card b{font-size:16px}
 .hero-thread-card small{font-size:12px;color:#d3c8b4;line-height:1.45}
 
+/* ===== 首页谜入口 ===== */
+.mystery-entry{
+  width:100%;text-align:left;border-radius:15px;padding:14px 15px;margin-bottom:14px;
+  background:linear-gradient(135deg,#c2691f,#d98a3d);
+  display:flex;flex-direction:column;gap:7px;color:#fff;
+  border:1px solid rgba(255,255,255,.25)
+}
+.mystery-entry:active{transform:scale(.985)}
+.mystery-tag{
+  align-self:flex-start;font-size:12px;font-weight:800;background:rgba(0,0,0,.25);
+  padding:3px 10px;border-radius:11px
+}
+.mystery-q{font-size:17px;font-weight:800;line-height:1.35}
+.mystery-go{font-size:13.5px;font-weight:700;opacity:.95}
+
+/* ===== 吸顶朝代导航 ===== */
+.quicknav{
+  position:sticky;top:0;z-index:25;
+  display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;
+  padding:9px 12px;margin:0 -16px 12px;
+  background:rgba(247,243,234,.96);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);scrollbar-width:none
+}
+.quicknav::-webkit-scrollbar{display:none}
+.qn-btn{
+  flex:0 0 auto;min-height:42px;padding:0 16px;border-radius:20px;
+  font-size:14px;font-weight:800;color:#5a4f42;
+  background:var(--card);border:1px solid var(--line)
+}
+.qn-btn:active{background:#efe7d6}
+
+/* ===== 回顶部浮标 ===== */
+.to-top{
+  position:fixed;right:18px;bottom:22px;width:50px;height:50px;border-radius:50%;
+  background:#3a3228;color:#fff;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 18px rgba(0,0,0,.28);
+  opacity:0;visibility:hidden;transform:translateY(12px);
+  transition:opacity .2s,transform .2s,visibility .2s;z-index:28
+}
+.to-top.show{opacity:1;visibility:visible;transform:translateY(0)}
+.to-top:active{transform:scale(.94)}
+.to-top svg{width:24px;height:24px}
+
 /* ===== 纵向时间线 ===== */
 .journey{position:relative;margin-top:4px}
 .j-seg{margin-bottom:6px}
@@ -561,20 +580,21 @@ button:focus:not(:focus-visible){outline:none}
 }
 .j-node[data-type="event"] .j-dot{border-radius:5px}
 .j-node[data-type="state"] .j-dot{border-radius:50% 50% 4px 4px}
-.j-node[data-type="person"]{--c:var(--person)} .j-node[data-type="event"]{--c:var(--event)} .j-node[data-type="state"]{--c:var(--state)}
+.j-node[data-type="site"] .j-dot{border-radius:4px 4px 50% 50%}
+.j-node[data-type="person"]{--c:var(--person)} .j-node[data-type="event"]{--c:var(--event)} .j-node[data-type="state"]{--c:var(--state)} .j-node[data-type="site"]{--c:var(--site)}
 .j-node.approx .j-dot{background:var(--card);border:3px solid var(--c)}
 .j-top{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
 .j-year{font-size:13px;font-weight:700;color:var(--sub)}
-.j-type-tag{font-size:11px;color:#fff;background:var(--c);border-radius:8px;padding:2px 8px}
+.j-type-tag{font-size:12px;color:#fff;background:var(--c);border-radius:8px;padding:2px 8px}
 .j-title{font-size:17px;font-weight:700;color:#332c24}
 .j-meta{font-size:12.5px;color:var(--sub);margin-top:3px}
 .j-node.seen .j-title::after{
-  content:'已看';font-size:10.5px;color:#fff;background:var(--state);
+  content:'已看';font-size:12px;color:#fff;background:var(--state);
   border-radius:8px;padding:2px 7px;margin-left:8px;font-weight:600;vertical-align:2px
 }
 .j-node.is-topic{border:2px solid var(--c);background:linear-gradient(180deg,#fff,#fbf6ec)}
 .topic-badge{
-  display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;
+  display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;
   color:#fff;background:var(--c);border-radius:9px;padding:3px 9px;margin-top:7px
 }
 .topic-badge svg{width:12px;height:12px}
@@ -582,7 +602,7 @@ button:focus:not(:focus-visible){outline:none}
 /* ===== 节点上的话题标签 ===== */
 .thread-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .thread-chip{
- display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;
+ display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;
  color:#fff;border-radius:20px;padding:3px 10px;min-height:24px
 }
 .thread-chip svg{width:12px;height:12px}
@@ -668,6 +688,62 @@ button:focus:not(:focus-visible){outline:none}
 .topic-crumb{font-size:13.5px;color:var(--sub);font-weight:600}
 .topic-pane{display:none}
 .topic-pane.active{display:block;animation:fade .25s ease}
+
+/* ===== 3D 视图 ===== */
+#view3d{padding:0 16px 28px;max-width:680px;margin:0 auto}
+.s3d-wrap{display:flex;flex-direction:column;gap:12px}
+.s3d-stage{
+  position:relative;width:100%;height:60vh;min-height:300px;max-height:460px;
+  border-radius:18px;overflow:hidden;border:1px solid var(--line);
+  background:radial-gradient(circle at 38% 30%,#f0eae0,#d6cec0 78%);
+  touch-action:none;cursor:grab
+}
+.s3d-stage.dragging{cursor:grabbing}
+.s3d-stage canvas{display:block;width:100%!important;height:100%!important}
+.s3d-loading,.s3d-fail{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:12px;
+  background:radial-gradient(circle at 38% 30%,#f0eae0,#d6cec0 78%);
+  text-align:center;padding:20px
+}
+.s3d-fail{display:none}
+.s3d-stage.is-fail .s3d-fail{display:flex}
+.s3d-stage.is-fail .s3d-loading{display:none}
+.s3d-loading p,.s3d-fail p{margin:0;font-size:14px;color:var(--sub);font-weight:600;max-width:240px}
+.s3d-spinner{
+  width:38px;height:38px;border-radius:50%;
+  border:3px solid rgba(47,111,143,.22);border-top-color:#2f6f8f;
+  animation:s3dspin .8s linear infinite
+}
+@keyframes s3dspin{to{transform:rotate(360deg)}}
+.s3d-hint{
+  display:flex;align-items:center;gap:10px;background:var(--card);
+  border:1px solid var(--line);border-radius:14px;padding:11px 13px
+}
+.s3d-hint svg{flex:0 0 auto;width:24px;height:24px;color:#2f6f8f}
+.s3d-hint p{margin:0;font-size:13.5px;color:var(--sub);font-weight:600;line-height:1.45}
+.s3d-viewbtns{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px}
+.s3d-viewbtns::-webkit-scrollbar{display:none}
+.s3d-vbtn{
+  flex:0 0 auto;min-height:44px;border-radius:12px;padding:0 16px;
+  border:1px solid var(--line);background:var(--card);
+  font-size:13.5px;font-weight:700;color:var(--ink)
+}
+.s3d-vbtn.active{background:#2f6f8f;border-color:#2f6f8f;color:#fff}
+.s3d-vbtn:active{transform:scale(.97)}
+.s3d-notes{display:flex;flex-direction:column;gap:10px}
+.s3d-note{
+  background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px
+}
+.s3d-note h4{margin:0 0 6px;font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px}
+.s3d-note h4 .dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+.s3d-note p{margin:0;font-size:13.5px;color:var(--sub);line-height:1.55}
+.s3d-note .cmp{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.s3d-note .cmp span{font-size:12.5px;font-weight:700;padding:5px 10px;border-radius:10px;background:#f0ebe1;color:var(--ink)}
+/* 详情卡里的 3D 入口按钮 */
+.sheet-action-btn.model3d{
+  background:linear-gradient(135deg,#2f6f8f,#4a93a8);border-color:transparent;color:#fff
+}
 </style>
 </head>
 <body>
@@ -683,7 +759,12 @@ button:focus:not(:focus-visible){outline:none}
 <main class="view active" id="homeView">
   <section class="hero-banner">
     <h2>中国历史，时间是一条线</h2>
-    <p>历史按时间走：从史前一路到东汉，每个点是一个年代，点进去看知识点。遇到同话题的内容，还能像串珠子一样把不同年代串起来看。</p>
+    <p>本期范围：史前 → 东汉。历史按时间走，每个点是一个年代，点进去看知识点；遇到同话题的内容，还能像串珠子一样把不同年代串起来看。</p>
+    <button class="mystery-entry" id="mysteryEntry" type="button">
+      <span class="mystery-tag">先破一个历史谜</span>
+      <span class="mystery-q">蔡伦以前，有人用过纸吗？</span>
+      <span class="mystery-go">动手挑证据 →</span>
+    </button>
     <div class="view-switch" role="tablist">
       <button class="vs-btn active" id="vsTime" type="button">按时间看</button>
       <button class="vs-btn" id="vsThread" type="button">按话题看</button>
@@ -701,6 +782,14 @@ button:focus:not(:focus-visible){outline:none}
     </div>
     <div id="threadEntry" class="hero-thread-grid"></div>
   </section>
+  <div class="quicknav" id="quicknav" role="navigation" aria-label="按朝代跳转">
+    <button class="qn-btn" data-jump="shiqian" type="button">史前</button>
+    <button class="qn-btn" data-jump="xianshangzhou" type="button">夏商周</button>
+    <button class="qn-btn" data-jump="qin" type="button">秦</button>
+    <button class="qn-btn" data-jump="xihan" type="button">西汉</button>
+    <button class="qn-btn" data-jump="xinchao" type="button">新朝</button>
+    <button class="qn-btn" data-jump="donghan" type="button">东汉</button>
+  </div>
   <div class="journey" id="journey"></div>
 </main>
 
@@ -833,14 +922,14 @@ button:focus:not(:focus-visible){outline:none}
       <!-- 两件证据 -->
       <div class="evidence-grid">
         <div class="evidence" id="evFmt">
-          <img src="assets/fangmatan.jpg" alt="放马滩纸地图残片">
+          <img src="assets/fangmatan.jpg" alt="放马滩纸地图残片" loading="lazy">
           <div class="ev-body">
             <b>放马滩纸地图残片</b>
             <small>西汉（约前179—前143），甘肃天水出土，麻纤维纸，上面有墨画的山、河、道路。</small>
           </div>
         </div>
         <div class="evidence" id="evCl">
-          <img src="assets/node15.jpg" alt="蔡伦像">
+          <img src="assets/node15.jpg" alt="蔡伦像" loading="lazy">
           <div class="ev-body">
             <b>蔡伦改进造纸的记载</b>
             <small>东汉（约公元105），记载蔡伦用树皮、麻头、破布、旧渔网造纸。画像是后世绘制。</small>
@@ -867,7 +956,7 @@ button:focus:not(:focus-visible){outline:none}
           <span class="qk">2</span>
           <span class="qt"><b>古纸能不能用来写字？</b>早期的纸比较粗糙，可也有能写字的。悬泉置出土的西汉麻纸上就有墨书，比蔡伦早约一百年。</span>
         </div>
-        <img src="assets/xuanquanzhi.jpg" alt="悬泉置带墨书麻纸">
+        <img src="assets/xuanquanzhi.jpg" alt="悬泉置带墨书麻纸" loading="lazy">
         <div class="cap">悬泉置麻纸文书（汉代，敦煌悬泉置出土，甘肃简牍博物馆藏），残纸上有墨书字迹。</div>
         <div class="q3">
           <span class="qk">3</span>
@@ -925,6 +1014,32 @@ button:focus:not(:focus-visible){outline:none}
   <div class="thread-body" id="threadBody"></div>
 </div>
 
+<!-- ===== 3D 视图（three.js 按需加载） ===== -->
+<div class="view" id="view3d">
+  <div class="topic-topbar">
+    <button class="back-btn" id="back3d" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      回到时间轴
+    </button>
+    <span class="topic-crumb" id="crumb3d"></span>
+  </div>
+  <div class="s3d-wrap">
+    <div class="s3d-stage" id="stage3d">
+      <div class="s3d-loading" id="loading3d"><span class="s3d-spinner"></span><p id="loading3dText">正在调出 3D……</p></div>
+      <div class="s3d-fail" id="fail3d">
+        <p id="fail3dText">这台设备暂时跑不动 3D。</p>
+        <button class="btn ghost" id="fail3dBack" type="button">回到时间轴</button>
+      </div>
+    </div>
+    <div class="s3d-hint" id="hint3d">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11.5a3 3 0 1 1 4 2.8c-.6.3-1 .9-1 1.7v.5"/><circle cx="12" cy="19" r=".6" fill="currentColor"/><rect x="3.5" y="3.5" width="17" height="17" rx="4"/></svg>
+      <p id="hint3dText">用手指拖动就能转着看；捏合或滚轮可以拉近拉远。</p>
+    </div>
+    <div class="s3d-viewbtns" id="viewBtns3d"></div>
+    <div class="s3d-notes" id="notes3d"></div>
+  </div>
+</div>
+
 <div class="backdrop" id="backdrop"></div>
 <div class="sheet" id="sheet">
   <div class="sheet-grip"></div>
@@ -953,6 +1068,7 @@ button:focus:not(:focus-visible){outline:none}
   </figure>
   <p class="s-real-note">古代没有照片，也没有真人写真。下面这些是真实的出土文物、古画或遗址，不是想象出来的。</p>
   <ul id="sPoints"></ul>
+  <div class="sheet-actions" id="sheetActions"></div>
   <div class="s-nav">
     <button class="btn ghost" id="prevNode">上一个</button>
     <button class="btn primary" id="nextNode">下一个</button>
@@ -961,36 +1077,42 @@ button:focus:not(:focus-visible){outline:none}
 
 <div class="toast" id="toast"></div>
 
+<button class="to-top" id="toTop" type="button" aria-label="回到顶部">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg>
+</button>
+
 <script>
 /* ===== 数据：核心锚点，按年代排序 ===== */
 const TYPE_META={
   person:{label:'人物',color:'var(--person)'},
   event:{label:'事件',color:'var(--event)'},
-  state:{label:'国家',color:'var(--state)'}
+  state:{label:'国家',color:'var(--state)'},
+  site:{label:'遗址·文化',color:'var(--site)'}
 };
 const ICONS={
   person:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>',
   event:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 6.9H22l-6 4.4 2.3 7L12 16l-6.3 4.3 2.3-7-6-4.4h7.6z"/></svg>',
-  state:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h12l-2.5 3L17 10H5"/></svg>'
+  state:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h12l-2.5 3L17 10H5"/></svg>',
+  site:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18l5-8 4 5 3-4 6 7"/><path d="M3 21h18"/></svg>'
 };
 const NODES=[
  /* ===== 第一单元 史前 ===== */
- {id:1,year:-1700000,yearLabel:'约170万年前',approx:true,type:'state',title:'元谋人',
+ {id:1,year:-1700000,yearLabel:'约170万年前',approx:true,type:'site',title:'元谋人',
   story:'这是我国目前已知最早的古人类之一，已经知道用火。',
   points:['在云南元谋发现，距今约170万年','会制造和使用打制石器，知道用火','光会用火这一条，就把人和动物分开了']},
- {id:2,year:-700000,yearLabel:'约70万—20万年前',approx:true,type:'state',title:'北京人',
+ {id:2,year:-700000,yearLabel:'约70万—20万年前',approx:true,type:'site',title:'北京人',
   story:'他们成群住在一起，会打石头做工具，还会把火保存下来。',
   points:['在北京周口店龙骨山发现，距今约70万到20万年','用打制石器，属于旧石器时代','会使用火，还会长时间保存火种，用火烤食物、取暖、赶野兽','过群居生活，一起干活、一起对付猛兽']},
- {id:3,year:-30000,yearLabel:'约3万年前',approx:true,type:'state',title:'山顶洞人',
+ {id:3,year:-30000,yearLabel:'约3万年前',approx:true,type:'site',title:'山顶洞人',
   story:'他们的模样已经和现代人差不多，会磨东西、钻孔，还会自己取火。',
   points:['也在周口店龙骨山顶部的洞穴里，距今约3万年','模样和现代人基本一样','掌握磨光和钻孔技术，懂得人工取火，会用骨针缝衣服']},
  {id:4,year:-10000,yearLabel:'约1万年前',approx:true,type:'event',title:'原始农业出现',
   story:'人们不再光靠打猎采果子，开始自己种庄稼、养牲口，慢慢定居下来。',
   points:['距今约1万年，我国出现最早的人工栽培农作物','有了农业，人们开始建房子长期住下，这叫定居','新石器时代开始，工具从打制变成磨制']},
- {id:5,year:-7000,yearLabel:'约7000年前',approx:true,type:'state',title:'河姆渡人',
+ {id:5,year:-7000,yearLabel:'约7000年前',approx:true,type:'site',title:'河姆渡人',
   story:'住在长江边，种水稻，房子架在半空，不怕潮。',
   points:['在浙江余姚，长江流域，距今约7000年','种水稻，住干栏式建筑，通风防潮','用磨制石器，做黑陶，会挖水井，养猪养狗']},
- {id:6,year:-6000,yearLabel:'约6000年前',approx:true,type:'state',title:'半坡居民',
+ {id:6,year:-6000,yearLabel:'约6000年前',approx:true,type:'site',title:'半坡居民',
   story:'住在黄河边，种粟，房子一半在地下，暖和。',
   points:['在陕西西安半坡，黄河流域，距今约6000年','种粟，住半地穴式圆形房屋，保暖避风','做彩陶，上面有人面、鱼的花纹，用磨制石器']},
  {id:7,year:-5300,yearLabel:'约5300—4300年前',approx:true,type:'state',title:'良渚古城',
@@ -1018,7 +1140,7 @@ const NODES=[
   points:['刻在龟甲和牛、羊等兽骨上的文字，叫甲骨文','内容多是占卜、祭祀、战争、收成，记得很具体','甲骨文是我国已发现的最早、体系较完整的成熟文字，汉字从它发展而来']},
  {id:14,year:-1200,yearLabel:'商周时期',approx:true,type:'event',title:'青铜器与金文',
   story:'当时的礼器、兵器多用青铜铸造，器物上还铸着字。',
-  points:['青铜是铜加锡、铅的合金，颜色金黄，古人称“金”','司母戊鼎是目前所见最重的青铜器，四羊方尊造型精巧','青铜器上铸刻的文字叫金文，又叫钟鼎文，西周毛公鼎铭文最多']},
+  points:['青铜是铜加锡、铅的合金，颜色金黄，古人称“金”','后母戊鼎是目前所见最重的青铜器，四羊方尊造型精巧','青铜器上铸刻的文字叫金文，又叫钟鼎文，西周毛公鼎铭文最多']},
  {id:15,year:-1046,yearLabel:'公元前1046年',approx:false,type:'event',title:'牧野之战',
   story:'周武王带兵和商军在牧野决战，商军倒戈，商就亡了。',
   points:['商纣王荒淫残暴，周武王联合各部落在牧野决战','商军阵前倒戈，周军大胜，商朝灭亡','公元前1046年，周武王建立周朝，定都镐京，史称西周']},
@@ -1112,7 +1234,7 @@ const NODES=[
   points:['刘秀称帝，定都洛阳，史称东汉，他就是光武帝','多次释放奴婢、合并郡县、裁减官员、惩处贪官','允许北方少数民族内迁，缓和民族矛盾，社会安定，史称“光武中兴”']},
  {id:45,year:73,yearLabel:'公元73年',approx:false,type:'event',title:'班超经营西域',
   story:'班超“投笔从戎”，在西域经营30多年，儿子班勇后来继承父业。',
-  points:['班超出使西域，使西域各国重新与汉朝建立联系','他派甘英出使大秦（罗马），甘英只到安息，却开辟了通往西亚的路线']},
+  points:['班超出使西域，使西域各国重新与汉朝建立联系','他派甘英出使大秦（罗马），甘英经安息、抵条支，临海而止，虽没到大秦，却开辟了通往西亚的路线']},
  {id:46,year:105,yearLabel:'公元105年',approx:true,type:'event',title:'蔡伦改进造纸',
   story:'蔡伦是改进不是发明，造纸术后来传遍了全世界。',
   points:['西汉时已经有麻纸，但质地粗糙、不好用','东汉蔡伦用树皮、麻头、破布、旧渔网改进工艺，纸便宜好用，人称“蔡侯纸”','纸逐渐取代简帛，造纸术是中国对世界文明的伟大贡献之一']},
@@ -1196,7 +1318,11 @@ const store={
   get muted(){return localStorage.getItem('zg_muted')==='1'},
   set muted(v){localStorage.setItem('zg_muted',v?'1':'0')},
   get last(){var v=localStorage.getItem('zg_last');return v===null?null:parseInt(v)},
-  set last(v){localStorage.setItem('zg_last',String(v))}
+  set last(v){localStorage.setItem('zg_last',String(v))},
+  get topic(){try{return JSON.parse(localStorage.getItem('zg_topic')||'null')}catch(e){return null}},
+  set topic(v){if(v===null)localStorage.removeItem('zg_topic');else localStorage.setItem('zg_topic',JSON.stringify(v))},
+  get topicStep(){try{return JSON.parse(localStorage.getItem('zg_topic_step')||'null')}catch(e){return null}},
+  set topicStep(v){if(v===null)localStorage.removeItem('zg_topic_step');else localStorage.setItem('zg_topic_step',JSON.stringify(v))}
 };
 let currentIndex=0;
 
@@ -1249,8 +1375,8 @@ const THREADS=[
    {node:38,cat:'nation',change:'漠北战役，西汉大举反击匈奴。'},
    {node:50,cat:'rebel',change:'黄巾起义，头裹黄巾的农民大起义。'}
   ]},
- {id:'reform',name:'改革',color:'#5a6bb0',icon:'scroll',
-  ask:'中央怎么一步步把权力收上来？',
+ {id:'reform',name:'制度',color:'#5a6bb0',icon:'scroll',
+  ask:'制度怎么一步步变，权力怎么往中央收？',
   beads:[
    {node:9,change:'尧舜禹靠禅让，位子选贤能的人接，不专属一家。'},
    {node:10,change:'夏朝启继位，世袭代替禅让，位子在自家传。'},
@@ -1310,7 +1436,7 @@ function renderJourney(){
       node.innerHTML=html;
       const idx=i;
       node.addEventListener('click',()=>{
-        if(topic){openTopic(topic);}else{openSheet(idx);}
+        openSheet(idx);
       });
       node.querySelectorAll('.thread-chip').forEach(chip=>{
        chip.addEventListener('click',e=>{
@@ -1326,26 +1452,60 @@ function renderJourney(){
 }
 
 /* ===== 视图切换 ===== */
-const homeView=document.getElementById('homeView'),topicView=document.getElementById('topicView'),threadViewEl=document.getElementById('threadView');
+const homeView=document.getElementById('homeView'),topicView=document.getElementById('topicView'),threadViewEl=document.getElementById('threadView'),view3dEl=document.getElementById('view3d');
 let currentTopic=null;
 function showView(v){
   homeView.classList.toggle('active',v==='home');
   topicView.classList.toggle('active',v==='topic');
   threadViewEl.classList.toggle('active',v==='thread');
+  view3dEl.classList.toggle('active',v==='3d');
 }
-function openTopic(key){
+function saveTopicStep(){
+  if(currentTopic==='silk'){
+    store.topicStep={level:silkLevel,mainPos:silkMainPos,picked:silkPicked,trials:silkTrials};
+  }else if(currentTopic==='tuen'){
+    store.topicStep={seenKing:seenKing,seenHou:seenHou};
+  }else if(currentTopic==='paper'){
+    store.topicStep={cailunDeep:cailunDeep.classList.contains('show')};
+  }
+}
+function restoreTopicStep(key){
+  const s=store.topicStep;
+  if(!s)return;
+  if(key==='silk'){
+    silkLevel=s.level||0;silkMainPos=s.mainPos||0;
+    Object.keys(silkPicked).forEach(k=>delete silkPicked[k]);
+    if(s.picked)Object.assign(silkPicked,s.picked);
+    silkTrials.length=0;
+    if(Array.isArray(s.trials))s.trials.forEach(t=>silkTrials.push(t));
+    renderSilk();
+  }else if(key==='tuen'){
+    if(s.seenKing||s.seenHou){
+      renderSplit();
+      if(s.seenKing){const k=kingdomEl.querySelector('.plot[data-king]');if(k)k.click();}
+      if(s.seenHou){const h=kingdomEl.querySelector('.plot[data-hou="0"]');if(h)h.click();}
+    }
+  }else if(key==='paper'){
+    if(s.cailunDeep)cailunDeep.classList.add('show');
+  }
+}
+function openTopic(key,resume){
   currentTopic=key;
   document.querySelectorAll('.topic-pane').forEach(p=>p.classList.remove('active'));
   document.getElementById(TOPIC_PANE[key]).classList.add('active');
   document.getElementById('topicCrumb').textContent='时间轴 → '+TOPIC_NAME[key];
   showView('topic');
+  if(resume!==false)restoreTopicStep(key);
+  store.topic=key;
   beep(500);
   setTimeout(()=>window.scrollTo(0,0),0);
 }
 function closeTopic(){
   const key=currentTopic;
+  store.topic=null;store.topicStep=null;
   showView('home');
   renderJourney();
+  initContinue();
   const nodeIdx=Object.keys(TOPIC_MAP).find(i=>TOPIC_MAP[i]===key);
   setTimeout(()=>{
     const node=nodeIdx?document.querySelectorAll('.j-node')[nodeIdx]:null;
@@ -1354,6 +1514,466 @@ function closeTopic(){
   },0);
 }
 document.getElementById('backBtn').addEventListener('click',closeTopic);
+
+/* ===================== 3D 模块（three.js r160，按需动态 import） ===================== */
+const THREE_URL='https://fastly.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+/* 节点索引 -> 3D 场景：都江堰 id24(索引23)；钱币 id28(索引27)、id39(索引38) */
+const NODE_3D_MAP={23:'dujiangyan',27:'coins',38:'coins'};
+const S3D_META={
+  coins:{name:'翻看秦半两与汉五铢',crumb:'时间轴 → 3D 钱币'},
+  dujiangyan:{name:'3D 看都江堰',crumb:'时间轴 → 3D 都江堰'}
+};
+let __threePromise=null;
+function loadThree(){
+  if(!__threePromise)__threePromise=import(THREE_URL);
+  return __threePromise;
+}
+function s3dClamp(v,a,b){return Math.min(b,Math.max(a,v));}
+function s3dRoundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+/* 自写中性 studio 环境贴图（不依赖外部 addon），给金属提供反射 */
+function makeEnvMap(THREE,renderer){
+  const pmrem=new THREE.PMREMGenerator(renderer);
+  const sc=new THREE.Scene();
+  sc.add(new THREE.Mesh(
+    new THREE.BoxGeometry(20,20,20),
+    new THREE.MeshBasicMaterial({color:0x8f887c,side:THREE.BackSide})
+  ));
+  const add=(c,x,y,z,sx,sy,sz)=>{
+    const m=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),new THREE.MeshBasicMaterial({color:c}));
+    m.position.set(x,y,z);sc.add(m);
+  };
+  add(0xffffff,0,9.4,0,12,1,12);
+  add(0xfff1da,-9.4,1.5,0,1,8,8);
+  add(0xd9e6f2,9.4,1.5,0,1,8,8);
+  add(0x5d574e,0,-9.4,0,12,1,12);
+  const rt=pmrem.fromScene(sc,0.04);
+  pmrem.dispose();
+  return rt.texture;
+}
+/* 始终面向相机的文字标签（canvas 纹理 Sprite） */
+function makeLabel(THREE,text,color){
+  const fs=46;
+  let cv=document.createElement('canvas');
+  let ctx=cv.getContext('2d');
+  ctx.font='700 '+fs+'px sans-serif';
+  const w=Math.ceil(ctx.measureText(text).width)+34;
+  cv.width=w;cv.height=fs+26;
+  ctx=cv.getContext('2d');
+  s3dRoundRect(ctx,2,2,cv.width-4,cv.height-4,15);
+  ctx.fillStyle='rgba(255,253,248,.93)';ctx.fill();
+  ctx.lineWidth=2;ctx.strokeStyle='rgba(43,38,32,.18)';ctx.stroke();
+  ctx.font='700 '+fs+'px sans-serif';
+  ctx.fillStyle=color||'#2b2620';
+  ctx.textBaseline='middle';
+  ctx.fillText(text,17,cv.height/2+2);
+  const tex=new THREE.CanvasTexture(cv);
+  tex.anisotropy=4;
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false}));
+  const k=0.0115;
+  sp.scale.set(cv.width*k,cv.height*k,1);
+  sp.renderOrder=30;
+  return sp;
+}
+/* 自写轻量轨道控制：单指旋转、双指/滚轮缩放，带阻尼与限位，兼容鼠标与触摸 */
+class DragOrbit{
+  constructor(THREE,camera,dom,o){
+    o=o||{};
+    this.camera=camera;this.dom=dom;
+    this.target=o.target||new THREE.Vector3(0,0,0);
+    this.tTarget=this.target.clone();
+    this.theta=o.theta||0;
+    this.phi=o.phi||Math.PI/2.5;
+    this.radius=o.radius||8;
+    this.minPhi=o.minPhi||0.18;this.maxPhi=o.maxPhi||Math.PI-0.18;
+    this.minRadius=o.minRadius||4;this.maxRadius=o.maxRadius||16;
+    this.tTheta=this.theta;this.tPhi=this.phi;this.tR=this.radius;
+    this.damp=0.14;this.pointers=new Map();this.lastPinch=0;
+    this._bind();this.update(true);
+  }
+  _bind(){
+    const d=this.dom;
+    this._down=e=>{d.setPointerCapture(e.pointerId);this.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});d.classList.add('dragging');if(this.pointers.size===2)this.lastPinch=this._dist();};
+    this._move=e=>{
+      if(!this.pointers.has(e.pointerId))return;
+      const prev=this.pointers.get(e.pointerId);
+      this.pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+      if(this.pointers.size===1){
+        this.tTheta-=(e.clientX-prev.x)*0.0085;
+        this.tPhi=s3dClamp(this.tPhi-(e.clientY-prev.y)*0.0085,this.minPhi,this.maxPhi);
+      }else if(this.pointers.size===2){
+        const dist=this._dist();
+        if(this.lastPinch>0)this.tR=s3dClamp(this.tR*(this.lastPinch/dist),this.minRadius,this.maxRadius);
+        this.lastPinch=dist;
+      }
+    };
+    this._up=e=>{this.pointers.delete(e.pointerId);if(this.pointers.size<2)this.lastPinch=0;if(this.pointers.size===0)this.dom.classList.remove('dragging');};
+    this._wheel=e=>{e.preventDefault();this.tR=s3dClamp(this.tR*(1+Math.sign(e.deltaY)*0.09),this.minRadius,this.maxRadius);};
+    d.addEventListener('pointerdown',this._down);
+    d.addEventListener('pointermove',this._move);
+    d.addEventListener('pointerup',this._up);
+    d.addEventListener('pointercancel',this._up);
+    d.addEventListener('wheel',this._wheel,{passive:false});
+  }
+  _dist(){const p=Array.from(this.pointers.values());return Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);}
+  setView(phi,theta,r){
+    if(phi!==undefined)this.tPhi=s3dClamp(phi,this.minPhi,this.maxPhi);
+    if(theta!==undefined)this.tTheta=theta;
+    if(r!==undefined)this.tR=s3dClamp(r,this.minRadius,this.maxRadius);
+  }
+  setTarget(v){this.tTarget.copy(v);}
+  update(){
+    this.target.lerp(this.tTarget,this.damp);
+    this.phi+=(this.tPhi-this.phi)*this.damp;
+    this.theta+=(this.tTheta-this.theta)*this.damp;
+    this.radius+=(this.tR-this.radius)*this.damp;
+    const sp=Math.sin(this.phi),cp=Math.cos(this.phi);
+    this.camera.position.set(
+      this.target.x+this.radius*sp*Math.cos(this.theta),
+      this.target.y+this.radius*cp,
+      this.target.z+this.radius*sp*Math.sin(this.theta)
+    );
+    this.camera.lookAt(this.target);
+  }
+  destroy(){
+    const d=this.dom;
+    d.removeEventListener('pointerdown',this._down);
+    d.removeEventListener('pointermove',this._move);
+    d.removeEventListener('pointerup',this._up);
+    d.removeEventListener('pointercancel',this._up);
+    d.removeEventListener('wheel',this._wheel);
+  }
+}
+
+/* ===== 钱币场景：秦半两 vs 汉五铢 ===== */
+function coinInscription(THREE,text,baseRgb){
+  const size=512;
+  const cv=document.createElement('canvas');cv.width=size;cv.height=size;
+  let ctx=cv.getContext('2d');
+  const grd=ctx.createRadialGradient(size/2,size/2,size*0.1,size/2,size/2,size*0.5);
+  grd.addColorStop(0,baseRgb.light);grd.addColorStop(1,baseRgb.base);
+  ctx.fillStyle=grd;ctx.beginPath();ctx.arc(size/2,size/2,size/2,0,Math.PI*2);ctx.fill();
+  ctx.font='bold 150px "STKaiti","KaiTi","SimSun",serif';
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle=baseRgb.text;
+  ctx.fillText(text.charAt(0),size*0.66,size*0.53);
+  ctx.fillText(text.charAt(1),size*0.34,size*0.53);
+  const map=new THREE.CanvasTexture(cv);map.anisotropy=8;map.colorSpace=THREE.SRGBColorSpace;
+  const cv2=document.createElement('canvas');cv2.width=size;cv2.height=size;
+  const g=cv2.getContext('2d');g.fillStyle='#000';g.beginPath();g.arc(size/2,size/2,size/2,0,Math.PI*2);g.fill();
+  g.font='bold 150px "STKaiti","KaiTi","SimSun",serif';g.textAlign='center';g.textBaseline='middle';
+  g.fillStyle='#fff';g.fillText(text.charAt(0),size*0.66,size*0.53);g.fillText(text.charAt(1),size*0.34,size*0.53);
+  return {map,bump:new THREE.CanvasTexture(cv2)};
+}
+function makeCoin(THREE,o){
+  const {radius,thick,hole,text,color,face,rgb}=o;
+  const shape=new THREE.Shape();
+  shape.absarc(0,0,radius,0,Math.PI*2,false);
+  const h=hole/2,hp=new THREE.Path();
+  hp.moveTo(-h,-h);hp.lineTo(h,-h);hp.lineTo(h,h);hp.lineTo(-h,h);hp.lineTo(-h,-h);
+  shape.holes.push(hp);
+  const geo=new THREE.ExtrudeGeometry(shape,{
+    depth:thick,bevelEnabled:true,bevelThickness:thick*0.2,bevelSize:radius*0.05,bevelSegments:3,curveSegments:72
+  });
+  geo.center();
+  const mat=new THREE.MeshStandardMaterial({color:color,metalness:0.92,roughness:0.46,envMapIntensity:1.15});
+  const mesh=new THREE.Mesh(geo,mat);
+  mesh.castShadow=true;mesh.receiveShadow=true;
+  const ins=coinInscription(THREE,text,rgb);
+  const faceMat=new THREE.MeshStandardMaterial({
+    color:face,metalness:0.92,roughness:0.4,envMapIntensity:1.15,
+    map:ins.map,bumpMap:ins.bump,bumpScale:0.07
+  });
+  const faceMesh=new THREE.Mesh(new THREE.CircleGeometry(radius*0.94,72),faceMat);
+  faceMesh.position.z=thick/2+0.012;
+  mesh.add(faceMesh);
+  return mesh;
+}
+function buildCoins(THREE,stage){
+  const w=stage.clientWidth,h=stage.clientHeight;
+  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(w,h);
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.05;
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  stage.appendChild(renderer.domElement);
+  const scene=new THREE.Scene();
+  scene.environment=makeEnvMap(THREE,renderer);
+  const camera=new THREE.PerspectiveCamera(42,w/h,0.1,100);
+  const controls=new DragOrbit(THREE,camera,stage,{
+    radius:7.4,minRadius:4.6,maxRadius:11.5,phi:Math.PI/2.35,theta:Math.PI/2
+  });
+  const key=new THREE.DirectionalLight(0xfff1da,2.3);
+  key.position.set(5,8,6);key.castShadow=true;
+  key.shadow.mapSize.set(1024,1024);key.shadow.camera.near=1;key.shadow.camera.far=30;
+  scene.add(key);
+  const fill=new THREE.DirectionalLight(0xd9e6f2,0.7);fill.position.set(-6,3,-4);scene.add(fill);
+  scene.add(new THREE.HemisphereLight(0xf4ecdd,0x6b6256,0.5));
+
+  const group=new THREE.Group();scene.add(group);
+  const banliang=makeCoin(THREE,{
+    radius:1.55,thick:0.2,hole:0.62,text:'半两',color:0x7d5f38,face:0x8a6a40,
+    rgb:{base:'#7d5f38',light:'#9c7a4c',text:'#e8c98f'}
+  });
+  banliang.position.x=-2.05;group.add(banliang);
+  const wuzhu=makeCoin(THREE,{
+    radius:1.18,thick:0.17,hole:0.46,text:'五铢',color:0xa87f43,face:0xb58c4d,
+    rgb:{base:'#a87f43',light:'#c49c5c',text:'#f0d49a'}
+  });
+  wuzhu.position.x=2.0;group.add(wuzhu);
+  const lb1=makeLabel(THREE,'秦半两','#7d4a28');lb1.position.set(-2.05,-2.15,0);group.add(lb1);
+  const lb2=makeLabel(THREE,'汉五铢','#2f6f5a');lb2.position.set(2.0,-2.0,0);group.add(lb2);
+
+  const VIEWS={
+    front:{phi:Math.PI/2.35,theta:Math.PI/2},
+    edge:{phi:Math.PI/2,theta:0},
+    back:{phi:Math.PI/2.35,theta:3*Math.PI/2}
+  };
+  let raf,visible=true;
+  function loop(){
+    if(visible){controls.update();renderer.render(scene,camera);}
+    raf=requestAnimationFrame(loop);
+  }
+  loop();
+  function onVis(){visible=document.visibilityState==='visible';}
+  document.addEventListener('visibilitychange',onVis);
+  function onResize(){
+    const nw=stage.clientWidth,nh=stage.clientHeight;
+    camera.aspect=nw/nh;camera.updateProjectionMatrix();renderer.setSize(nw,nh);
+  }
+  window.addEventListener('resize',onResize);
+  return {
+    setView:id=>{const v=VIEWS[id];if(v)controls.setView(v.phi,v.theta);},
+    destroy(){
+      cancelAnimationFrame(raf);
+      document.removeEventListener('visibilitychange',onVis);
+      window.removeEventListener('resize',onResize);
+      controls.destroy();
+      scene.traverse(o=>{
+        if(o.geometry)o.geometry.dispose();
+        if(o.material){[].concat(o.material).forEach(m=>{
+          ['map','bumpMap','envMap'].forEach(k=>{if(m[k])m[k].dispose();});m.dispose();
+        });}
+      });
+      renderer.dispose();
+      if(renderer.domElement.parentNode)renderer.domElement.parentNode.removeChild(renderer.domElement);
+    }
+  };
+}
+
+/* ===== 都江堰场景：鱼嘴分水、飞沙堰泄洪、宝瓶口引水 ===== */
+function buildDujiangyan(THREE,stage){
+  const w=stage.clientWidth,h=stage.clientHeight;
+  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(w,h);
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure=1.08;
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  stage.appendChild(renderer.domElement);
+  const scene=new THREE.Scene();
+  scene.environment=makeEnvMap(THREE,renderer);
+  const camera=new THREE.PerspectiveCamera(45,w/h,0.1,120);
+  const controls=new DragOrbit(THREE,camera,stage,{
+    target:new THREE.Vector3(0,0,-0.5),radius:13,minRadius:4,maxRadius:17,
+    phi:0.7,theta:0.6,minPhi:0.22,maxPhi:Math.PI/2.02
+  });
+  const key=new THREE.DirectionalLight(0xfff4e0,2.2);
+  key.position.set(6,11,5);key.castShadow=true;
+  key.shadow.mapSize.set(2048,2048);
+  key.shadow.camera.near=1;key.shadow.camera.far=40;
+  key.shadow.camera.left=-12;key.shadow.camera.right=12;key.shadow.camera.top=12;key.shadow.camera.bottom=-12;
+  scene.add(key);
+  scene.add(new THREE.HemisphereLight(0xdcebf5,0x5a6b45,0.65));
+  const fill=new THREE.DirectionalLight(0xcfe0f0,0.5);fill.position.set(-6,5,-6);scene.add(fill);
+
+  const M={
+    plain:new THREE.MeshStandardMaterial({color:0x6f9a55,roughness:0.95,metalness:0}),
+    mount:new THREE.MeshStandardMaterial({color:0x7d6b46,roughness:1,metalness:0}),
+    stone:new THREE.MeshStandardMaterial({color:0x8d8a82,roughness:0.85,metalness:0.05}),
+    spill:new THREE.MeshStandardMaterial({color:0xa9a69d,roughness:0.85,metalness:0.05}),
+    rock:new THREE.MeshStandardMaterial({color:0x7c7468,roughness:0.95,metalness:0}),
+    water:new THREE.MeshStandardMaterial({color:0x3f86b0,roughness:0.3,metalness:0.15})
+  };
+  function box(wd,ht,dp,mat,x,y,z){
+    const m=new THREE.Mesh(new THREE.BoxGeometry(wd,ht,dp),mat);
+    m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;scene.add(m);return m;
+  }
+  /* 地形：成都平原 + 上游山地 + 背景群山 */
+  box(14,0.4,15,M.plain,0,-0.2,1.5);
+  box(14,1.0,4.2,M.mount,0,0.1,-6.4);
+  box(2.6,2.4,2.2,M.mount,-4.6,1.0,-8.2);
+  box(3.0,3.0,2.4,M.mount,-1.2,1.3,-8.4);
+  box(2.8,2.2,2.2,M.mount,2.4,0.9,-8.2);
+  box(2.4,2.6,2.2,M.mount,5.0,1.1,-8.3);
+  /* 河道 */
+  box(1.5,0.1,4.4,M.water,0,0.02,-5.0);
+  box(1.0,0.1,8.6,M.water,-0.85,0.02,1.6);
+  box(1.0,0.1,4.3,M.water,0.85,0.02,-0.75);
+  box(0.5,0.08,3.6,M.water,0.55,0.02,3.4);
+  box(0.5,0.08,3.6,M.water,1.2,0.02,3.4);
+  box(0.5,0.08,2.7,M.water,1.85,0.02,2.9);
+  /* 三大件：金刚堤+鱼嘴、飞沙堰、宝瓶口 */
+  box(0.34,0.6,2.3,M.stone,0,0.28,-2.0);
+  const tip=new THREE.Mesh(new THREE.CylinderGeometry(0.2,0.2,0.62,3),M.stone);
+  tip.rotation.x=Math.PI/2;tip.position.set(0,0.28,-3.45);tip.castShadow=true;scene.add(tip);
+  box(0.34,0.26,0.6,M.spill,0,0.12,-0.55);
+  box(0.4,1.3,1.4,M.rock,0.42,0.65,1.5);
+  box(1.7,1.9,2.6,M.rock,1.75,0.95,1.5);
+  /* 文字标签 */
+  const labels=[
+    ['岷江',0,1.0,-6.3,'#2f6f8f'],['鱼嘴',0,1.15,-3.5,'#8a3c2e'],
+    ['飞沙堰',0,0.95,-0.5,'#b07d2b'],['宝瓶口',1.25,1.75,1.5,'#5a6bb0'],
+    ['外江',-1.75,0.7,1.4,'#2f6f8f'],['内江',1.6,0.7,-0.9,'#2f6f8f'],
+    ['成都平原',2.7,0.85,5.3,'#4a7a52']
+  ];
+  labels.forEach(L=>{const s=makeLabel(THREE,L[0],L[4]);s.position.set(L[1],L[2],L[3]);scene.add(s);});
+
+  /* 水流粒子：两条路径在鱼嘴分叉，内江穿过宝瓶口 */
+  const outer=new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0,0.14,-6.6),new THREE.Vector3(0,0.14,-4.2),
+    new THREE.Vector3(-0.35,0.14,-3.2),new THREE.Vector3(-0.85,0.14,-2.2),
+    new THREE.Vector3(-0.85,0.14,0),new THREE.Vector3(-0.85,0.14,3),
+    new THREE.Vector3(-0.85,0.14,5.6)
+  ]);
+  const inner=new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0,0.14,-6.6),new THREE.Vector3(0,0.14,-4.2),
+    new THREE.Vector3(0.35,0.14,-3.2),new THREE.Vector3(0.85,0.14,-2.2),
+    new THREE.Vector3(0.85,0.14,-0.5),new THREE.Vector3(0.82,0.14,0.9),
+    new THREE.Vector3(0.8,0.14,1.55),new THREE.Vector3(0.95,0.14,2.7),
+    new THREE.Vector3(1.05,0.14,4.6)
+  ]);
+  const N=64,parts=[];
+  for(let i=0;i<N;i++){
+    parts.push({path:Math.random()<0.55?inner:outer,t:Math.random(),spd:0.05+Math.random()*0.05});
+  }
+  const inst=new THREE.InstancedMesh(
+    new THREE.SphereGeometry(0.085,8,8),
+    new THREE.MeshBasicMaterial({color:0xd8f0fc}),N
+  );
+  inst.frustumCulled=false;scene.add(inst);
+  const dummy=new THREE.Object3D();
+  const VIEWS={
+    overall:{tgt:[0,0,-0.5],phi:0.7,theta:0.6,r:13},
+    yuzui:{tgt:[0,0,-3.2],phi:1.05,theta:Math.PI/2,r:6},
+    baoping:{tgt:[0.9,0,1.5],phi:1.0,theta:Math.PI/2,r:5}
+  };
+  let raf,visible=true,last=performance.now();
+  function loop(now){
+    const dt=Math.min(0.05,(now-last)/1000);last=now;
+    if(visible){
+      for(let i=0;i<N;i++){
+        const p=parts[i];p.t+=p.spd*dt;if(p.t>=1)p.t-=1;
+        p.path.getPointAt(p.t,dummy.position);
+        dummy.updateMatrix();inst.setMatrixAt(i,dummy.matrix);
+      }
+      inst.instanceMatrix.needsUpdate=true;
+      controls.update();renderer.render(scene,camera);
+    }
+    raf=requestAnimationFrame(loop);
+  }
+  raf=requestAnimationFrame(loop);
+  function onVis(){visible=document.visibilityState==='visible';last=performance.now();}
+  document.addEventListener('visibilitychange',onVis);
+  function onResize(){
+    const nw=stage.clientWidth,nh=stage.clientHeight;
+    camera.aspect=nw/nh;camera.updateProjectionMatrix();renderer.setSize(nw,nh);
+  }
+  window.addEventListener('resize',onResize);
+  return {
+    setView:id=>{const v=VIEWS[id];if(v){controls.setTarget(new THREE.Vector3(v.tgt[0],v.tgt[1],v.tgt[2]));controls.setView(v.phi,v.theta,v.r);}},
+    destroy(){
+      cancelAnimationFrame(raf);
+      document.removeEventListener('visibilitychange',onVis);
+      window.removeEventListener('resize',onResize);
+      controls.destroy();
+      Object.values(M).forEach(m=>m.dispose());
+      scene.traverse(o=>{
+        if(o.geometry)o.geometry.dispose();
+        if(o.material){[].concat(o.material).forEach(m=>{
+          ['map','bumpMap','envMap'].forEach(k=>{if(m[k])m[k].dispose();});m.dispose();
+        });}
+      });
+      renderer.dispose();
+      if(renderer.domElement.parentNode)renderer.domElement.parentNode.removeChild(renderer.domElement);
+    }
+  };
+}
+
+/* ===== 3D 界面文案与生命周期 ===== */
+const S3D_UI={
+  coins:{
+    views:[['front','看正面'],['edge','看厚度'],['back','看背面']],
+    notes:[
+      {title:'秦半两',color:'#8a3c2e',text:'圆形方孔，正面刻“半两”两个字，个头大、分量重。秦把六国乱七八糟的刀币、布币，统一成这一种形制。背面是平素的，没有字。'},
+      {title:'汉五铢',color:'#2f6f5a',text:'比秦半两小一圈、分量轻，正面刻“五铢”。汉武帝先让郡国自己铸，后来把铸钱的权力收归中央，由上林三官统一铸造。'},
+      {title:'同一种形制',color:'#b07d2b',text:'两枚钱都是圆形方孔。这个样子从秦一直用到清朝，用了两千多年。',cmp:['都有方孔','都用铜铸','一面有字']}
+    ]
+  },
+  dujiangyan:{
+    views:[['overall','看整体'],['yuzui','看鱼嘴分水'],['baoping','看宝瓶口']],
+    notes:[
+      {title:'鱼嘴',color:'#8a3c2e',text:'在最前头，像鱼张开的嘴，把岷江分成两股：外江排走，内江引去灌田。'},
+      {title:'飞沙堰',color:'#b07d2b',text:'内江旁边一段矮堤。水小的时候挡住水，水大了就漫过它泄到外江，还顺带把泥沙甩出去，不让瓶口堵住。'},
+      {title:'宝瓶口',color:'#5a6bb0',text:'穿山凿出来的一个窄口子，像瓶子的口。内江水从这里受控地流进成都平原。'},
+      {title:'三件怎么配合',color:'#4a7a52',text:'鱼嘴分水、飞沙堰泄洪排沙、宝瓶口控制引水。没有拦河大坝，靠顺着水势引导，成都平原这才成了旱涝保收的地方。'}
+    ]
+  }
+};
+let current3d=null,fromNode3d=null,s3dToken=0;
+async function open3D(key,fromIdx){
+  const myToken=++s3dToken;
+  fromNode3d=fromIdx;
+  const stage=document.getElementById('stage3d');
+  stage.classList.remove('is-fail');
+  document.getElementById('crumb3d').textContent=S3D_META[key].crumb;
+  const vb=document.getElementById('viewBtns3d');
+  vb.innerHTML='';
+  S3D_UI[key].views.forEach((v,i)=>{
+    const b=document.createElement('button');
+    b.type='button';b.className='s3d-vbtn'+(i===0?' active':'');b.textContent=v[1];
+    b.addEventListener('click',()=>{
+      vb.querySelectorAll('.s3d-vbtn').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      if(current3d)current3d.setView(v[0]);
+    });
+    vb.appendChild(b);
+  });
+  document.getElementById('notes3d').innerHTML=S3D_UI[key].notes.map(n=>
+    '<div class="s3d-note"><h4><span class="dot" style="background:'+n.color+'"></span>'+n.title+'</h4><p>'+n.text+'</p>'+
+    (n.cmp?'<div class="cmp">'+n.cmp.map(c=>'<span>'+c+'</span>').join('')+'</div>':'')+'</div>'
+  ).join('');
+  showView('3d');
+  try{
+    const THREE=await loadThree();
+    if(myToken!==s3dToken)return;
+    current3d=key==='coins'?buildCoins(THREE,stage):buildDujiangyan(THREE,stage);
+  }catch(err){
+    if(myToken===s3dToken)stage.classList.add('is-fail');
+  }
+}
+function close3D(){
+  s3dToken++;
+  if(current3d){current3d.destroy();current3d=null;}
+  showView('home');renderJourney();
+  const idx=fromNode3d;fromNode3d=null;
+  setTimeout(()=>{
+    if(idx!==null&&idx!==undefined){
+      const node=document.querySelectorAll('.j-node')[idx];
+      if(node)node.scrollIntoView({block:'center'});
+    }else window.scrollTo(0,0);
+  },0);
+}
+document.getElementById('back3d').addEventListener('click',close3D);
+document.getElementById('fail3dBack').addEventListener('click',close3D);
 
 /* ===== 话题图标 ===== */
 const THREAD_ICONS={
@@ -1409,7 +2029,6 @@ function jumpToNode(nodeId){
  showView('home');
  renderJourney();
  setTimeout(()=>{
-  if(topic){openTopic(topic);return;}
   const node=document.querySelectorAll('.j-node')[idx];
   if(node){node.scrollIntoView({block:'center'});openSheet(idx);}
  },0);
@@ -1499,19 +2118,51 @@ document.querySelectorAll('.seg-pill').forEach(b=>{
   });
 });
 
+/* 吸顶朝代导航：位置对齐 header，跳转复用分段 */
+const headerEl=document.querySelector('header');
+const quicknav=document.getElementById('quicknav');
+function alignQuicknav(){quicknav.style.top=headerEl.offsetHeight+'px';}
+alignQuicknav();window.addEventListener('resize',alignQuicknav);
+quicknav.querySelectorAll('.qn-btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const seg=document.querySelector('.j-seg[data-seg="'+b.getAttribute('data-jump')+'"]');
+    if(seg){seg.scrollIntoView({behavior:'auto',block:'start'});beep(460);}
+  });
+});
+
+/* 回顶部浮标 */
+const toTop=document.getElementById('toTop');
+function onScroll(){
+  if(window.scrollY>420){toTop.classList.add('show');}else{toTop.classList.remove('show');}
+}
+window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+toTop.addEventListener('click',()=>{window.scrollTo({top:0,behavior:'smooth'});beep(440);});
+
+/* 首页谜入口：直接进造纸专题 */
+document.getElementById('mysteryEntry').addEventListener('click',()=>openTopic('paper'));
+
 /* 继续上次 */
 const heroContinue=document.getElementById('heroContinue');
 function initContinue(){
+  heroContinue.classList.remove('show');
+  heroContinue.textContent='继续上次';
+  const t=store.topic;
+  if(t&&TOPIC_NAME[t]){
+    heroContinue.textContent='继续动手：'+TOPIC_NAME[t];
+    heroContinue.classList.add('show');
+    return;
+  }
   if(store.last!==null&&NODES[store.last]){
     heroContinue.textContent='继续上次：'+NODES[store.last].title;
     heroContinue.classList.add('show');
   }
 }
 heroContinue.addEventListener('click',()=>{
+  const t=store.topic;
+  if(t&&TOPIC_NAME[t]){openTopic(t);return;}
   const last=store.last;
   if(last===null)return;
-  const topic=TOPIC_MAP[last];
-  if(topic){openTopic(topic);}else{openSheet(last);}
+  openSheet(last);
 });
 
 /* hero 按时间 / 按话题 切换 */
@@ -1578,6 +2229,25 @@ function openSheet(i){
   }
   document.getElementById('sStory').textContent=n.story;
   document.getElementById('sPoints').innerHTML=n.points.map(p=>'<li>'+p+'</li>').join('');
+  /* 动手入口：专题 / 3D（统一从详情卡进） */
+  const actionsEl=document.getElementById('sheetActions');
+  actionsEl.innerHTML='';
+  const topic=TOPIC_MAP[i];
+  if(topic){
+    const b=document.createElement('button');
+    b.type='button';b.className='sheet-action-btn topic';
+    b.innerHTML='<span class="sa-label">动手试试</span><span class="sa-title">'+TOPIC_NAME[topic]+'</span><span class="sa-go">›</span>';
+    b.addEventListener('click',()=>{closeSheet();openTopic(topic);});
+    actionsEl.appendChild(b);
+  }
+  const s3d=NODE_3D_MAP[i];
+  if(s3d){
+    const b=document.createElement('button');
+    b.type='button';b.className='sheet-action-btn model3d';
+    b.innerHTML='<span class="sa-label">3D 看</span><span class="sa-title">'+S3D_META[s3d].name+'</span><span class="sa-go">›</span>';
+    b.addEventListener('click',()=>{closeSheet();open3D(s3d,i);});
+    actionsEl.appendChild(b);
+  }
   sheet.classList.add('show');backdrop.classList.add('show');
   if(!store.seen.includes(n.id)){const s=store.seen;s.push(n.id);store.seen=s;renderJourney();}
   document.getElementById('prevNode').disabled=(i===0);
@@ -1674,6 +2344,7 @@ function bindPlots(){
       hintAfterEl.classList.remove('show');
       beep(440);
       if(seenKing&&seenHou){revealEl.classList.add('show');revealEl.classList.remove('open');}
+      saveTopicStep();
       setTimeout(()=>belongEl.scrollIntoView({behavior:'auto',block:'nearest'}),60);
     });
   });
@@ -1759,7 +2430,7 @@ const SILK_PATH=[
   {id:'dunhuang',name:'敦煌',sub:'出玉门关',note:'出玉门关就进西域。在这里把货交给常跑西域的商人，你不必再往前。',in:['补给'],out:['丝绸']}
  ]},
  {type:'fork', nodes:[
-  {id:'loulan',name:'楼兰',sub:'南道·沙漠绿洲',note:'楼兰是沙漠里的绿洲小国。这里能换到葡萄、石榴、苜蓿的种子。',in:['葡萄','石榴','苜蓿'],out:['丝绸']},
+  {id:'loulan',name:'楼兰',sub:'南道·沙漠绿洲',note:'楼兰是沙漠里的绿洲小国。这里能换到葡萄、石榴、苜蓿、核桃。',in:['葡萄','石榴','苜蓿','核桃'],out:['丝绸']},
   {id:'qiuci',name:'龟兹',sub:'北道·西域古国',note:'龟兹的乐舞很有名。丝绸继续往更西走，乐舞后来顺着这条路往东传。',in:['乐器','歌舞'],out:['丝绸']}
  ]},
  {type:'fork', nodes:[
@@ -1849,6 +2520,7 @@ function renderSilk(){
   });
   showNow();
   renderChoices();
+  saveTopicStep();
 }
 function currentLvComplete(){
   const lv=SILK_PATH[silkLevel];
@@ -1886,7 +2558,7 @@ function showSilkReturn(){
   silkTrials.push({route:route.map(n=>n.name).join(' → '),back:back.slice()});
   silkReturn.innerHTML='<h4>顺着同一张网，这些东西往东走</h4><div class="goods">'+
     (back.length?back.map(g=>'<span class="chip">'+g+'</span>').join(''):'<span class="chip">这趟没换到东西</span>')+'</div>'+
-    '<div class="silk-flow"><div class="f west"><b>往西去</b>丝绸等中原物产，经商人一站站转手到欧洲。</div>'+
+    '<div class="silk-flow"><div class="f west"><b>往西去</b>丝绸、漆器，还有铸铁、凿井的技术，经商人一站站转手到欧洲。</div>'+
     '<div class="f east"><b>往东来</b>'+(back.length?back.join('、'):'种子、香料、乐舞')+'，还有文化和技艺。</div></div>'+
     '<p class="conclude">货靠人接力才走那么远。你选的路不同，带回的东西也不一样。</p>'+
     '<button class="choice" id="silkAlt" type="button">试另一条走法，保留这趟对照</button>';
@@ -1949,6 +2621,7 @@ document.querySelectorAll('.ev-answer').forEach(b=>{
     if(ok){
       evFeedback.textContent='对了。放马滩纸是西汉的，比蔡伦早两百多年，它一出现，“蔡伦以前没有纸”这句话就被推翻了。';
       cailunDeep.classList.add('show');
+      saveTopicStep();
       beep(560);
       setTimeout(()=>cailunDeep.scrollIntoView({behavior:'auto',block:'nearest'}),60);
     }else{
