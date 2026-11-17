@@ -245,6 +245,7 @@ html{scroll-behavior:smooth}
 }
 .sheet ul{margin:0;padding-left:18px;font-size:16px}
 .sheet li{margin-bottom:9px}
+.pt-term{font-weight:700;color:var(--person);white-space:nowrap}
 /* 真实文物图 + 四要素 */
 .s-figure{margin:0 0 14px;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#efe8d9;position:relative}
 .s-figure img{display:block;width:100%;height:auto;max-height:60vh;object-fit:contain;background:#2b2620}
@@ -2321,6 +2322,43 @@ function schedulePreload(i){
   if(window.requestIdleCallback){requestIdleCallback(run,{timeout:2000});}
   else{setTimeout(run,400);}
 }
+/* ===== 后台全量预热：空闲时按顺序、串行拉完全部图片，点开即显示；切后台暂停，不抢当前带宽 ===== */
+let warmList=null,warmPos=0,warmBusy=false,warmWait=false;
+function buildWarmList(){
+  if(warmList)return warmList;
+  warmList=[];
+  NODES.forEach(n=>{
+    const m=IMG_META[n.id];
+    if(m){const s=toWebp(m.img);if(warmList.indexOf(s)<0)warmList.push(s);}
+  });
+  return warmList;
+}
+function warmAdvance(){
+  warmWait=false;
+  if(document.hidden){warmBusy=false;return;}
+  const list=buildWarmList();
+  while(warmPos<list.length&&imgMemory[list[warmPos]]===true){warmPos++;}
+  if(warmPos>=list.length){warmBusy=false;return;}
+  const s=list[warmPos];
+  const img=new Image();
+  img.onload=()=>{if(imgMemory[s]!==true)imgMemory[s]=true;warmPos++;warmAdvance();};
+  img.onerror=()=>{imgMemory[s]=null;warmPos++;warmAdvance();};
+  if(imgMemory[s]!==true)imgMemory[s]=img;
+  img.src=s;
+}
+function scheduleWarm(){
+  if(warmWait||document.hidden)return;
+  warmWait=true;
+  if(window.requestIdleCallback){requestIdleCallback(warmAdvance,{timeout:3000});}
+  else{setTimeout(warmAdvance,600);}
+}
+function startWarmup(){
+  if(warmBusy)return;
+  warmBusy=true;
+  scheduleWarm();
+}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)startWarmup();});
+window.addEventListener('load',()=>{setTimeout(startWarmup,1200);});
 let imgLoadTimer=null;
 function clearImgTimer(){if(imgLoadTimer){clearTimeout(imgLoadTimer);imgLoadTimer=null;}}
 /* 统一加载详情卡图片：带 8 秒超时，成功/失败/超时都有归宿，不永久转圈 */
@@ -2396,7 +2434,11 @@ function openSheet(i){
     document.getElementById('capKind').textContent=meta.label;
   }
   document.getElementById('sStory').textContent=n.story;
-  document.getElementById('sPoints').innerHTML=n.points.map(p=>'<li>'+p+'</li>').join('');
+  document.getElementById('sPoints').innerHTML=n.points.map(p=>{
+    const ci=p.indexOf('：');
+    if(ci<0)return '<li>'+p+'</li>';
+    return '<li><span class="pt-term">'+p.slice(0,ci)+'：</span>'+p.slice(ci+1)+'</li>';
+  }).join('');
   /* 动手入口：专题 / 3D（统一从详情卡进） */
   const actionsEl=document.getElementById('sheetActions');
   actionsEl.innerHTML='';
@@ -2893,6 +2935,7 @@ sheet.addEventListener('transitionend',function(){
 renderJourney();
 initContinue();
 renderMystery();
+setTimeout(startWarmup,1500);
 
 </script>
 </body>
