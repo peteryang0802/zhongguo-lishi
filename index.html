@@ -247,22 +247,23 @@ html{scroll-behavior:smooth}
 .sheet li{margin-bottom:9px}
 /* 真实文物图 + 四要素 */
 .s-figure{margin:0 0 14px;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#efe8d9;position:relative}
-.s-figure img{display:block;width:100%;height:150px;object-fit:cover;object-position:center top}
-.s-figure.big img{height:auto;max-height:60vh;object-fit:contain;background:#2b2620}
-.img-zoom{position:absolute;top:10px;right:10px;font-size:12.5px;font-weight:700;color:#fff;background:rgba(43,38,32,.72);border-radius:10px;padding:6px 11px;min-height:34px}
-.s-figure.big .img-zoom{background:rgba(255,255,255,.9);color:#2b2620}
+.s-figure img{display:block;width:100%;height:auto;max-height:60vh;object-fit:contain;background:#2b2620}
 .s-img-fail{display:none;position:absolute;inset:0;flex-direction:column;align-items:center;justify-content:center;gap:8px;height:150px;color:#7a5a17;font-size:14px;font-weight:600;background:#efe8d9}
 .s-figure.fail .s-img-fail{display:flex}
 .s-figure.fail img{display:none}
-.s-figure.fail .img-zoom{display:none}
 .s-img-fail .retry{border:1px solid #b8860b;border-radius:12px;padding:7px 16px;font-size:13.5px;color:#8a6d3b}
+.s-img-loading{display:none;position:absolute;inset:0;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#8a6d3b;font-size:13.5px;font-weight:700;background:#efe8d9;z-index:2}
+.s-figure.loading{min-height:200px}
+.s-figure.loading .s-img-loading{display:flex}
+.s-spinner{width:28px;height:28px;border:3px solid #d8c9a8;border-top-color:#a8792f;border-radius:50%;animation:s-spin .8s linear infinite}
+@keyframes s-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.s-spinner{animation:none}}
 .s-img-placeholder{display:none;position:absolute;inset:0;flex-direction:column;align-items:center;justify-content:center;gap:6px;height:150px;padding:12px;text-align:center;color:#8a6d3b;background:linear-gradient(160deg,#f3ecdd,#e8dcc4)}
 .s-img-placeholder svg{width:40px;height:40px;stroke:#b08a4a}
 .s-img-placeholder .ph-title{font-size:15px;font-weight:700;color:#6f5526}
 .s-img-placeholder .ph-sub{font-size:12.5px;color:#9a835a;line-height:1.4}
 .s-figure.placeholder .s-img-placeholder{display:flex}
 .s-figure.placeholder img{display:none}
-.s-figure.placeholder .img-zoom{display:none}
 .s-cap{padding:11px 13px 12px;background:#fbf6ec}
 .s-cap .cap-name{font-size:16px;font-weight:700;color:#3a3228;margin-bottom:7px}
 .s-cap .cap-row{display:flex;gap:7px;align-items:flex-start;font-size:13.5px;line-height:1.45;margin-top:4px;color:#5a5145}
@@ -1100,7 +1101,7 @@ button:focus:not(:focus-visible){outline:none}
       <div class="ph-sub">先看下面的故事和要点，图以后补进来</div>
     </div>
     <div class="s-img-fail" id="sImgFail">图片没加载出来<span class="retry">点这里重新加载</span></div>
-    <button class="img-zoom" id="imgZoom" type="button">查看大图</button>
+    <div class="s-img-loading" id="sImgLoading"><span class="s-spinner"></span><span>图片加载中…</span></div>
     <figcaption class="s-cap">
       <div class="cap-name" id="capName"></div>
       <div class="cap-row k-era"><span class="cap-k">年代</span><span id="capEra"></span></div>
@@ -2287,6 +2288,18 @@ renderHeroThreads();
 
 /* ===== 底部短卡 ===== */
 const sheet=document.getElementById('sheet'),backdrop=document.getElementById('backdrop');
+/* 图片内存缓存：预加载过的 src 直接复用，切换零等待 */
+const imgMemory={};
+function fetchImage(src){
+  if(imgMemory[src])return imgMemory[src];
+  imgMemory[src]=new Promise((res,rej)=>{
+    const probe=new Image();
+    probe.onload=()=>{imgMemory[src]=true;res(true);};
+    probe.onerror=()=>{imgMemory[src]=null;rej(new Error('img fail '+src));};
+    probe.src=src;
+  });
+  return imgMemory[src];
+}
 function openSheet(i){
   currentIndex=i;store.last=i;
   lastTrigger=document.activeElement;
@@ -2298,19 +2311,29 @@ function openSheet(i){
   const im=IMG_META[n.id];
   const sImg=document.getElementById('sImg');
   const sFigure=document.getElementById('sFigure');
-  sFigure.classList.remove('fail','big','placeholder');
-  document.getElementById('imgZoom').textContent='查看大图';
+  sFigure.classList.remove('fail','placeholder','loading');
   sheet.scrollTop=0;
   if(im){
     sImg.alt=im.name;
-    sImg.onload=function(){sFigure.classList.remove('fail');sImg.style.transform='translateZ(0)';};
-    sImg.onerror=function(){sFigure.classList.add('fail');};
-    sImg.src=im.img;
     window.__curImg=im.img;
     document.getElementById('capName').textContent=im.name;
     document.getElementById('capEra').textContent=im.era;
     document.getElementById('capSource').textContent=im.source;
     document.getElementById('capKind').textContent=im.kind;
+    if(imgMemory[im.img]===true){
+      /* 已缓存：直接显示，不闪加载态 */
+      sFigure.classList.remove('loading');
+      sImg.src=im.img;
+    }else{
+      /* 先遮住旧图，后台加载完再替换；__curImg 防止用户已切走后误更新 */
+      sImg.removeAttribute('src');
+      sFigure.classList.add('loading');
+      fetchImage(im.img).then(()=>{
+        if(window.__curImg===im.img){sFigure.classList.remove('loading');sImg.src=im.img;}
+      }).catch(()=>{
+        if(window.__curImg===im.img){sFigure.classList.remove('loading');sFigure.classList.add('fail');}
+      });
+    }
   }else{
     sImg.removeAttribute('src');
     sFigure.classList.add('placeholder');
@@ -2345,17 +2368,20 @@ function openSheet(i){
   if(!store.seen.includes(n.id)){const s=store.seen;s.push(n.id);store.seen=s;renderJourney();}
   document.getElementById('prevNode').disabled=(i===0);
   document.getElementById('nextNode').disabled=(i===NODES.length-1);
+  /* 延迟预加载相邻节点，线性切换时直接命中缓存；不抢当前图带宽 */
+  setTimeout(()=>{
+    [i-1,i+1].forEach(j=>{
+      if(j>=0&&j<NODES.length){
+        const pim=IMG_META[NODES[j].id];
+        if(pim)fetchImage(pim.img);
+      }
+    });
+  },350);
 }
 function closeSheet(){sheet.classList.remove('show');backdrop.classList.remove('show');if(lastTrigger){lastTrigger.focus();lastTrigger=null;}}
 let lastTrigger=null;
 document.getElementById('sheetClose').addEventListener('click',closeSheet);
 backdrop.addEventListener('click',closeSheet);
-document.getElementById('imgZoom').addEventListener('click',function(){
-  const sFigure=document.getElementById('sFigure');
-  sFigure.classList.toggle('big');
-  this.textContent=sFigure.classList.contains('big')?'收起大图':'查看大图';
-  beep(440);
-});
 document.getElementById('prevNode').addEventListener('click',()=>{if(currentIndex>0)openSheet(currentIndex-1);});
 document.getElementById('nextNode').addEventListener('click',()=>{if(currentIndex<NODES.length-1)openSheet(currentIndex+1);});
 
@@ -2812,9 +2838,16 @@ document.getElementById('paperReset').addEventListener('click',()=>{
 });
 document.getElementById('sImgFail').addEventListener('click',function(){
   const sFigure=document.getElementById('sFigure');
-  const sImg=document.getElementById('sImg');
+  const src=window.__curImg;
+  if(!src)return;
+  imgMemory[src]=null; /* 清失败标记，允许重新加载 */
   sFigure.classList.remove('fail');
-  sImg.src=window.__curImg+'?r='+Date.now();
+  sFigure.classList.add('loading');
+  fetchImage(src).then(()=>{
+    if(window.__curImg===src){sFigure.classList.remove('loading');document.getElementById('sImg').src=src;}
+  }).catch(()=>{
+    if(window.__curImg===src){sFigure.classList.remove('loading');sFigure.classList.add('fail');}
+  });
 });
 sheet.addEventListener('transitionend',function(){
   const sImg=document.getElementById('sImg');
