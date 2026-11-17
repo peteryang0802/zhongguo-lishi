@@ -1,0 +1,2006 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>中国历史时间轴 · 动手玩历史</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%238a5a2b'/%3E%3Ctext x='16' y='23' font-size='17' text-anchor='middle' fill='%23fffdf8' font-family='serif'%3E史%3C/text%3E%3C/svg%3E">
+<style>
+:root{
+  --paper:#f7f3ea; --card:#fffdf8; --ink:#2b2620; --sub:#7a7064;
+  --person:#c2691f; --event:#2f6f8f; --state:#4a7a52; --gold:#b8860b;
+  --line:#e3dccb; --shadow:0 6px 20px rgba(60,45,20,.10);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--paper);color:var(--ink);line-height:1.6;
+  -webkit-user-select:none;user-select:none;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+h1,h2,h3{margin:0;line-height:1.3}
+
+/* ===== 顶栏 ===== */
+header{
+  position:sticky;top:0;z-index:30;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px;background:rgba(247,243,234,.94);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+}
+header h1{font-size:19px;letter-spacing:1px}
+header h1 small{font-size:12px;color:var(--sub);font-weight:400;margin-left:6px}
+.icon-btn{
+  width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  background:var(--card);border:1px solid var(--line);
+}
+.icon-btn svg{width:22px;height:22px}
+
+main{padding:0 16px 24px;max-width:680px;margin:0 auto}
+
+/* ===== 区块标题 ===== */
+.sec-title{display:flex;align-items:baseline;gap:8px;margin:22px 0 12px}
+.sec-title h2{font-size:20px}
+.sec-title span{font-size:13px;color:var(--sub)}
+html{scroll-behavior:smooth}
+
+/* ===== 推恩令问题 ===== */
+.question{
+  background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:18px 18px 16px;box-shadow:var(--shadow);
+}
+.question .tag{
+  display:inline-block;font-size:12px;color:var(--card);
+  background:var(--person);padding:3px 10px;border-radius:20px;margin-bottom:10px;
+}
+.question h2{font-size:21px;margin-bottom:8px}
+.question p{margin:0;font-size:16px;color:#4a4238}
+.question .guess{margin-top:12px;font-size:15px;color:var(--gold);font-weight:600}
+
+/* ===== 封地舞台 ===== */
+.stage-wrap{margin-top:14px}
+.stage{
+  position:relative;background:var(--card);border:1px solid var(--line);
+  border-radius:18px;padding:14px;box-shadow:var(--shadow);
+}
+.stage-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.stage-head b{font-size:15px}
+.stage-head .before{font-size:12px;color:var(--sub);border:1px dashed var(--line);padding:3px 9px;border-radius:8px}
+.kingdom{
+  display:grid;gap:8px;width:100%;min-height:168px;
+  grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;
+}
+.plot{
+  position:relative;border-radius:12px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:8px;
+  font-size:14px;font-weight:600;min-height:100px;
+  transition:transform .25s ease, background .25s ease, opacity .25s;
+}
+.plot:active{transform:scale(.97)}
+.plot .role{font-size:12px;font-weight:400;margin-top:3px;opacity:.85}
+.plot.whole{grid-column:1/3;grid-row:1/3;background:#e8d3b8;color:#5c4326;border:2px solid #c9a878}
+.plot.king{background:#d9a066;color:#fff;border:2px solid #c2691f}
+.plot.hou{background:#dfe9e6;color:#35594a;border:2px dashed #7fa08d}
+.plot.hou.h2{background:#dde7ee;color:#2f5670;border-color:#83a8bd}
+.plot.hou.h3{background:#ece3d2;color:#6b5a36;border-color:#bda878}
+.kingdom.split{display:flex;gap:8px;align-items:stretch}
+.kingdom.split .plot.king{flex:1.15;min-height:196px}
+.hou-col{flex:1;display:flex;flex-direction:column;gap:8px}
+.hou-col .plot{flex:1;min-height:0}
+.plot .crown-ico{width:26px;height:26px;margin-bottom:3px}
+.plot.hou .crown-ico{width:22px;height:22px}
+.plot .crown{font-size:22px;margin-bottom:2px}
+.plot.picked{outline:3px solid var(--gold);outline-offset:2px}
+
+/* 管辖线对照 */
+.rule-compare{
+  margin-top:14px;background:#fbf7ee;border:1px solid var(--line);border-radius:16px;padding:14px;display:none
+}
+.rule-compare.show{display:block;animation:fade .25s ease}
+.rc-switch{display:flex;gap:8px;margin-bottom:13px}
+.rc-mode{
+  flex:1;min-height:48px;border-radius:12px;border:2px solid var(--line);background:var(--card);
+  font-size:13.5px;font-weight:700;color:#5a5145;padding:6px 8px
+}
+.rc-mode.active{border-color:var(--person);background:#f3e7d8;color:#8a5a2b}
+.rc-pane{display:none}
+.rc-pane.active{display:block;animation:fade .2s ease}
+.rc-land{
+  display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr);gap:6px;
+  position:relative;padding:0;border-radius:12px;background:#f4ede0
+}
+.rc-cell{min-height:52px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;text-align:center;padding:4px}
+.rc-cell.king{grid-column:1;grid-row:1/4;background:#d9a066;color:#fff;border:2px solid #c2691f}
+.rc-cell.hou{grid-column:2;background:#dfe9e6;color:#35594a;border:2px dashed #7fa08d}
+.rc-cover{
+  position:absolute;border:3px solid var(--person);border-radius:14px;pointer-events:none
+}
+.rc-cover.all{inset:0}
+.rc-cover.left{inset:0 calc(50% + 3px) 0 0}
+.rc-cover.right{inset:0 0 0 calc(50% + 3px)}
+.rc-cover .rc-tag{
+  position:absolute;top:-13px;left:8px;font-size:11.5px;font-weight:700;color:#fff;
+  background:var(--person);border-radius:8px;padding:2px 9px;white-space:nowrap
+}
+.rc-cover.jun{border-color:#4a7a52}
+.rc-cover.jun .rc-tag{background:#4a7a52}
+.rc-note{font-size:13.5px;color:#5a5145;margin-top:11px;line-height:1.55}
+.rc-ask{
+  margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);
+  font-size:14.5px;font-weight:700;color:#3a3228
+}
+.rc-answers{display:flex;gap:8px;margin-top:9px}
+.rc-answer{
+  flex:1;min-height:50px;border-radius:12px;border:2px solid var(--line);background:var(--card);
+  font-size:13.5px;font-weight:700;color:#5a5145;padding:6px
+}
+.rc-answer.right{border-color:#4a7a52;background:#e7f0e9;color:#33503a}
+.rc-answer.wrong{border-color:#b5533c;background:#f6e3de;color:#8a3a2a}
+.rc-feedback{font-size:13.5px;margin-top:10px;line-height:1.55;display:none}
+.rc-feedback.show{display:block;animation:fade .2s ease}
+
+/* 分封后引导 */
+.hint-after{
+  margin-top:12px;background:#eef3f0;border-radius:14px;padding:12px 16px;
+  font-size:15px;color:#35594a;font-weight:600;display:none;
+}
+.hint-after.show{display:block;animation:fade .25s ease}
+.btn-row #resetBtn{display:none}
+.btn-row.split-on #resetBtn{display:flex;flex:0 0 auto;padding:0 20px}
+
+/* 归属信息 */
+.belong{
+  margin-top:12px;background:#f3ece0;border-radius:14px;padding:14px 16px;
+  font-size:15px;display:none;
+}
+.belong.show{display:block;animation:fade .25s ease}
+.belong b{color:var(--person)}
+.belong .line2{margin-top:6px;color:#4a4238}
+.belong .verdict{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);color:var(--gold);font-weight:600}
+.go-next{
+  margin-top:10px;padding:9px 12px;background:#eef3f0;border-radius:10px;
+  color:#35594a;font-weight:600;font-size:14px;
+}
+.compare-done{
+  margin-top:10px;padding:11px 13px;background:#f7eeda;border:1px solid #e0c79a;border-radius:10px;
+  color:#7a5a17;font-weight:700;
+}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* 按钮 */
+.btn-row{display:flex;gap:10px;margin-top:0}
+.stage{margin-top:12px}
+.btn{
+  flex:1;min-height:52px;border-radius:14px;font-size:17px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:transform .15s, filter .15s;
+}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--person);color:#fff}
+.btn.ghost{background:var(--card);border:1px solid var(--line);color:var(--ink)}
+.btn:disabled{opacity:.45;filter:grayscale(.4)}
+.btn svg{width:20px;height:20px}
+
+/* 概念揭晓 */
+.reveal{
+  margin-top:14px;background:linear-gradient(180deg,#fff8ec,#fdf2dd);
+  border:1px solid #e6d3a8;border-radius:16px;padding:16px;display:none;
+}
+.reveal.show{display:block;animation:fade .3s ease}
+.reveal-toggle{width:100%;min-height:48px;border-radius:12px;background:var(--gold);color:#fff;font-size:15px;font-weight:700;padding:8px 12px}
+.reveal-toggle:active{filter:brightness(.95)}
+.reveal-body{display:none;margin-top:12px}
+.reveal.open .reveal-body{display:block;animation:fade .25s ease}
+.reveal h3{font-size:17px;color:var(--gold);margin-bottom:8px}
+.reveal ul{margin:0;padding-left:18px;font-size:15px}
+.reveal li{margin-bottom:6px}
+.reveal .term{display:inline-block;background:var(--gold);color:#fff;font-size:13px;padding:2px 9px;border-radius:14px;margin-bottom:8px}
+
+/* ===== 时间轴 ===== */
+.tl-scroll{
+  display:flex;overflow-x:auto;gap:0;padding:8px 4px 14px;
+  scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+  border-radius:16px;background:var(--card);border:1px solid var(--line);
+}
+.tl-scroll::-webkit-scrollbar{height:6px}
+.tl-scroll::-webkit-scrollbar-thumb{background:#d8cdb8;border-radius:3px}
+.tl-node{
+  flex:0 0 auto;width:96px;scroll-snap-align:center;
+  display:flex;flex-direction:column;align-items:center;padding:8px 4px;
+}
+.tl-dot{
+  width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  color:#fff;box-shadow:var(--shadow);transition:transform .2s;position:relative;
+}
+.tl-dot:active{transform:scale(.92)}
+.tl-node.event .tl-dot{border-radius:12px}
+.tl-node.state .tl-dot{border-radius:50% 50% 12px 12px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);border-radius:0}
+.tl-dot svg{width:24px;height:24px}
+.tl-node.person{--c:var(--person)} .tl-node.event{--c:var(--event)} .tl-node.state{--c:var(--state)}
+.tl-dot{background:var(--c)}
+.tl-node.approx .tl-dot{background:var(--card);border:2px dashed var(--c);color:var(--c)}
+.tl-year{font-size:12px;color:var(--sub);margin-top:7px;font-weight:600}
+.tl-name{font-size:12.5px;text-align:center;margin-top:2px;color:#3d362c;min-height:32px}
+.tl-check{position:absolute;top:-4px;right:-4px;width:20px;height:20px;border-radius:50%;background:var(--state);display:none;align-items:center;justify-content:center}
+.tl-check svg{width:13px;height:13px}
+.tl-node.seen .tl-check{display:flex}
+.tl-node.flash .tl-dot{box-shadow:0 0 0 4px rgba(184,134,11,.35),var(--shadow)}
+.tl-connector{width:14px;height:3px;background:var(--line);align-self:flex-start;margin-top:31px;flex:0 0 14px}
+.tl-dynasty{font-size:11px;color:var(--card);background:var(--sub);padding:2px 8px;border-radius:10px;margin:14px 0 4px;align-self:center}
+/* 朝代导航 */
+.dynasty-bar{display:flex;gap:9px;margin-bottom:10px}
+.dyn{flex:1;border-radius:14px;padding:9px 6px;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;align-items:center;gap:2px;min-height:54px}
+.dyn b{font-size:15.5px;color:#3a3228}
+.dyn small{font-size:11.5px;color:var(--sub)}
+.dyn:active{background:#f0e9da}
+.dyn[data-dyn="1"]{border-top:3px solid #2f6f8f}
+.dyn[data-dyn="10"]{border-top:3px solid #b8860b}
+.dyn[data-dyn="12"]{border-top:3px solid #4a7a52}
+/* 回到上次 */
+.last-btn{display:none;align-items:center;gap:8px;width:100%;min-height:48px;border-radius:14px;border:1px solid #d8c28a;background:#fdf6e6;color:#8a6d3b;font-size:14px;font-weight:600;padding:8px 14px;margin-bottom:10px;text-align:left}
+.last-btn.show{display:flex}
+.last-btn svg{width:19px;height:19px;flex:0 0 19px}
+.last-btn #lastLabel{color:#5a5145;font-weight:700}
+/* 顺序说明 */
+.order-note{font-size:12.5px;color:var(--sub);background:#f1ece1;border-radius:10px;padding:8px 12px;margin-bottom:10px;line-height:1.5}
+
+/* ===== 底部短卡 ===== */
+.backdrop{
+  position:fixed;inset:0;background:rgba(35,28,18,.4);z-index:40;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+}
+.backdrop.show{opacity:1;pointer-events:auto}
+.sheet{
+  position:fixed;left:0;right:0;bottom:0;z-index:41;
+  background:var(--card);border-radius:22px 22px 0 0;
+  max-height:82vh;overflow-y:auto;
+  transform:translateY(100%);transition:transform .3s cubic-bezier(.2,.8,.25,1);
+  padding:10px 18px calc(20px + env(safe-area-inset-bottom));
+}
+.sheet.show{transform:none}
+.sheet-grip{width:42px;height:5px;border-radius:3px;background:#d8cdb8;margin:4px auto 12px}
+.sheet .close{position:absolute;top:12px;right:14px;width:40px;height:40px;border-radius:12px;background:var(--paper);display:flex;align-items:center;justify-content:center}
+.sheet .close svg{width:20px;height:20px}
+.sheet .s-tag{font-size:12px;color:#fff;padding:3px 10px;border-radius:14px;display:inline-block}
+.sheet h3{font-size:22px;margin:10px 0 4px;padding-right:44px}
+.sheet .s-year{font-size:14px;color:var(--sub);margin-bottom:12px}
+.sheet .story{
+  background:#f6efe2;border-left:4px solid var(--gold);border-radius:0 12px 12px 0;
+  padding:10px 14px;font-size:15px;margin-bottom:14px;
+}
+.sheet ul{margin:0;padding-left:18px;font-size:16px}
+.sheet li{margin-bottom:9px}
+/* 真实文物图 + 四要素 */
+.s-figure{margin:0 0 14px;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#efe8d9;position:relative}
+.s-figure img{display:block;width:100%;height:150px;object-fit:cover;object-position:center top}
+.s-figure.big img{height:auto;max-height:60vh;object-fit:contain;background:#2b2620}
+.img-zoom{position:absolute;top:10px;right:10px;font-size:12.5px;font-weight:700;color:#fff;background:rgba(43,38,32,.72);border-radius:10px;padding:6px 11px;min-height:34px}
+.s-figure.big .img-zoom{background:rgba(255,255,255,.9);color:#2b2620}
+.s-img-fail{display:none;position:absolute;inset:0;flex-direction:column;align-items:center;justify-content:center;gap:8px;height:150px;color:#7a5a17;font-size:14px;font-weight:600;background:#efe8d9}
+.s-figure.fail .s-img-fail{display:flex}
+.s-figure.fail img{display:none}
+.s-figure.fail .img-zoom{display:none}
+.s-img-fail .retry{border:1px solid #b8860b;border-radius:12px;padding:7px 16px;font-size:13.5px;color:#8a6d3b}
+.s-img-placeholder{display:none;position:absolute;inset:0;flex-direction:column;align-items:center;justify-content:center;gap:6px;height:150px;padding:12px;text-align:center;color:#8a6d3b;background:linear-gradient(160deg,#f3ecdd,#e8dcc4)}
+.s-img-placeholder svg{width:40px;height:40px;stroke:#b08a4a}
+.s-img-placeholder .ph-title{font-size:15px;font-weight:700;color:#6f5526}
+.s-img-placeholder .ph-sub{font-size:12.5px;color:#9a835a;line-height:1.4}
+.s-figure.placeholder .s-img-placeholder{display:flex}
+.s-figure.placeholder img{display:none}
+.s-figure.placeholder .img-zoom{display:none}
+.s-cap{padding:11px 13px 12px;background:#fbf6ec}
+.s-cap .cap-name{font-size:16px;font-weight:700;color:#3a3228;margin-bottom:7px}
+.s-cap .cap-row{display:flex;gap:7px;align-items:flex-start;font-size:13.5px;line-height:1.45;margin-top:4px;color:#5a5145}
+.s-cap .cap-k{flex:0 0 40px;font-size:12px;color:#fff;background:var(--sub);border-radius:7px;text-align:center;padding:2px 0;margin-top:1px}
+.s-cap .cap-row.k-era .cap-k{background:#8a6d3b}
+.s-cap .cap-row.k-source .cap-k{background:#5d7a86}
+.s-cap .cap-row.k-kind .cap-k{background:#6b8a67}
+.s-real-note{margin:0 0 13px;font-size:12.5px;color:var(--sub);background:#f1ece1;border-radius:10px;padding:8px 12px}
+.sheet .s-nav{display:flex;gap:10px;margin-top:18px}
+.sheet .s-nav .btn{min-height:48px;font-size:15px}
+
+/* toast */
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+  background:#3a3228;color:#fff;font-size:14px;padding:10px 18px;border-radius:24px;
+  z-index:60;opacity:0;transition:.25s;pointer-events:none;max-width:86%;text-align:center;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ===== 实验卡片通用 ===== */
+.exp-card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px 16px 18px;margin-bottom:24px;box-shadow:var(--shadow)}
+.exp-card .tag{display:inline-block;font-size:12.5px;color:#fff;padding:4px 11px;border-radius:14px;margin-bottom:10px}
+.exp-card h2{font-size:21px;margin:0 0 8px}
+.exp-card>p{font-size:14.5px;color:#5a5145;line-height:1.6;margin:0 0 14px}
+/* 丝绸之路 */
+.silk .tag{background:#2f6f8f}
+.silk-title h2{color:#2f6f8f}
+.silk-map{background:#f4ede0;border-radius:16px;padding:14px 10px 10px;margin-bottom:14px;border:1px solid var(--line)}
+.silk-level{display:flex;justify-content:center;gap:12px}
+.silk-node{flex:1;max-width:150px;text-align:center;border-radius:14px;padding:10px 6px;background:#fffdf8;border:2px solid var(--line);min-height:62px;display:flex;flex-direction:column;justify-content:center;gap:3px}
+.silk-node b{font-size:14.5px;color:#3a3228}
+.silk-node small{font-size:11.5px;color:var(--sub)}
+.silk-node.done{border-color:#2f6f8f;background:#e8f1f5}
+.silk-node.done b{color:#2f6f8f}
+.silk-node.current{border-color:#2f6f8f;background:#2f6f8f;box-shadow:0 6px 16px rgba(47,111,143,.3)}
+.silk-node.current b,.silk-node.current small{color:#fff}
+.silk-link{width:2px;height:16px;background:#cdc2ae;margin:0 auto}
+.silk-link.done{background:#2f6f8f}
+.silk-node.skip{border-style:dashed;border-color:#c9bfa9;background:#f2eee5;opacity:.85}
+.silk-node.skip b{color:#9a9082}
+.silk-node.skip .skip-tag{color:#a89a80;font-size:10.5px}
+.silk-node.locked{border-color:#e4ddcd;background:#faf7f0;opacity:.6}
+.silk-node.locked b{color:#b3a997}
+.silk-node.locked small{color:#c3b9a6}
+.silk-node.picked{outline:3px solid #2f6f8f;outline-offset:2px}
+.silk-level.fork .silk-node{max-width:none}
+.silk-choices .choice#silkAlt{border-color:#b8860b;color:#8a6d3b}
+.silk-now{border-radius:14px;padding:12px 14px;margin-bottom:12px;background:#e8f1f5;border-left:4px solid #2f6f8f;font-size:14.5px;line-height:1.55;color:#2c4654}
+.silk-now .goods{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px;align-items:center}
+.silk-now .silk-k{font-size:12.5px;color:#2c4654;font-weight:600}
+.silk-now .chip{font-size:12.5px;background:#fff;color:#2f6f8f;border:1px solid #b9d2dd;padding:3px 10px;border-radius:12px}
+.silk-now .chip.out{color:#9a6a1f;border-color:#e3c98f;background:#fdf6e6}
+.silk-choices{display:flex;flex-direction:column;gap:9px;margin-bottom:12px}
+.silk-choices .hint{font-size:13.5px;color:var(--sub);text-align:center;margin-bottom:2px}
+.silk-choices .choice{min-height:52px;border-radius:14px;border:2px solid #2f6f8f;background:#fff;color:#2f6f8f;font-size:15.5px;font-weight:600;padding:8px 14px;display:flex;align-items:center;gap:9px}
+.silk-choices .choice:active{background:#e8f1f5}
+.silk-choices .choice .arrow{margin-left:auto}
+.silk-return{display:none;border-radius:14px;padding:12px 14px;background:#fdf3e3;border:1px solid #e6d3a8;margin-bottom:12px}
+.silk-return.show{display:block}
+.silk-return h4{margin:0 0 8px;font-size:15.5px;color:#8a6d3b}
+.silk-return .goods{display:flex;flex-wrap:wrap;gap:6px}
+.silk-return .chip{font-size:12.5px;background:#fff;color:#8a6d3b;border:1px solid #e3c98f;padding:3px 10px;border-radius:12px}
+.silk-return .conclude{font-size:14px;color:#5a5145;line-height:1.6;margin:10px 0 0}
+/* 丝绸当前持有标记 */
+.silk-hold{
+  display:inline-flex;align-items:center;gap:4px;margin-top:6px;font-size:10.5px;font-weight:700;
+  color:#a8442c;background:#fff;border-radius:8px;padding:2px 7px
+}
+.silk-hold svg{width:12px;height:12px}
+.silk-schematic{font-size:11.5px;color:var(--sub);background:#f1ece1;border-radius:9px;padding:7px 11px;margin-bottom:11px}
+/* 两趟对照 */
+.silk-compare{display:none;border-radius:14px;padding:13px 14px;background:#eef3f7;border:1px solid #b9d2dd;margin-top:12px}
+.silk-compare.show{display:block;animation:fade .25s ease}
+.silk-compare h4{margin:0 0 9px;font-size:15px;color:#2f6f8f}
+.silk-trial{background:#fff;border-radius:11px;padding:10px 12px;margin-bottom:9px;border:1px solid #d4e2ea}
+.silk-trial .t-name{font-size:13.5px;font-weight:700;color:#2f6f8f;margin-bottom:6px}
+.silk-trial .t-route{font-size:12.5px;color:#5a5145;line-height:1.5;margin-bottom:6px}
+.silk-trial .goods{display:flex;flex-wrap:wrap;gap:5px}
+.silk-trial .chip{font-size:11.5px;background:#eef3f7;color:#2f6f8f;border:1px solid #b9d2dd;padding:2px 8px;border-radius:10px}
+.silk-compare .c-note{font-size:13px;color:#5a5145;line-height:1.55;margin-top:4px}
+/* 甘英追问 */
+.silk-gan{display:none;border-radius:14px;padding:13px 14px;background:#fbf3e3;border:1px solid #e6d3a8;margin-top:12px}
+.silk-gan.show{display:block;animation:fade .25s ease}
+.silk-gan h4{margin:0 0 8px;font-size:15px;color:#8a6d3b}
+.silk-gan .g-line{font-size:13.5px;color:#5a5145;line-height:1.6;margin-bottom:7px}
+.silk-gan .g-stop{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.silk-gan .g-pill{font-size:12px;background:#fff;border:1px solid #e3c98f;color:#8a6d3b;border-radius:10px;padding:4px 10px}
+.silk-gan .g-q{font-size:13.5px;font-weight:700;color:#3a3228;margin-top:6px}
+/* 东西方向箭头 */
+.silk-flow{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.silk-flow .f{flex:1;min-width:130px;border-radius:11px;padding:9px 11px;font-size:12.5px;line-height:1.5}
+.silk-flow .f.west{background:#eef3f7;color:#2c4654;border:1px solid #b9d2dd}
+.silk-flow .f.east{background:#f3f7ef;color:#33503a;border:1px solid #b3cdb8}
+.silk-flow b{display:block;margin-bottom:3px;font-size:13px}
+/* 造纸术 */
+.paper .tag{background:#4a7a52}
+.paper-title h2{color:#4a7a52}
+.paper-demos{display:flex;gap:9px;margin-bottom:14px}
+.demo{flex:1;text-align:center;min-width:0}
+.demo-art{height:112px;border-radius:12px;margin-bottom:7px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.demo b{font-size:14.5px;display:block;color:#3a3228}
+.demo small{font-size:11.5px;color:var(--sub)}
+.demo-art.jian{background:#e7d6ac;gap:3px;padding:10px 12px;border:1px solid #cbb582}
+.demo-art.jian span{flex:1;background:linear-gradient(#dcc28a,#cfb176);border:1px solid #b3985c;border-radius:2px;height:100%;position:relative}
+.demo-art.jian span::after{content:'';position:absolute;left:50%;top:8px;bottom:8px;width:1px;background:rgba(120,95,40,.35)}
+.demo-art.bo{background:repeating-linear-gradient(110deg,#f2e2cd,#f2e2cd 6px,#ecdcc6 6px,#ecdcc6 12px);border:1px solid #d8c3a4}
+.demo-art.bo span{font-size:15px;color:#8a6d3b;letter-spacing:4px}
+.demo-art.zhi{background:#fcfbf6;border:1px solid #d8d2c2;box-shadow:0 2px 5px rgba(0,0,0,.06)}
+.demo-art.zhi span{font-size:15px;color:#5a5145;letter-spacing:4px}
+.paper-ask{font-size:14.5px;color:var(--sub);text-align:center;margin-bottom:9px}
+.paper-choices{display:flex;gap:9px;margin-bottom:12px}
+.pchoice{flex:1;min-height:50px;border-radius:14px;border:2px solid #4a7a52;background:#fff;color:#4a7a52;font-size:15px;font-weight:600}
+.pchoice:active{background:#e7f0e9}
+.paper-result{display:none;border-radius:14px;padding:12px 14px;background:#e7f0e9;border-left:4px solid #4a7a52;font-size:14.5px;line-height:1.6;color:#33503a;margin-bottom:12px}
+.paper-result.show{display:block}
+.paper-result .big{font-size:16px;font-weight:700;margin-bottom:6px}
+.paper-result .compare-btn{margin-top:11px;min-height:46px;width:100%;border-radius:12px;background:#4a7a52;color:#fff;font-size:15px;font-weight:600}
+.paper-summary{display:none;border-radius:14px;padding:13px 14px;background:#fbf7ee;border:1px solid #e3d8bf}
+.paper-summary.show{display:block}
+.paper-summary h4{margin:0 0 9px;font-size:15.5px;color:#8a6d3b}
+.paper-summary .row{display:flex;gap:8px;font-size:14px;margin-bottom:8px;line-height:1.5}
+.paper-summary .row .k{flex:0 0 44px;font-weight:700;color:#4a7a52}
+.paper-summary .note{font-size:13.5px;color:#5a5145;line-height:1.6;margin-top:8px;border-top:1px dashed #d4c8ac;padding-top:9px}
+
+/* ===== 造纸断案 ===== */
+.paper-claim{background:#f3ece0;border-radius:14px;padding:13px 15px;margin-bottom:14px}
+.paper-claim .ck{font-size:12.5px;font-weight:700;color:#8a6d3b;margin-bottom:7px}
+.claim-box{
+  font-size:17px;font-weight:700;color:#3a3228;background:#fff;border-left:5px solid #b5533c;
+  border-radius:0 10px 10px 0;padding:11px 13px;line-height:1.5
+}
+.evidence-grid{display:flex;gap:10px;margin-bottom:13px}
+.evidence{
+  flex:1;min-width:0;border:2px solid var(--line);border-radius:14px;background:var(--card);
+  padding:0 0 12px;text-align:left;overflow:hidden;transition:transform .15s
+}
+.evidence:active{transform:scale(.98)}
+.evidence img{display:block;width:100%;height:118px;object-fit:cover;background:#efe8d9}
+.evidence .ev-body{padding:9px 11px 0}
+.evidence b{font-size:14.5px;color:#332c24;display:block;margin-bottom:5px}
+.evidence small{font-size:12px;color:var(--sub);line-height:1.5;display:block}
+.evidence.picked{border-color:#4a7a52;box-shadow:0 0 0 2px rgba(74,122,82,.25)}
+.ev-ask{font-size:14.5px;font-weight:700;color:#3a3228;margin:4px 0 9px}
+.ev-answers{display:flex;gap:9px;margin-bottom:11px}
+.ev-answer{
+  flex:1;min-height:50px;border-radius:12px;border:2px solid var(--line);background:var(--card);
+  font-size:14px;font-weight:700;color:#5a5145
+}
+.ev-answer.right{border-color:#4a7a52;background:#e7f0e9;color:#33503a}
+.ev-answer.wrong{border-color:#b5533c;background:#f6e3de;color:#8a3a2a}
+.ev-feedback{display:none;font-size:13.5px;line-height:1.6;border-radius:11px;padding:11px 13px;margin-bottom:13px}
+.ev-feedback.show{display:block;animation:fade .2s ease}
+.ev-feedback.ok{background:#e7f0e9;color:#33503a;border:1px solid #b3cdb8}
+.ev-feedback.no{background:#f6e3de;color:#8a3a2a;border:1px solid #e0b3a8}
+.cailun-deep{display:none;border-radius:15px;background:#fbf7ee;border:1px solid var(--line);padding:15px;margin-bottom:14px}
+.cailun-deep.show{display:block;animation:fade .25s ease}
+.cailun-deep h4{font-size:16px;color:#4a7a52;margin:0 0 11px}
+.q3{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+.q3 .qk{
+  flex:0 0 30px;height:30px;border-radius:50%;background:#4a7a52;color:#fff;font-size:14px;font-weight:700;
+  display:flex;align-items:center;justify-content:center
+}
+.q3 .qt{font-size:13.5px;color:#4a4238;line-height:1.6;padding-top:4px}
+.q3 .qt b{color:#332c24}
+.cailun-deep img{width:100%;border-radius:11px;margin:8px 0 6px;object-fit:cover;max-height:240px}
+.cailun-deep .cap{font-size:12px;color:var(--sub);line-height:1.5;margin-bottom:10px}
+.cailun-deep .verdict{
+  background:#e7f0e9;border-radius:11px;padding:11px 13px;font-size:13.5px;color:#33503a;line-height:1.6;margin-top:8px
+}
+.warmup{border:2px solid var(--line);border-radius:14px;background:var(--card);padding:0 14px;margin-top:6px}
+.warmup summary{min-height:48px;display:flex;align-items:center;font-size:15px;font-weight:700;color:#4a7a52;cursor:pointer}
+.warmup .w-body{padding-bottom:14px}
+
+@media (min-width:768px){
+  .kingdom{min-height:280px}
+  .tl-node{width:110px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto!important}
+}
+/* 键盘焦点可见，鼠标点击不显示 */
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:8px}
+button:focus:not(:focus-visible){outline:none}
+
+/* ===== 视图切换 ===== */
+.view{display:none}
+.view.active{display:block}
+#topicView{padding:0 16px 28px;max-width:680px;margin:0 auto}
+
+/* ===== 首屏总纲 ===== */
+.hero-banner{
+  background:linear-gradient(155deg,#38302a,#5d4a34);
+  color:#f7f3ea;border-radius:20px;padding:20px 18px 18px;margin:14px 0 16px;
+}
+.hero-banner h2{font-size:22px;margin-bottom:9px}
+.hero-banner p{font-size:14.5px;line-height:1.65;margin:0 0 15px;color:#e7ddcb}
+.hero-banner .seg-row{display:flex;gap:9px}
+.hero-banner .seg-pill{
+  flex:1;min-height:50px;border-radius:13px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:2px;background:rgba(255,253,248,.1);
+  border:1px solid rgba(255,255,255,.18);color:#f3ead8;font-size:14px;font-weight:700
+}
+.hero-banner .seg-pill small{font-size:10.5px;font-weight:400;color:#cabfa9}
+.hero-banner .seg-pill.p1{border-top:3px solid #5b97b5}
+.hero-banner .seg-pill.p2{border-top:3px solid #c9a24b}
+.hero-banner .seg-pill.p3{border-top:3px solid #7ba884}
+.hero-banner .seg-pill:active{background:rgba(255,253,248,.22)}
+.hero-continue{
+  margin-top:12px;width:100%;min-height:48px;border-radius:13px;background:#c2691f;color:#fff;
+  font-size:15px;font-weight:700;display:none
+}
+.hero-continue.show{display:flex;align-items:center;justify-content:center;gap:8px}
+
+/* hero 双轴切换 */
+.view-switch{
+ display:flex;gap:8px;background:rgba(0,0,0,.22);border-radius:13px;padding:5px;margin-bottom:14px
+}
+.vs-btn{
+ flex:1;min-height:44px;border-radius:10px;font-size:15px;font-weight:800;
+ color:#d8cdb9;background:transparent
+}
+.vs-btn.active{background:#f7f3ea;color:#3a2f22;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.hero-banner .seg-row{display:flex;flex-wrap:wrap;gap:8px}
+.hero-banner .seg-pill{flex:1 1 30%;min-width:92px}
+#threadEntry{display:none}
+#threadEntry.show{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hero-thread-card{
+ text-align:left;border-radius:14px;padding:13px 14px;min-height:96px;
+ background:rgba(255,253,248,.1);border:1px solid rgba(255,255,255,.18);color:#f3ead8;
+ display:flex;flex-direction:column;gap:6px
+}
+.hero-thread-card .htc-icon{
+ width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff
+}
+.hero-thread-card .htc-icon svg{width:21px;height:21px}
+.hero-thread-card b{font-size:16px}
+.hero-thread-card small{font-size:12px;color:#d3c8b4;line-height:1.45}
+
+/* ===== 纵向时间线 ===== */
+.journey{position:relative;margin-top:4px}
+.j-seg{margin-bottom:6px}
+.j-seg-head{
+  display:flex;align-items:baseline;gap:9px;margin:18px 0 4px;padding:7px 13px;
+  border-radius:12px;background:var(--card);border:1px solid var(--line)
+}
+.j-seg-head b{font-size:17px}
+.j-seg-head span{font-size:12px;color:var(--sub)}
+.j-seg[data-seg="shiqian"] .j-seg-head{border-left:5px solid #b0764a}
+.j-seg[data-seg="xianshangzhou"] .j-seg-head{border-left:5px solid #5f6e78}
+.j-seg[data-seg="qin"] .j-seg-head{border-left:5px solid #93402f}
+.j-seg[data-seg="xihan"] .j-seg-head{border-left:5px solid #2f6f8f}
+.j-seg[data-seg="xinchao"] .j-seg-head{border-left:5px solid #b8860b}
+.j-seg[data-seg="donghan"] .j-seg-head{border-left:5px solid #4a7a52}
+.j-nodes{position:relative;margin-left:10px;padding-left:18px}
+.j-nodes::before{
+  content:'';position:absolute;left:6px;top:6px;bottom:18px;width:3px;
+  background:linear-gradient(#d8cdb8,#e3dccb);border-radius:2px
+}
+.j-node{
+  position:relative;width:100%;text-align:left;
+  background:var(--card);border:1px solid var(--line);border-radius:15px;
+  padding:13px 14px 13px 16px;margin:9px 0;box-shadow:var(--shadow);
+  transition:transform .15s
+}
+.j-node:active{transform:scale(.985)}
+.j-dot{
+  position:absolute;left:-20px;top:16px;width:18px;height:18px;border-radius:50%;
+  background:var(--c);border:3px solid var(--paper);box-shadow:0 0 0 1px var(--line)
+}
+.j-node[data-type="event"] .j-dot{border-radius:5px}
+.j-node[data-type="state"] .j-dot{border-radius:50% 50% 4px 4px}
+.j-node[data-type="person"]{--c:var(--person)} .j-node[data-type="event"]{--c:var(--event)} .j-node[data-type="state"]{--c:var(--state)}
+.j-node.approx .j-dot{background:var(--card);border:3px solid var(--c)}
+.j-top{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap}
+.j-year{font-size:13px;font-weight:700;color:var(--sub)}
+.j-type-tag{font-size:11px;color:#fff;background:var(--c);border-radius:8px;padding:2px 8px}
+.j-title{font-size:17px;font-weight:700;color:#332c24}
+.j-meta{font-size:12.5px;color:var(--sub);margin-top:3px}
+.j-node.seen .j-title::after{
+  content:'已看';font-size:10.5px;color:#fff;background:var(--state);
+  border-radius:8px;padding:2px 7px;margin-left:8px;font-weight:600;vertical-align:2px
+}
+.j-node.is-topic{border:2px solid var(--c);background:linear-gradient(180deg,#fff,#fbf6ec)}
+.topic-badge{
+  display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;
+  color:#fff;background:var(--c);border-radius:9px;padding:3px 9px;margin-top:7px
+}
+.topic-badge svg{width:12px;height:12px}
+
+/* ===== 节点上的话题标签 ===== */
+.thread-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.thread-chip{
+ display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;
+ color:#fff;border-radius:20px;padding:3px 10px;min-height:24px
+}
+.thread-chip svg{width:12px;height:12px}
+.thread-chip[data-thread="money"]{background:#b07d2b}
+.thread-chip[data-thread="war"]{background:#a83c2e}
+.thread-chip[data-thread="reform"]{background:#5a6bb0}
+.thread-chip[data-thread="writing"]{background:#3f7a7a}
+
+/* ===== 话题串珠视图 ===== */
+.thread-body{padding:0 2px 30px}
+.thread-ask{
+ border-radius:16px;padding:16px 18px;color:#fff;margin-bottom:18px;
+ box-shadow:var(--shadow)
+}
+.thread-ask .th-name{display:flex;align-items:center;gap:8px;font-size:20px;font-weight:800;margin-bottom:6px}
+.thread-ask .th-name svg{width:24px;height:24px}
+.thread-ask p{margin:0;font-size:15px;line-height:1.55}
+.bead-track{position:relative;margin-left:34px;padding-left:22px}
+.bead-track::before{
+ content:'';position:absolute;left:11px;top:14px;bottom:14px;width:4px;
+ border-radius:4px;background:var(--th-color)
+}
+.bead{position:relative;margin-bottom:14px}
+.bead:last-child{margin-bottom:0}
+.bead-dot{
+ position:absolute;left:-34px;top:6px;width:46px;height:46px;border-radius:50%;
+ overflow:hidden;border:4px solid var(--card);box-shadow:0 0 0 4px var(--th-color);
+ background:var(--line);display:flex;align-items:center;justify-content:center
+}
+.bead-dot img{width:100%;height:100%;object-fit:cover}
+.bead-dot .bead-fallback{width:22px;height:22px;color:var(--th-color)}
+.bead-card{
+ background:var(--card);border:1px solid var(--line);border-radius:14px;
+ padding:12px 14px;box-shadow:var(--shadow)
+}
+.bead-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px}
+.bead-year{font-size:12px;font-weight:700;color:var(--sub)}
+.bead-title{font-size:16.5px;font-weight:800;color:#332c24}
+.bead-change{font-size:14px;color:#4a4238;line-height:1.55;margin-top:4px}
+.bead-change b{color:var(--th-color)}
+.bead-jump{
+ margin-top:9px;display:inline-flex;align-items:center;gap:4px;font-size:13px;font-weight:700;
+ color:var(--th-color);min-height:36px;padding:0 12px;border-radius:10px;
+ border:1px solid var(--th-color);background:transparent
+}
+.bead-jump svg{width:14px;height:14px}
+
+/* 战争分类玩法 */
+.cat-tip{font-size:13.5px;color:#fff;margin:0 0 12px;opacity:.95}
+.cat-board{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:16px}
+.cat-bin{
+ border:2px dashed var(--th-color);border-radius:14px;padding:10px 12px;min-height:58px;
+ background:rgba(168,60,46,.05)
+}
+.cat-bin h4{margin:0 0 4px;font-size:14.5px;color:var(--th-color);display:flex;justify-content:space-between}
+.cat-bin h4 small{font-weight:500;color:var(--sub)}
+.cat-bin .bin-items{display:flex;flex-wrap:wrap;gap:6px}
+.cat-pill{
+ font-size:12.5px;font-weight:700;color:#fff;background:var(--th-color);
+ border-radius:18px;padding:5px 11px;min-height:28px
+}
+.cat-pool{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.cat-pool .cat-pill{background:#8a8074}
+.cat-actions{display:flex;gap:10px;flex-wrap:wrap}
+.cat-actions .btn{min-height:44px;border-radius:12px;padding:0 18px;font-size:14.5px;font-weight:700}
+.cat-actions .btn.primary{background:var(--th-color);color:#fff}
+.cat-actions .btn.ghost{background:var(--card);border:1px solid var(--line);color:var(--ink)}
+.cat-feedback{font-size:14px;font-weight:700;margin-top:12px;line-height:1.5}
+.cat-feedback.ok{color:var(--state)}
+.cat-feedback.no{color:#a83c2e}
+@media(min-width:560px){.cat-board{grid-template-columns:1fr 1fr}}
+
+/* ===== 专题视图头部 ===== */
+.topic-topbar{
+  display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:20;
+  background:rgba(247,243,234,.96);backdrop-filter:blur(8px);
+  padding:10px 0;margin-bottom:10px;border-bottom:1px solid var(--line)
+}
+.back-btn{
+  display:flex;align-items:center;gap:5px;min-height:44px;border-radius:12px;
+  background:var(--card);border:1px solid var(--line);padding:0 14px;font-size:14.5px;font-weight:700
+}
+.topic-crumb{font-size:13.5px;color:var(--sub);font-weight:600}
+.topic-pane{display:none}
+.topic-pane.active{display:block;animation:fade .25s ease}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>中国历史<small>动手玩历史</small></h1>
+  <button class="icon-btn" id="muteBtn" aria-label="声音开关">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#2b2620" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="16" y1="9" x2="22" y2="15"></line><line x1="22" y1="9" x2="16" y2="15"></line></svg>
+  </button>
+</header>
+
+<!-- ===== 主视图：时间轴主线 ===== -->
+<main class="view active" id="homeView">
+  <section class="hero-banner">
+    <h2>中国历史，时间是一条线</h2>
+    <p>历史按时间走：从史前一路到东汉，每个点是一个年代，点进去看知识点。遇到同话题的内容，还能像串珠子一样把不同年代串起来看。</p>
+    <div class="view-switch" role="tablist">
+      <button class="vs-btn active" id="vsTime" type="button">按时间看</button>
+      <button class="vs-btn" id="vsThread" type="button">按话题看</button>
+    </div>
+    <div id="timeEntry">
+      <div class="seg-row">
+        <button class="seg-pill" data-jump="shiqian" type="button">史前<small>约170万—4000年前</small></button>
+        <button class="seg-pill" data-jump="xianshangzhou" type="button">夏商周<small>前2070—前221</small></button>
+        <button class="seg-pill" data-jump="qin" type="button">秦<small>前221—前207</small></button>
+        <button class="seg-pill" data-jump="xihan" type="button">西汉<small>前202—公元9</small></button>
+        <button class="seg-pill" data-jump="xinchao" type="button">新朝<small>9—23</small></button>
+        <button class="seg-pill" data-jump="donghan" type="button">东汉<small>25—220</small></button>
+      </div>
+      <button class="hero-continue" id="heroContinue" type="button">继续上次</button>
+    </div>
+    <div id="threadEntry" class="hero-thread-grid"></div>
+  </section>
+  <div class="journey" id="journey"></div>
+</main>
+
+<!-- ===== 专题视图：一次一个 ===== -->
+<div class="view" id="topicView">
+  <div class="topic-topbar">
+    <button class="back-btn" id="backBtn" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      回到时间轴
+    </button>
+    <span class="topic-crumb" id="topicCrumb"></span>
+  </div>
+
+  <!-- ===== 推恩令专题 ===== -->
+  <div class="topic-pane" id="pane-tuen">
+    <section class="question">
+      <span class="tag">第12课 · 大一统的巩固</span>
+      <h2>一个王国，分完以后，谁说了算？</h2>
+      <p>王位照旧传给长子，其他儿子也各自分到一块地。先猜一猜：继位的长子，还能直接管新分出去的地吗？</p>
+    </section>
+
+    <div class="stage-wrap" id="tuenExp">
+      <div class="btn-row" id="btnRow">
+        <button class="btn primary" id="splitBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><path d="M6 3v6c0 3 3 4 6 4s6-1 6-4V3"/><line x1="12" y1="13" x2="12" y2="21"/></svg>
+          我来分一次
+        </button>
+        <button class="btn ghost" id="resetBtn">重新来</button>
+      </div>
+
+      <div class="stage">
+        <div class="stage-head">
+          <b id="stageLabel">分封前 · 整块地原归王国管辖</b>
+          <span class="before" id="beforeChip">1 个王国</span>
+        </div>
+        <div class="kingdom" id="kingdom"></div>
+      </div>
+
+      <div class="hint-after" id="hintAfter">继位的诸侯王，还能管新分出去的地吗？点一块看看。</div>
+      <div class="belong" id="belong">
+        <div id="belongText"></div>
+      </div>
+
+      <div class="reveal" id="reveal">
+        <button class="reveal-toggle" id="revealToggle">展开看三件事：分完到底变了什么</button>
+        <div class="reveal-body" id="revealBody">
+          <span class="term">这就是推恩令</span>
+          <h3>分完以后，三件事看明白</h3>
+          <ul>
+            <li><b>王位没变</b>：还是长子继承，诸侯王还在</li>
+            <li><b>封地变小（地块大小为示意）</b>：其他儿子也分地，诸侯王能直接管的地少了一大块</li>
+            <li><b>管辖权变了</b>：新封的是侯国，封号由朝廷定，归旁边的汉郡和中央管，诸侯王管不着——这才是变弱的关键</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 管辖线对照：同样四块地，两种归属 -->
+      <div class="rule-compare" id="ruleCompare">
+        <div class="rc-switch">
+          <button class="rc-mode active" data-rc="assume" type="button">画面一 · 假设：只分地，还归王管</button>
+          <button class="rc-mode" data-rc="history" type="button">画面二 · 历史：封侯国，归汉郡</button>
+        </div>
+
+        <div class="rc-pane active" id="rcAssume">
+          <div class="rc-land">
+            <div class="rc-cell king">国王（长子）</div>
+            <div class="rc-cell hou">次子侯国</div>
+            <div class="rc-cell hou">三子侯国</div>
+            <div class="rc-cell hou">幼子侯国</div>
+            <div class="rc-cover all"><span class="rc-tag">王国 · 全归王管</span></div>
+          </div>
+          <div class="rc-note">地分成了四块，可管辖线都指向同一个王。王还是能直接管全部的地，他没真的变弱。</div>
+        </div>
+
+        <div class="rc-pane" id="rcHistory">
+          <div class="rc-land">
+            <div class="rc-cell king">国王（长子）</div>
+            <div class="rc-cell hou">次子侯国</div>
+            <div class="rc-cell hou">三子侯国</div>
+            <div class="rc-cell hou">幼子侯国</div>
+            <div class="rc-cover left"><span class="rc-tag">王国</span></div>
+            <div class="rc-cover right jun"><span class="rc-tag">汉郡</span></div>
+          </div>
+          <div class="rc-note">地块形状一模一样，可三个侯国的管辖线改指汉郡和朝廷。王能直接管的，只剩左边那一块。</div>
+        </div>
+
+        <div class="rc-ask">哪一种情况下，王直接管的地方真的少了？</div>
+        <div class="rc-answers">
+          <button class="rc-answer" data-ok="0" type="button">画面一：还归王管</button>
+          <button class="rc-answer" data-ok="1" type="button">画面二：归汉郡管</button>
+        </div>
+        <div class="rc-feedback" id="rcFeedback"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 丝绸之路专题 ===== -->
+  <div class="topic-pane" id="pane-silk">
+    <section class="exp-card silk" id="silkExp">
+      <span class="tag">第14课 · 中外交流</span>
+      <h2>一匹丝绸，怎么走到欧洲？</h2>
+      <p>你从长安出发，手里有一匹丝绸。这匹丝绸可能经不同商人多次转手，每到一站，就把货交给下一段的人。主干路一站接一站，遇到分岔，往哪走由你选。</p>
+
+      <div class="silk-schematic">站点、路线和货物组合是教学示意，帮你看懂“接力”。真实的丝路是长期形成的路网，物产和文化的传播跨了不同时期，也不是同一个商人从头走到尾。</div>
+      <div class="silk-map" id="silkMap"></div>
+      <div class="silk-now" id="silkNow"></div>
+      <div class="silk-choices" id="silkChoices"></div>
+      <div class="silk-return" id="silkReturn"></div>
+      <div class="silk-compare" id="silkCompare"></div>
+      <div class="silk-gan" id="silkGan"></div>
+
+      <div class="btn-row">
+        <button class="btn ghost" id="silkReset">重新来</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== 造纸术专题 ===== -->
+  <div class="topic-pane" id="pane-paper">
+    <section class="exp-card paper" id="paperExp">
+      <span class="tag">第15课 · 两汉科技文化</span>
+      <h2>蔡伦以前，汉朝人真的没有纸吗？</h2>
+
+      <!-- 待核对的话 -->
+      <div class="paper-claim">
+        <div class="ck">先看一句话，等会儿用证据核对它</div>
+        <div class="claim-box">“蔡伦以前，汉朝人还没有纸。”</div>
+      </div>
+
+      <!-- 两件证据 -->
+      <div class="evidence-grid">
+        <div class="evidence" id="evFmt">
+          <img src="assets/fangmatan.jpg" alt="放马滩纸地图残片">
+          <div class="ev-body">
+            <b>放马滩纸地图残片</b>
+            <small>西汉（约前179—前143），甘肃天水出土，麻纤维纸，上面有墨画的山、河、道路。</small>
+          </div>
+        </div>
+        <div class="evidence" id="evCl">
+          <img src="assets/node15.jpg" alt="蔡伦像">
+          <div class="ev-body">
+            <b>蔡伦改进造纸的记载</b>
+            <small>东汉（约公元105），记载蔡伦用树皮、麻头、破布、旧渔网造纸。画像是后世绘制。</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="ev-ask">哪一件证据，能推翻上面那句话？</div>
+      <div class="ev-answers">
+        <button class="ev-answer" data-ok="1" type="button">放马滩纸</button>
+        <button class="ev-answer" data-ok="0" type="button">蔡伦的记载</button>
+      </div>
+      <div class="ev-feedback" id="evFeedback"></div>
+
+      <!-- 追问：蔡伦到底做了什么 -->
+      <div class="cailun-deep" id="cailunDeep">
+        <h4>既然西汉已有纸，东汉蔡伦做了什么？</h4>
+
+        <div class="q3">
+          <span class="qk">1</span>
+          <span class="qt"><b>什么时候有纸？</b>放马滩纸证明西汉早期就有纸，比蔡伦早了两百多年。所以蔡伦是改进，不是发明。</span>
+        </div>
+        <div class="q3">
+          <span class="qk">2</span>
+          <span class="qt"><b>古纸能不能用来写字？</b>早期的纸比较粗糙，可也有能写字的。悬泉置出土的西汉麻纸上就有墨书，比蔡伦早约一百年。</span>
+        </div>
+        <img src="assets/xuanquanzhi.jpg" alt="悬泉置带墨书麻纸">
+        <div class="cap">悬泉置麻纸文书（汉代，敦煌悬泉置出土，甘肃简牍博物馆藏），残纸上有墨书字迹。</div>
+        <div class="q3">
+          <span class="qk">3</span>
+          <span class="qt"><b>纸什么时候广泛用起来？</b>蔡伦用树皮、麻头、破布、旧渔网这些到处能找到的便宜原料，改进工艺，纸变得更好、更便宜，后来才慢慢推广，取代了简和帛。</span>
+        </div>
+
+        <div class="verdict">记住这是三个不同的问题：什么时候有纸、能不能写字、什么时候广泛使用。年代、书写、推广，别混成一句“西汉的纸粗糙不能用”。</div>
+      </div>
+
+      <!-- 热身：三材料携带 -->
+      <details class="warmup" id="paperWarmup">
+        <summary>热身小实验：出远门，你带竹简、帛还是纸？</summary>
+        <div class="w-body">
+          <div class="paper-demos" id="paperDemos">
+            <div class="demo">
+              <div class="demo-art jian"><span></span><span></span><span></span><span></span><span></span></div>
+              <b>竹简</b><small>竹片穿起来</small>
+            </div>
+            <div class="demo">
+              <div class="demo-art bo"><span>丝帛</span></div>
+              <b>帛</b><small>丝织品</small>
+            </div>
+            <div class="demo">
+              <div class="demo-art zhi"><span>纸</span></div>
+              <b>纸</b><small>植物纤维做的</small>
+            </div>
+          </div>
+          <div class="paper-ask" id="paperAsk">出远门，你带哪一种？点一个</div>
+          <div class="paper-choices" id="paperChoices">
+            <button class="pchoice" data-pick="jian" type="button">带竹简</button>
+            <button class="pchoice" data-pick="bo" type="button">带帛</button>
+            <button class="pchoice" data-pick="zhi" type="button">带纸</button>
+          </div>
+          <div class="paper-result" id="paperResult"></div>
+          <div class="paper-summary" id="paperSummary"></div>
+        </div>
+      </details>
+
+      <div class="btn-row" style="margin-top:14px">
+        <button class="btn ghost" id="paperReset" type="button">重新来</button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- ===== 话题串珠视图 ===== -->
+<div class="view" id="threadView">
+  <div class="topic-topbar">
+    <button class="back-btn" id="threadBack" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y12="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      回到时间轴
+    </button>
+    <span class="topic-crumb" id="threadCrumb"></span>
+  </div>
+  <div class="thread-body" id="threadBody"></div>
+</div>
+
+<div class="backdrop" id="backdrop"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-grip"></div>
+  <button class="close" id="sheetClose" aria-label="关闭">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#2b2620" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+  </button>
+  <span class="s-tag" id="sTag"></span>
+  <h3 id="sTitle"></h3>
+  <div class="s-year" id="sYear"></div>
+  <div class="story" id="sStory"></div>
+  <figure class="s-figure" id="sFigure">
+    <img id="sImg" alt="">
+    <div class="s-img-placeholder" id="sImgPlaceholder">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="1.6"/><path d="M21 15l-5-5L5 21"/></svg>
+      <div class="ph-title" id="phTitle">这一站的文物图还在找</div>
+      <div class="ph-sub">先看下面的故事和要点，图以后补进来</div>
+    </div>
+    <div class="s-img-fail" id="sImgFail">图片没加载出来<span class="retry">点这里重新加载</span></div>
+    <button class="img-zoom" id="imgZoom" type="button">查看大图</button>
+    <figcaption class="s-cap">
+      <div class="cap-name" id="capName"></div>
+      <div class="cap-row k-era"><span class="cap-k">年代</span><span id="capEra"></span></div>
+      <div class="cap-row k-source"><span class="cap-k">出处</span><span id="capSource"></span></div>
+      <div class="cap-row k-kind"><span class="cap-k">类型</span><span id="capKind"></span></div>
+    </figcaption>
+  </figure>
+  <p class="s-real-note">古代没有照片，也没有真人写真。下面这些是真实的出土文物、古画或遗址，不是想象出来的。</p>
+  <ul id="sPoints"></ul>
+  <div class="s-nav">
+    <button class="btn ghost" id="prevNode">上一个</button>
+    <button class="btn primary" id="nextNode">下一个</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== 数据：核心锚点，按年代排序 ===== */
+const TYPE_META={
+  person:{label:'人物',color:'var(--person)'},
+  event:{label:'事件',color:'var(--event)'},
+  state:{label:'国家',color:'var(--state)'}
+};
+const ICONS={
+  person:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>',
+  event:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 6.9H22l-6 4.4 2.3 7L12 16l-6.3 4.3 2.3-7-6-4.4h7.6z"/></svg>',
+  state:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h12l-2.5 3L17 10H5"/></svg>'
+};
+const NODES=[
+ /* ===== 第一单元 史前 ===== */
+ {id:1,year:-1700000,yearLabel:'约170万年前',approx:true,type:'state',title:'元谋人',
+  story:'这是我国目前已知最早的古人类之一，已经知道用火。',
+  points:['在云南元谋发现，距今约170万年','会制造和使用打制石器，知道用火','光会用火这一条，就把人和动物分开了']},
+ {id:2,year:-700000,yearLabel:'约70万—20万年前',approx:true,type:'state',title:'北京人',
+  story:'他们成群住在一起，会打石头做工具，还会把火保存下来。',
+  points:['在北京周口店龙骨山发现，距今约70万到20万年','用打制石器，属于旧石器时代','会使用火，还会长时间保存火种，用火烤食物、取暖、赶野兽','过群居生活，一起干活、一起对付猛兽']},
+ {id:3,year:-30000,yearLabel:'约3万年前',approx:true,type:'state',title:'山顶洞人',
+  story:'他们的模样已经和现代人差不多，会磨东西、钻孔，还会自己取火。',
+  points:['也在周口店龙骨山顶部的洞穴里，距今约3万年','模样和现代人基本一样','掌握磨光和钻孔技术，懂得人工取火，会用骨针缝衣服']},
+ {id:4,year:-10000,yearLabel:'约1万年前',approx:true,type:'event',title:'原始农业出现',
+  story:'人们不再光靠打猎采果子，开始自己种庄稼、养牲口，慢慢定居下来。',
+  points:['距今约1万年，我国出现最早的人工栽培农作物','有了农业，人们开始建房子长期住下，这叫定居','新石器时代开始，工具从打制变成磨制']},
+ {id:5,year:-7000,yearLabel:'约7000年前',approx:true,type:'state',title:'河姆渡人',
+  story:'住在长江边，种水稻，房子架在半空，不怕潮。',
+  points:['在浙江余姚，长江流域，距今约7000年','种水稻，住干栏式建筑，通风防潮','用磨制石器，做黑陶，会挖水井，养猪养狗']},
+ {id:6,year:-6000,yearLabel:'约6000年前',approx:true,type:'state',title:'半坡居民',
+  story:'住在黄河边，种粟，房子一半在地下，暖和。',
+  points:['在陕西西安半坡，黄河流域，距今约6000年','种粟，住半地穴式圆形房屋，保暖避风','做彩陶，上面有人面、鱼的花纹，用磨制石器']},
+ {id:7,year:-5300,yearLabel:'约5300—4300年前',approx:true,type:'state',title:'良渚古城',
+  story:'城里有宫殿、有水利，玉器做得极精，已经像个早期国家。',
+  points:['在浙江杭州良渚，距今约5300到4300年','有古城、大型水利工程，玉琮、玉璧上刻着神徽','贫富已经分开，出现了贵族和平民，是早期国家的样子']},
+ {id:8,year:-5000,yearLabel:'约五六千年前',approx:true,type:'event',title:'炎黄传说',
+  story:'炎帝、黄帝两个部落联合，打败蚩尤，后人把他们当中华民族的祖先。',
+  points:['传说炎帝、黄帝部落联合，在涿鹿之战打败蚩尤','两个部落以后融合，形成华夏族，后人称自己是炎黄子孙','黄帝的手下传说发明了文字、舟车、养蚕，这是传说，不是确凿史实']},
+ {id:9,year:-4200,yearLabel:'传说时代',approx:true,type:'event',title:'尧舜禹禅让',
+  story:'位子不传给儿子，而是选贤能的人来接，大禹治水靠的是疏导。',
+  points:['尧老了，把位子让给贤能的舜，舜又让给治水有功的禹，这叫禅让','禹治水一改堵的办法，开山疏导，把洪水引到海里','禹因为威望高，后来成了部落联盟的首领']},
+
+ /* ===== 第二单元 夏商周 ===== */
+ {id:10,year:-2070,yearLabel:'约公元前2070年',approx:true,type:'event',title:'夏朝建立',
+  story:'禹建立夏朝，他儿子启接班，从此位子在自家传，天下成了一家的。',
+  points:['约公元前2070年，禹建立夏，这是我国历史上第一个王朝','禹死后启继位，世袭制代替禅让制，“公天下”变成“家天下”','二里头遗址很可能是夏代的都城，有宫殿、青铜器']},
+ {id:11,year:-1600,yearLabel:'约公元前1600年',approx:true,type:'event',title:'商汤灭夏',
+  story:'夏的最后一个王桀很残暴，商的首领汤起兵，把夏灭了。',
+  points:['夏朝最后一个王桀，暴虐，百姓恨他','商部落首领汤起兵，约公元前1600年灭夏，建立商朝','汤任用贤才伊尹，商很快强大']},
+ {id:12,year:-1300,yearLabel:'约公元前1300年',approx:true,type:'event',title:'盘庚迁殷',
+  story:'商王盘庚把都城迁到殷，从此稳定下来，所以商又叫殷商。',
+  points:['商朝前期都城搬来搬去，战乱不断','商王盘庚迁都到殷，今河南安阳，以后再没大迁','迁都后商朝稳定，殷成为繁华的都城']},
+ {id:13,year:-1250,yearLabel:'商代',approx:true,type:'event',title:'甲骨文',
+  story:'商人把占卜的事刻在龟甲、兽骨上，这是我国最早的成熟文字。',
+  points:['刻在龟甲和牛、羊等兽骨上的文字，叫甲骨文','内容多是占卜、祭祀、战争、收成，记得很具体','甲骨文是我国已发现的最早、体系较完整的成熟文字，汉字从它发展而来']},
+ {id:14,year:-1200,yearLabel:'商周时期',approx:true,type:'event',title:'青铜器与金文',
+  story:'当时的礼器、兵器多用青铜铸造，器物上还铸着字。',
+  points:['青铜是铜加锡、铅的合金，颜色金黄，古人称“金”','司母戊鼎是目前所见最重的青铜器，四羊方尊造型精巧','青铜器上铸刻的文字叫金文，又叫钟鼎文，西周毛公鼎铭文最多']},
+ {id:15,year:-1046,yearLabel:'公元前1046年',approx:false,type:'event',title:'牧野之战',
+  story:'周武王带兵和商军在牧野决战，商军倒戈，商就亡了。',
+  points:['商纣王荒淫残暴，周武王联合各部落在牧野决战','商军阵前倒戈，周军大胜，商朝灭亡','公元前1046年，周武王建立周朝，定都镐京，史称西周']},
+ {id:16,year:-1040,yearLabel:'西周初年',approx:true,type:'event',title:'分封制',
+  story:'周王把土地和百姓分给亲属、功臣，让他们到各地当诸侯。',
+  points:['周王根据血缘远近和功劳大小，把宗亲和功臣分封到各地，建立诸侯国','诸侯要替周王守土、打仗、进贡、朝见','西周还通过血缘和礼乐制度，把贵族的等级固定下来']},
+ {id:17,year:-841,yearLabel:'公元前841年',approx:false,type:'event',title:'国人暴动',
+  story:'周厉王压制百姓，不让人说话，城里人忍无可忍，起来把他赶走。',
+  points:['周厉王贪财，把山川湖泽收归自己，还派人监视百姓，谁敢议论就杀','“道路以目”，熟人路上只敢用眼神打招呼','公元前841年，国人暴动，厉王被赶走，这是中国历史有确切纪年的开始']},
+ {id:18,year:-770,yearLabel:'公元前770年',approx:false,type:'event',title:'平王东迁',
+  story:'犬戎攻破镐京，新的周王把都城东迁到洛邑，西周结束、春秋开始。',
+  points:['公元前771年，犬戎攻破镐京，西周灭亡','公元前770年，周平王把都城东迁洛邑，今洛阳，史称东周','东周分两段：前段叫春秋，后段叫战国']},
+ {id:19,year:-650,yearLabel:'春秋时期',approx:true,type:'event',title:'春秋争霸',
+  story:'周王衰微，强大的诸侯争当霸主，打出“尊王攘夷”的旗号。',
+  points:['王室衰微，诸侯不再听令，大的诸侯打着“尊王攘夷”旗号争当霸主','齐桓公任用管仲改革，第一个称霸，后来还有晋文公、楚庄王等','争霸战争多，可也让各民族往来更多，慢慢走向融合']},
+ {id:20,year:-500,yearLabel:'春秋后期',approx:true,type:'event',title:'铁器牛耕',
+  story:'铁做的农具和牛拉犁出现，种地快了，能开垦的地也多了。',
+  points:['春秋后期，铁制农具出现，牛耕开始使用','到战国，铁农具和牛耕推广，生产力大大提高','私田越开越多，旧的井田制度守不住，社会开始大变革']},
+ {id:21,year:-475,yearLabel:'公元前475年',approx:false,type:'event',title:'战国七雄',
+  story:'三家分晋、田氏代齐，形成七个大国并立的局面。',
+  points:['晋国分成韩、赵、魏三家，齐国大夫田氏取代国君，形成齐、楚、秦、燕、赵、魏、韩七雄','各国都想富国强兵，在兼并战争中取胜，变法成了风气']},
+ {id:22,year:-340,yearLabel:'战国时期',approx:true,type:'event',title:'战国著名战役',
+  story:'兼并战争越打越大，留下好几个有名的计策和成语。',
+  points:['桂陵之战：齐军围魏救赵，解了赵国之围','马陵之战：孙膑用减灶计诱敌，大败魏军','长平之战：赵括纸上谈兵，秦将白起全歼赵军主力，是战国最大的歼灭战，此后六国再难抗秦']},
+ {id:23,year:-356,yearLabel:'公元前356年',approx:false,type:'event',title:'商鞅变法',
+  story:'商鞅在秦国变法，奖耕战、立县制，让秦国一跃成为最强的国家。',
+  points:['公元前356年，秦孝公任用商鞅变法','政治上确立县制，由国君派官治理，废除贵族世袭特权','经济上废井田、允许土地买卖，奖励耕织，生产多的可免徭役','军事上奖励军功，按杀敌多少授爵位，军队战斗力大增','变法以后秦国国力、军力跃居七雄之首，为后来统一六国打下底子']},
+ {id:24,year:-256,yearLabel:'公元前256年',approx:false,type:'event',title:'都江堰',
+  story:'李冰父子在岷江修了一座水利，既能防洪又能灌溉，成都平原成了天府之国。',
+  points:['战国后期，秦国蜀郡太守李冰父子在岷江主持修建','由鱼嘴、飞沙堰、宝瓶口等组成，分水、排沙、控水，至今还在用','灌溉了大片农田，成都平原变成“水旱从人”的天府之国']},
+ {id:25,year:-300,yearLabel:'战国时期',approx:true,type:'event',title:'百家争鸣',
+  story:'同一个社会问题，各学派各有各的答法，思想空前活跃。',
+  points:['儒家：孔子讲“仁”、以德治国，孟子讲“仁政”、民贵君轻','道家：老子讲事物会向相反方向转化、无为而治，庄子讲顺应自然','墨家：墨子讲“兼爱”“非攻”，反对不义战争','法家：韩非讲以法治国、建立中央集权，最合当时君主的胃口','各家著书讲学、互相辩论，形成百家争鸣的局面']},
+ {id:26,year:-221,yearLabel:'公元前230—前221年',approx:false,type:'event',title:'秦灭六国',
+  story:'秦国按顺序攻灭六国，结束了几百年的分裂。',
+  points:['从公元前230年起，秦国先后攻灭韩、赵、魏、楚、燕、齐','公元前221年，六国全灭，秦国完成统一，结束了长期混战']},
+ /* ===== 第三单元 秦汉 ===== */
+ {id:27,year:-221,yearLabel:'公元前221年',approx:false,type:'event',title:'秦统一中国',
+  story:'秦王嬴政称“始皇帝”，把全国的大权都攥在中央手里。',
+  points:['嬴政建立秦朝，定都咸阳，自称“始皇帝”，总揽军政大权','中央设丞相、太尉、御史大夫，分别管行政、军事、监察','地方废除分封，全面推行郡县制，长官由皇帝直接任免，不能世袭','这套中央集权的制度，以后各朝基本沿用']},
+ {id:28,year:-220,yearLabel:'秦统一后',approx:true,type:'event',title:'统一措施',
+  story:'文字、货币、度量衡全统一，车也走同宽的道，各地再不能各搞各的。',
+  points:['统一文字：以小篆为通用字体，后来又流行更简便的隶书','统一货币：废除六国旧钱，用圆形方孔的半两钱','统一度量衡，车轨同宽，修驰道、灵渠，北筑长城抵御匈奴','统一让各地交流方便，也巩固了大一统的局面']},
+ {id:29,year:-209,yearLabel:'公元前209年',approx:false,type:'event',title:'大泽乡起义',
+  story:'戍边误了期限，陈胜、吴广干脆揭竿而起，这是中国历史上第一次农民大起义。',
+  points:['秦朝徭役、赋税沉重，法律严酷，百姓苦不堪言','陈胜、吴广带队戍边，遇雨误期，按律当斩，便在大泽乡起义','“王侯将相宁有种乎”，起义虽败，却点燃了反秦的大火']},
+ {id:30,year:-207,yearLabel:'公元前207年',approx:false,type:'event',title:'巨鹿之战',
+  story:'项羽破釜沉舟，以少胜多，秦军主力就此被打垮。',
+  points:['项羽率楚军渡过漳水，砸破锅、凿沉船，只带三天干粮，以示必死','楚军以一当十，在巨鹿大败秦军主力，这一年秦朝灭亡']},
+ {id:31,year:-204,yearLabel:'公元前206—前202年',approx:true,type:'event',title:'楚汉之争',
+  story:'项羽、刘邦争天下，刘邦会用人，最终把项羽逼到乌江自刎。',
+  points:['秦亡后，项羽自立为西楚霸王，封刘邦为汉王，双方争夺天下，史称楚汉之争','刘邦任用张良、萧何、韩信，约法三章收民心；项羽刚愎自用','公元前202年，项羽兵败垓下、乌江自刎，刘邦胜出']},
+ {id:32,year:-209,yearLabel:'公元前209年',approx:false,type:'state',title:'匈奴',
+  story:'汉初打不过匈奴，只能把宗室女子嫁给单于，每年还送布匹粮食，这叫“和亲”。',
+  points:['匈奴是蒙古草原上的游牧民族，首领冒顿单于统一了草原','匈奴不断南下袭扰，西汉初年国力弱，被迫实行和亲','经过文景之治，西汉强盛起来，汉武帝开始大举反击']},
+ {id:33,year:-202,yearLabel:'公元前202年',approx:false,type:'event',title:'西汉建立',
+  story:'汉高祖刘邦出身亭长，靠会用人——张良、萧何、韩信，打下了天下。',
+  points:['刘邦打败项羽，公元前202年建立汉朝，定都长安，史称西汉','刘邦就是汉高祖','汉初社会残破，连皇帝的马车都配不齐四匹同色的马，有的将相只能坐牛车']},
+ {id:34,year:-170,yearLabel:'约前180—前141',approx:true,type:'event',title:'文景之治',
+  story:'汉文帝拒绝别人献的千里马，自己的陵墓只用瓦器，不用金银铜。',
+  points:['汉文帝、汉景帝以农为本，把田赋降到三十税一','提倡勤俭、以德化民，废除断残肢体的肉刑','政治清明、钱粮充盈，史称“文景之治”，为汉武帝鼎盛打下基础']},
+ {id:35,year:-141,yearLabel:'公元前141年',approx:false,type:'person',title:'汉武帝',
+  story:'汉武帝在位50多年，是汉朝最有作为的皇帝。',
+  points:['汉武帝具有雄才大略，从政治、思想、经济、军事四方面巩固大一统','他在位期间，西汉进入鼎盛时期']},
+ {id:36,year:-138,yearLabel:'公元前138年',approx:false,type:'event',title:'张骞第一次出使',
+  story:'张骞被匈奴扣了10多年，手里始终攥着汉朝的符节，前后13年才回来。',
+  points:['汉武帝想联络大月氏夹击匈奴，张骞应募出使','途中被匈奴扣留10余年，他“持汉节不失”，寻机逃脱继续西行','此行让汉朝了解了西域，被称为“凿空”','小观察：这幅壁画是初唐人画的，它能告诉我们唐人怎样讲张骞的故事，却不能证明张骞当时真的穿成这样']},
+ {id:37,year:-127,yearLabel:'公元前127年',approx:false,type:'event',title:'推恩令',
+  story:'推恩令高明在让诸侯没法反对——皇帝是在“施恩”给他们的儿子。',
+  points:['汉武帝采纳主父偃的建议，让诸侯王把封地再分给其他儿子作侯国','新封的侯国由皇帝定封号，归汉郡和中央管','随着封地逐步分出，诸侯王能直接管辖的地方减少，势力逐渐削弱']},
+ {id:38,year:-119,yearLabel:'公元前119年',approx:false,type:'event',title:'漠北战役',
+  story:'这一年卫青穿越大漠包围单于，霍去病挥师北进，是反击匈奴的高潮。',
+  points:['卫青、霍去病率精骑深入漠北，卫青包围单于，单于逃走','匈奴遭到沉重打击，再无力与西汉对抗，部分匈奴人开始西迁']},
+ {id:39,year:-115,yearLabel:'前118—前113年',approx:true,type:'event',title:'五铢钱',
+  story:'从此私人不能铸钱，国家把经济命脉攥在了自己手里。',
+  points:['公元前118年，郡国开始铸造五铢钱','公元前113年，汉武帝把铸币权收归中央，由上林三官统一铸造','同时实行盐铁官营专卖，国家财政大为改善']},
+ {id:40,year:-106,yearLabel:'公元前106年',approx:false,type:'event',title:'刺史制度',
+  story:'刺史官不大，却能代表皇帝监督地方上的大官。',
+  points:['全国划分为13个州部，每州部派刺史一人','刺史代表朝廷监视地方官吏、豪强及其子弟，严禁为非作歹']},
+ {id:41,year:-60,yearLabel:'公元前60年',approx:false,type:'event',title:'西域都护',
+  story:'从这一年起，今新疆一带正式纳入中央管辖。',
+  points:['西汉设置西域都护，管理西域36国，府治在乌垒城','西域都护颁行号令、调遣军队、征发粮草','标志着西域正式归属中央政权']},
+ {id:42,year:9,yearLabel:'公元9年',approx:false,type:'event',title:'王莽篡汉',
+  story:'王莽是太后的亲戚，靠“禅让”当上了皇帝。',
+  points:['外戚王莽夺取政权，建立新朝，西汉灭亡','王莽改制加剧社会动荡，激起各地农民起义']},
+ {id:43,year:23,yearLabel:'公元23年',approx:false,type:'event',title:'新朝灭亡',
+  story:'昆阳之战刘秀以少胜多，新朝很快就垮了。',
+  points:['绿林军攻入长安，王莽被杀，新朝灭亡']},
+ {id:44,year:25,yearLabel:'公元25年',approx:false,type:'event',title:'刘秀建立东汉',
+  story:'刘秀是西汉宗室，他统治时期社会安定，后来这一局面被称为光武中兴。',
+  points:['刘秀称帝，定都洛阳，史称东汉，他就是光武帝','多次释放奴婢、合并郡县、裁减官员、惩处贪官','允许北方少数民族内迁，缓和民族矛盾，社会安定，史称“光武中兴”']},
+ {id:45,year:73,yearLabel:'公元73年',approx:false,type:'event',title:'班超经营西域',
+  story:'班超“投笔从戎”，在西域经营30多年，儿子班勇后来继承父业。',
+  points:['班超出使西域，使西域各国重新与汉朝建立联系','他派甘英出使大秦（罗马），甘英只到安息，却开辟了通往西亚的路线']},
+ {id:46,year:105,yearLabel:'公元105年',approx:true,type:'event',title:'蔡伦改进造纸',
+  story:'蔡伦是改进不是发明，造纸术后来传遍了全世界。',
+  points:['西汉时已经有麻纸，但质地粗糙、不好用','东汉蔡伦用树皮、麻头、破布、旧渔网改进工艺，纸便宜好用，人称“蔡侯纸”','纸逐渐取代简帛，造纸术是中国对世界文明的伟大贡献之一']},
+ {id:47,year:123,yearLabel:'公元123年',approx:false,type:'event',title:'西域长史府',
+  story:'这是2024版教材里新增的内容。',
+  points:['东汉把西域都护府改为西域长史府，继续行使管理西域的职权']},
+ {id:48,year:160,yearLabel:'东汉末年',approx:true,type:'person',title:'医圣张仲景',
+  story:'他每月初一、十五打开衙门坐堂看病，“坐堂医生”就是这么来的。',
+  points:['写成《伤寒杂病论》，提出辨证分析、对症治疗','发展了“治未病”的预防思想，被后世尊称为“医圣”']},
+ {id:49,year:170,yearLabel:'东汉末年',approx:true,type:'person',title:'名医华佗',
+  story:'华佗模仿虎、鹿、熊、猿、鸟五种动物，编了一套“五禽戏”。',
+  points:['发明“麻沸散”，让病人失去知觉后再做外科手术','创编“五禽戏”，帮助人们强身健体']},
+ {id:50,year:184,yearLabel:'公元184年',approx:false,type:'event',title:'黄巾起义',
+  story:'张角创立太平道，传教10多年，起义军头上都裹着黄巾。',
+  points:['张角领导的有组织、有准备的农民大起义爆发','主力9个月被镇压，余部坚持20多年','起义后州牧割据，加速了东汉王朝的瓦解']},
+ {id:51,year:220,yearLabel:'公元220年',approx:false,type:'event',title:'东汉灭亡',
+  story:'黄巾起义后，东汉还撑了36年，到这一年才真正结束。',
+  points:['曹丕逼汉献帝禅让，建立曹魏，东汉灭亡','历史从此进入三国时期']}
+];
+
+
+/* ===== 真实图与四要素（id 索引）===== */
+const IMG_META={
+ 1:{img:'assets/pre01.jpg',name:'元谋人上门齿化石',era:'约170万年前',source:'云南元谋出土，中国国家博物馆藏',kind:'出土化石·古人类'},
+ 2:{img:'assets/pre02.jpg',name:'北京人复原头骨',era:'约70万—20万年前',source:'北京周口店出土，头骨复原模型',kind:'出土化石·古人类'},
+ 3:{img:'assets/pre03.jpg',name:'山顶洞人骨针',era:'约3万年前',source:'北京周口店山顶洞出土，中国国家博物馆藏',kind:'出土文物·骨器'},
+ 4:{img:'assets/pre04.jpg',name:'炭化粟与炭化稻谷',era:'新石器时代',source:'早期农耕遗址出土，农作物遗存',kind:'出土文物·农作物'},
+ 5:{img:'assets/pre05.jpg',name:'河姆渡干栏式建筑（复原）',era:'约7000年前',source:'浙江余姚河姆渡遗址',kind:'遗址·建筑复原'},
+ 6:{img:'assets/pre06.jpg',name:'人面鱼纹彩陶盆',era:'约6000年前',source:'陕西西安半坡出土，中国国家博物馆藏',kind:'出土文物·彩陶'},
+ 7:{img:'assets/pre07.jpg',name:'神人兽面纹玉琮',era:'约5300年前',source:'浙江余杭良渚遗址出土',kind:'出土文物·玉器'},
+ 8:{img:'assets/pre08.jpg',name:'轩辕黄帝像',era:'后世绘制',source:'明仇英绘，古代人物画像，非当时写真',kind:'人物像·古画（后世）'},
+ 9:{img:'assets/pre09.jpg',name:'夏禹王像',era:'宋代（后世绘制）',source:'宋马麟绘，台北故宫博物院藏，非当时写真',kind:'人物像·古画（后世）'},
+ 10:{img:'assets/pre10.jpg',name:'二里头绿松石龙形器',era:'约3800年前',source:'河南偃师二里头遗址出土',kind:'出土文物·松石器'},
+ 11:{img:'assets/pre11.jpg',name:'商汤王像',era:'清代（后世绘制）',source:'清姚文翰《历代帝王像》，非当时写真',kind:'人物像·古画（后世）'},
+ 12:{img:'assets/pre12.jpg',name:'殷墟宫殿宗庙遗址',era:'商代都城，现代拍摄',source:'河南安阳殷墟，航拍实景',kind:'遗址·实景'},
+ 13:{img:'assets/pre13.jpg',name:'殷墟刻辞卜甲',era:'商代',source:'河南安阳殷墟出土，刻有甲骨文',kind:'出土文物·甲骨'},
+ 14:{img:'assets/pre14.jpg',name:'后母戊鼎',era:'商代',source:'河南安阳殷墟出土，中国国家博物馆藏',kind:'出土文物·青铜器'},
+ 15:{img:'assets/pre15.jpg',name:'利簋（武王征商簋）',era:'西周早期',source:'陕西临潼出土，中国国家博物馆藏',kind:'出土文物·青铜器'},
+ 16:{img:'assets/pre16.jpg',name:'宜侯夨簋',era:'西周早期',source:'江苏丹徒烟墩山出土，中国国家博物馆藏',kind:'出土文物·青铜器'},
+ 17:{img:'assets/pre17.jpg',name:'国人暴动（情景画）',era:'后世绘制',source:'描绘公元前841年镐京国人抗争，非当时写真',kind:'情景画（后世）'},
+ 18:{img:'assets/pre18.jpg',name:'周平王东迁（情景画）',era:'后世绘制',source:'描绘公元前770年迁都洛邑，非当时写真',kind:'情景画（后世）'},
+ 19:{img:'assets/pre19.jpg',name:'古代战车（青铜雕塑）',era:'后世雕塑',source:'表现春秋时期四马战车，非当时实物',kind:'雕塑（后世）'},
+ 20:{img:'assets/pre20.jpg',name:'战国铁犁铧',era:'战国',source:'河南辉县出土，中国国家博物馆藏',kind:'出土文物·铁器'},
+ 21:{img:'assets/pre21.jpg',name:'战国七雄形势图（公元前260年）',era:'现代绘制',source:'战国历史地图，现代整理绘制',kind:'历史地图·现代绘制'},
+ 22:{img:'assets/pre22.jpg',name:'长平之战尸骨坑',era:'战国',source:'山西高平长平之战遗址出土',kind:'遗址·尸骨坑'},
+ 23:{img:'assets/pre23.jpg',name:'商鞅方升',era:'战国',source:'上海博物馆藏，商鞅变法标准量器',kind:'出土文物·青铜器'},
+ 24:{img:'assets/pre24.jpg',name:'都江堰全景',era:'战国始建，现代航拍',source:'四川都江堰水利工程，航拍实景',kind:'遗址·实景'},
+ 25:{img:'assets/pre25.jpg',name:'孔子见老子（情景画）',era:'后世绘制',source:'描绘春秋末儒道相会，非当时写真',kind:'情景画（后世）'},
+ 26:{img:'assets/pre26.jpg',name:'秦统一形势图',era:'现代绘制',source:'标有灭六国年份与进军路线，现代整理',kind:'历史地图·现代绘制'},
+ 27:{img:'assets/pre27.jpg',name:'秦始皇陵兵马俑',era:'秦代',source:'陕西西安临潼出土',kind:'出土文物·陶俑'},
+ 28:{img:'assets/pre28.jpg',name:'秦半两钱',era:'秦代',source:'圆形方孔半两钱，出土文物',kind:'出土文物·钱币'},
+ 29:{img:'assets/pre29.jpg',name:'大泽乡起义（油画）',era:'现代油画',source:'戴泽绘，中国国家博物馆藏，非当时写真',kind:'历史画（后世）'},
+ 30:{img:'assets/pre30.jpg',name:'项羽像（西楚霸王）',era:'后世绘制',source:'古代人物绣像，非当时写真',kind:'人物像·古画（后世）'},
+ 31:{img:'assets/pre31.jpg',name:'鸿门宴（情景画）',era:'后世绘制',source:'描绘楚汉相争鸿门宴，非当时写真',kind:'情景画（后世）'},
+ 32:{img:'assets/node01.jpg',name:'鹰顶金冠（匈奴王金冠）',era:'战国',source:'内蒙古杭锦旗阿鲁柴登出土，内蒙古博物院藏',kind:'出土文物·金器'},
+ 33:{img:'assets/node02.jpg',name:'汉高祖刘邦像',era:'后世绘制',source:'古代人物画像，非当时写真',kind:'人物像·古画（后世）'},
+ 34:{img:'assets/node03.jpg',name:'汉文帝刘恒像',era:'后世绘制',source:'古代人物画像，非当时写真',kind:'人物像·古画（后世）'},
+ 35:{img:'assets/node04.jpg',name:'汉武帝刘彻像',era:'后世绘制',source:'古代帝王线描像，非当时写真',kind:'人物像·古画（后世）'},
+ 36:{img:'assets/node05.jpg',name:'张骞出使西域图（壁画局部）',era:'初唐',source:'敦煌莫高窟第323窟佛教史迹壁画',kind:'壁画（后世绘制）'},
+ 37:{img:'assets/node06.jpg',name:'中山靖王刘胜金缕玉衣',era:'西汉',source:'满城汉墓出土，河北博物院藏',kind:'出土文物·玉器'},
+ 38:{img:'assets/node07.jpg',name:'马踏匈奴石雕',era:'西汉',source:'霍去病墓前，茂陵博物馆藏',kind:'出土文物·石刻'},
+ 39:{img:'assets/node08.jpg',name:'五铢钱（郡国五铢）',era:'西汉',source:'中国国家博物馆藏',kind:'出土文物·钱币'},
+ 40:{img:'assets/node09.jpg',name:'汉代“董辅国”铜印章',era:'汉代',source:'红河州博物馆藏',kind:'出土文物·印章'},
+ 41:{img:'assets/node10.jpg',name:'西域城邦分布图',era:'现代绘制（公元前1世纪形势）',source:'塔里木盆地历史地图',kind:'历史地图·现代绘制'},
+ 42:{img:'assets/node11.jpg',name:'王莽像',era:'后世绘制',source:'古代人物画像，非当时写真',kind:'人物像·古画（后世）'},
+ 43:{img:'assets/node12.jpg',name:'新朝货布（十布）',era:'新朝（王莽）',source:'出土文物展陈',kind:'出土文物·钱币'},
+ 44:{img:'assets/node13.jpg',name:'汉光武帝刘秀像',era:'后世绘制',source:'古代人物画像，非当时写真',kind:'人物像·古画（后世）'},
+ 45:{img:'assets/node14.jpg',name:'班超投笔从戎图',era:'近代·马骀《马骀画宝》',source:'传统白描历史画',kind:'古画·白描（后世）'},
+ 46:{img:'assets/node15.jpg',name:'蔡伦像',era:'后世绘制',source:'古代人物画像，非当时写真',kind:'人物像·古画（后世）'},
+ 47:{img:'assets/node16.jpg',name:'楼兰故城佛塔遗址',era:'汉代遗址，现代拍摄',source:'新疆若羌楼兰故城',kind:'遗址·实景'},
+ 48:{img:'assets/node17.jpg',name:'医圣张仲景木刻像',era:'清代木刻',source:'Wellcome 图书馆藏',kind:'古版画（后世）'},
+ 49:{img:'assets/node18.jpg',name:'五禽戏图',era:'古画（后世）',source:'虎、鹿、熊、猿、鸟五式',kind:'古画·养生图'},
+ 50:{img:'assets/node19.jpg',name:'张角像',era:'古版画（后世）',source:'《三国志演义》全图',kind:'古画·人物像'},
+ 51:{img:'assets/node20.jpg',name:'魏文帝曹丕像',era:'唐代',source:'阎立本《历代帝王图》',kind:'古画真迹·人物像'}
+};
+
+/* ===== 进度与设置 ===== */
+const store={
+  get seen(){try{return JSON.parse(localStorage.getItem('zg_progress')||'[]')}catch(e){return[]}},
+  set seen(v){localStorage.setItem('zg_progress',JSON.stringify(v))},
+  get muted(){return localStorage.getItem('zg_muted')==='1'},
+  set muted(v){localStorage.setItem('zg_muted',v?'1':'0')},
+  get last(){var v=localStorage.getItem('zg_last');return v===null?null:parseInt(v)},
+  set last(v){localStorage.setItem('zg_last',String(v))}
+};
+let currentIndex=0;
+
+/* ===== 时期段（可扩展：以后加七下就在此追加）===== */
+const PERIODS=[
+  {key:'shiqian',name:'史前',range:'约170万—约4000年前',from:0,to:8},
+  {key:'xianshangzhou',name:'夏商周',range:'约前2070—前221',from:9,to:25},
+  {key:'qin',name:'秦',range:'前221—前207',from:26,to:30},
+  {key:'xihan',name:'西汉',range:'前202—公元9',from:31,to:40},
+  {key:'xinchao',name:'新朝',range:'9—23',from:41,to:42},
+  {key:'donghan',name:'东汉',range:'25—220',from:43,to:50}
+];
+/* 数组索引（0起）→ 专题：张骞=35、推恩令=36、蔡伦=45 */
+const TOPIC_MAP={35:'silk',36:'tuen',45:'paper'};
+const TOPIC_PANE={silk:'pane-silk',tuen:'pane-tuen',paper:'pane-paper'};
+const TOPIC_NAME={silk:'丝绸之路',tuen:'推恩令',paper:'造纸术'};
+const NODE_META={
+ 31:'西汉建立前的背景',
+ 47:'东汉末年，与华佗同一时期',
+ 48:'东汉末年，与张仲景同一时期'
+};
+
+/* ===== 话题线（跨年代串珠，可跨册追加）===== */
+const THREADS=[
+ {id:'money',name:'钱',color:'#b07d2b',icon:'coin',
+  ask:'钱怎么一步步变统一？圆形方孔为什么能一直用到清朝？',
+  beads:[
+   {node:21,change:'战国七雄各用各的钱：刀币、布币、蚁鼻钱、环钱，做买卖换算都麻烦。'},
+   {node:28,change:'秦废掉六国旧钱，全国只留一种圆形方孔的半两钱，买卖用一样的钱。'},
+   {node:39,change:'汉武帝把铸钱的权力从郡国收归中央，私人不许铸，五铢钱分量足、信得过。'}
+  ]},
+ {id:'war',name:'战争',color:'#a83c2e',icon:'sword',
+  ask:'这些仗为什么打？你能按“为什么动手”给它们分分类吗？',
+  classify:true,
+  cats:[
+   {id:'unify',name:'兼并统一',hint:'为了把别的国家吞掉、把天下合成一个'},
+   {id:'fight',name:'争霸',hint:'都想当老大，谁也不服谁'},
+   {id:'rebel',name:'农民起义',hint:'百姓活不下去，被逼反了'},
+   {id:'nation',name:'民族冲突',hint:'不同部族、政权之间的较量'}
+  ],
+  beads:[
+   {node:8,cat:'nation',change:'炎黄部落和蚩尤在涿鹿打，是传说里部落之间的较量。'},
+   {node:15,cat:'unify',change:'周武王牧野伐商，商军倒戈，商亡周立。'},
+   {node:19,cat:'fight',change:'春秋诸侯打着“尊王攘夷”旗号，争当霸主。'},
+   {node:22,cat:'unify',change:'战国桂陵、马陵、长平，大国兼并，越打越大。'},
+   {node:26,cat:'unify',change:'秦灭六国，几百年分裂合成一个国家。'},
+   {node:29,cat:'rebel',change:'大泽乡揭竿而起，第一次农民大起义。'},
+   {node:30,cat:'rebel',change:'巨鹿之战项羽破釜沉舟，打垮秦军主力。'},
+   {node:31,cat:'fight',change:'楚汉之争，刘邦项羽争天下。'},
+   {node:38,cat:'nation',change:'漠北战役，西汉大举反击匈奴。'},
+   {node:50,cat:'rebel',change:'黄巾起义，头裹黄巾的农民大起义。'}
+  ]},
+ {id:'reform',name:'改革',color:'#5a6bb0',icon:'scroll',
+  ask:'中央怎么一步步把权力收上来？',
+  beads:[
+   {node:9,change:'尧舜禹靠禅让，位子选贤能的人接，不专属一家。'},
+   {node:10,change:'夏朝启继位，世袭代替禅让，位子在自家传。'},
+   {node:16,change:'西周分封，把土地分给诸侯，诸侯替周王守土。'},
+   {node:23,change:'商鞅变法，立县制、奖耕战，权力往国君手里收。'},
+   {node:27,change:'秦朝废分封、行郡县，长官由皇帝任免，不能世袭。'},
+   {node:37,change:'推恩令让诸侯把封地再分，势力越分越小。'},
+   {node:40,change:'刺史官小，却能代表皇帝盯着地方大官。'}
+  ]},
+ {id:'writing',name:'文字',color:'#3f7a7a',icon:'brush',
+  ask:'字为什么越来越简单、好写？',
+  beads:[
+   {node:13,change:'甲骨文刻在龟甲兽骨上，是最早的成熟文字。'},
+   {node:14,change:'金文铸在青铜器上，西周铭文越写越长。'},
+   {node:28,change:'秦统一用小篆，后来又推广更省事的隶书。'},
+   {node:46,change:'有了便宜好用的纸，字不再只写在笨重的简和贵的帛上。'}
+  ]}
+];
+/* 节点 id → 所属话题线（渲染标签用）*/
+const THREAD_MAP={};
+THREADS.forEach(t=>t.beads.forEach(b=>{
+ if(!THREAD_MAP[b.node])THREAD_MAP[b.node]=[];
+ THREAD_MAP[b.node].push(t.id);
+}));
+
+
+/* ===== 渲染纵向时间线 ===== */
+const journey=document.getElementById('journey');
+function renderJourney(){
+  journey.innerHTML='';
+  PERIODS.forEach(seg=>{
+    const sec=document.createElement('section');
+    sec.className='j-seg';sec.setAttribute('data-seg',seg.key);
+    sec.innerHTML='<div class="j-seg-head"><b>'+seg.name+'</b><span>'+seg.range+'</span></div>';
+    const wrap=document.createElement('div');wrap.className='j-nodes';
+    for(let i=seg.from;i<=seg.to;i++){
+      const n=NODES[i],topic=TOPIC_MAP[i];
+      const node=document.createElement('button');
+      node.type='button';
+      node.className='j-node'+(n.approx?' approx':'')+(store.seen.includes(n.id)?' seen':'')+(topic?' is-topic':'');
+      node.setAttribute('data-type',n.type);
+      let html='<span class="j-dot"></span>'+
+        '<div class="j-top"><span class="j-year">'+n.yearLabel+'</span>'+
+        '<span class="j-type-tag">'+TYPE_META[n.type].label+'</span></div>'+
+        '<span class="j-title">'+n.title+'</span>';
+      if(NODE_META[i]){html+='<div class="j-meta">'+NODE_META[i]+'</div>';}
+      if(topic){html+='<span class="topic-badge">动手专题 · '+TOPIC_NAME[topic]+'</span>';}
+      const thIds=THREAD_MAP[n.id];
+      if(thIds&&thIds.length){
+       html+='<span class="thread-tags">';
+       thIds.forEach(tid=>{
+        const th=THREADS.find(x=>x.id===tid);
+        html+='<span class="thread-chip" data-thread="'+tid+'">'+THREAD_ICONS[th.icon]+'话题·'+th.name+'</span>';
+       });
+       html+='</span>';
+      }
+      node.innerHTML=html;
+      const idx=i;
+      node.addEventListener('click',()=>{
+        if(topic){openTopic(topic);}else{openSheet(idx);}
+      });
+      node.querySelectorAll('.thread-chip').forEach(chip=>{
+       chip.addEventListener('click',e=>{
+        e.stopPropagation();
+        openThread(chip.getAttribute('data-thread'),n.id);
+       });
+      });
+      wrap.appendChild(node);
+    }
+    sec.appendChild(wrap);
+    journey.appendChild(sec);
+  });
+}
+
+/* ===== 视图切换 ===== */
+const homeView=document.getElementById('homeView'),topicView=document.getElementById('topicView'),threadViewEl=document.getElementById('threadView');
+let currentTopic=null;
+function showView(v){
+  homeView.classList.toggle('active',v==='home');
+  topicView.classList.toggle('active',v==='topic');
+  threadViewEl.classList.toggle('active',v==='thread');
+}
+function openTopic(key){
+  currentTopic=key;
+  document.querySelectorAll('.topic-pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById(TOPIC_PANE[key]).classList.add('active');
+  document.getElementById('topicCrumb').textContent='时间轴 → '+TOPIC_NAME[key];
+  showView('topic');
+  beep(500);
+  setTimeout(()=>window.scrollTo(0,0),0);
+}
+function closeTopic(){
+  const key=currentTopic;
+  showView('home');
+  renderJourney();
+  const nodeIdx=Object.keys(TOPIC_MAP).find(i=>TOPIC_MAP[i]===key);
+  setTimeout(()=>{
+    const node=nodeIdx?document.querySelectorAll('.j-node')[nodeIdx]:null;
+    if(node){node.scrollIntoView({block:'center'});}
+    else{window.scrollTo(0,0);}
+  },0);
+}
+document.getElementById('backBtn').addEventListener('click',closeTopic);
+
+/* ===== 话题图标 ===== */
+const THREAD_ICONS={
+ coin:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><rect x="10" y="10" width="4" height="4"/></svg>',
+ sword:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 3.5L20.5 9.5 9 21H3v-6z"/><path d="M13 5l6 6"/><path d="M5 14l-2 7 7-2"/></svg>',
+ scroll:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3h11v16a2 2 0 01-2 2H8"/><path d="M8 3a2 2 0 00-2 2v14a2 2 0 01-2 2 2 2 0 002 2h2"/><path d="M11 8h5M11 12h5"/></svg>',
+ brush:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4-9 9-4-4z"/><path d="M8 16c-2 0-4 2-4 5 3 0 5-2 5-4"/></svg>'
+};
+function nodeIndexById(id){return NODES.findIndex(n=>n.id===id);}
+function beadDot(nodeId){
+ const meta=IMG_META[nodeId];
+ if(meta&&meta.img){return '<span class="bead-dot"><img src="'+meta.img+'" alt="'+meta.name+'"></span>';}
+ const t=currentThread;
+ return '<span class="bead-dot"><span class="bead-fallback">'+THREAD_ICONS[t.icon]+'</span></span>';
+}
+
+/* ===== 打开/关闭话题 ===== */
+const threadView=document.getElementById('threadView'),threadBody=document.getElementById('threadBody');
+let currentThread=null,threadReturnIdx=null;
+function openThread(key,fromNodeId){
+ const t=THREADS.find(x=>x.id===key);
+ currentThread=t;
+ threadReturnIdx=fromNodeId?nodeIndexById(fromNodeId):null;
+ document.getElementById('threadCrumb').textContent='时间轴 → 话题 · '+t.name;
+ if(t.classify){renderClassify(t);}else{renderBeads(t);}
+ showView('thread');
+ beep(520);
+ setTimeout(()=>window.scrollTo(0,0),0);
+}
+function renderBeads(t){
+ let html='<div class="thread-ask" style="background:'+t.color+'">'+
+  '<div class="th-name">'+THREAD_ICONS[t.icon]+t.name+'</div><p>'+t.ask+'</p></div>';
+ html+='<div class="bead-track" style="--th-color:'+t.color+'">';
+ t.beads.forEach((b,i)=>{
+  const n=NODES[nodeIndexById(b.node)];
+  html+='<div class="bead">'+beadDot(b.node)+
+   '<div class="bead-card"><div class="bead-top"><span class="bead-year">'+n.yearLabel+'</span>'+
+   '<span class="bead-title">'+n.title+'</span></div>'+
+   '<div class="bead-change">'+(i===0?'<b>起点：</b>':'<b>变了：</b>')+b.change+'</div>'+
+   '<button class="bead-jump" type="button" data-jump-node="'+b.node+'">回到这个年代 '+
+   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></button>'+
+   '</div></div>';
+ });
+ html+='</div>';
+ threadBody.innerHTML=html;
+ threadBody.querySelectorAll('[data-jump-node]').forEach(btn=>{
+  btn.addEventListener('click',()=>jumpToNode(parseInt(btn.getAttribute('data-jump-node'))));
+ });
+}
+function jumpToNode(nodeId){
+ const idx=nodeIndexById(nodeId);
+ const topic=TOPIC_MAP[idx];
+ showView('home');
+ renderJourney();
+ setTimeout(()=>{
+  if(topic){openTopic(topic);return;}
+  const node=document.querySelectorAll('.j-node')[idx];
+  if(node){node.scrollIntoView({block:'center'});openSheet(idx);}
+ },0);
+}
+function closeThread(){
+ showView('home');
+ renderJourney();
+ const idx=threadReturnIdx;
+ setTimeout(()=>{
+  if(idx!==null&&document.querySelectorAll('.j-node')[idx]){
+   document.querySelectorAll('.j-node')[idx].scrollIntoView({block:'center'});
+  }else{window.scrollTo(0,0);}
+ },0);
+}
+document.getElementById('threadBack').addEventListener('click',closeThread);
+
+/* ===== 战争分类玩法（只判对错，不直接给答案）===== */
+let warPool=[],warBins={},warSelected=null;
+function renderClassify(t){
+ warPool=t.beads.map(b=>b.node);
+ warBins={};t.cats.forEach(c=>warBins[c.id]=[]);
+ warSelected=null;
+ paintClassify(t);
+}
+function paintClassify(t){
+ let html='<div class="thread-ask" style="background:'+t.color+'">'+
+  '<div class="th-name">'+THREAD_ICONS[t.icon]+t.name+'</div><p>'+t.ask+'</p></div>';
+ html+='<p class="cat-tip">先点下面一颗“珠子”，再点一个筐把它放进去。点筐里的珠子可以拿回来。</p>';
+ html+='<div class="cat-pool" id="catPool">';
+ if(warPool.length===0){html+='<span class="cat-tip" style="color:var(--sub)">珠子都放进筐里了</span>';}
+ warPool.forEach(nid=>{
+  const n=NODES[nodeIndexById(nid)];
+  html+='<button class="cat-pill" type="button" data-pool="'+nid+'">'+n.title+'</button>';
+ });
+ html+='</div>';
+ html+='<div class="cat-board" style="--th-color:'+t.color+'">';
+ t.cats.forEach(c=>{
+  html+='<div class="cat-bin" data-bin="'+c.id+'"><h4>'+c.name+
+   '<small>'+c.hint+'</small></h4><div class="bin-items">';
+  warBins[c.id].forEach(nid=>{
+   const n=NODES[nodeIndexById(nid)];
+   html+='<button class="cat-pill" type="button" data-binpick="'+nid+'">'+n.title+'</button>';
+  });
+  html+='</div></div>';
+ });
+ html+='</div>';
+ html+='<div class="cat-actions"><button class="btn primary" id="catCheck" type="button">检查</button>'+
+  '<button class="btn ghost" id="catReset" type="button">重新来</button></div>';
+ html+='<div class="cat-feedback" id="catFeedback"></div>';
+ threadBody.innerHTML=html;
+ threadBody.querySelectorAll('[data-pool]').forEach(b=>b.addEventListener('click',()=>{
+  warSelected=parseInt(b.getAttribute('data-pool'));toast('选好了，点一个筐');beep(440);
+ }));
+ threadBody.querySelectorAll('[data-bin]').forEach(bin=>bin.addEventListener('click',()=>{
+  if(warSelected===null){toast('先点上面一颗珠子');return;}
+  const cid=bin.getAttribute('data-bin');
+  warPool=warPool.filter(x=>x!==warSelected);
+  Object.keys(warBins).forEach(k=>warBins[k]=warBins[k].filter(x=>x!==warSelected));
+  warBins[cid].push(warSelected);warSelected=null;
+  document.getElementById('catFeedback').textContent='';
+  paintClassify(t);
+ }));
+ threadBody.querySelectorAll('[data-binpick]').forEach(b=>b.addEventListener('click',()=>{
+  const nid=parseInt(b.getAttribute('data-binpick'));
+  Object.keys(warBins).forEach(k=>warBins[k]=warBins[k].filter(x=>x!==nid));
+  warPool.push(nid);paintClassify(t);
+ }));
+ document.getElementById('catCheck').addEventListener('click',()=>{
+  if(warPool.length>0){toast('还有珠子没放进筐');return;}
+  let wrong=0;
+  t.beads.forEach(b=>{
+   const placed=Object.keys(warBins).find(k=>warBins[k].includes(b.node));
+   if(placed!==b.cat)wrong++;
+  });
+  const fb=document.getElementById('catFeedback');
+  if(wrong===0){fb.className='cat-feedback ok';fb.textContent='全对！你能讲出每一类为什么这么分吗？';beep(700);}
+  else{fb.className='cat-feedback no';fb.textContent='还不对，有 '+wrong+' 颗放错了，再想想为什么打这仗。';beep(260);}
+ });
+ document.getElementById('catReset').addEventListener('click',()=>renderClassify(t));
+}
+
+/* 首屏分段跳转 */
+document.querySelectorAll('.seg-pill').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const seg=document.querySelector('.j-seg[data-seg="'+b.getAttribute('data-jump')+'"]');
+    if(seg){seg.scrollIntoView({behavior:'auto',block:'start'});beep(460);}
+  });
+});
+
+/* 继续上次 */
+const heroContinue=document.getElementById('heroContinue');
+function initContinue(){
+  if(store.last!==null&&NODES[store.last]){
+    heroContinue.textContent='继续上次：'+NODES[store.last].title;
+    heroContinue.classList.add('show');
+  }
+}
+heroContinue.addEventListener('click',()=>{
+  const last=store.last;
+  if(last===null)return;
+  const topic=TOPIC_MAP[last];
+  if(topic){openTopic(topic);}else{openSheet(last);}
+});
+
+/* hero 按时间 / 按话题 切换 */
+const vsTime=document.getElementById('vsTime'),vsThread=document.getElementById('vsThread');
+const timeEntry=document.getElementById('timeEntry'),threadEntry=document.getElementById('threadEntry');
+function renderHeroThreads(){
+ let h='';
+ THREADS.forEach(t=>{
+  h+='<button class="hero-thread-card" type="button" data-hero-thread="'+t.id+'">'+
+   '<span class="htc-icon" style="background:'+t.color+'">'+THREAD_ICONS[t.icon]+'</span>'+
+   '<b>'+t.name+'</b><small>'+t.ask+'</small></button>';
+ });
+ threadEntry.innerHTML=h;
+ threadEntry.querySelectorAll('[data-hero-thread]').forEach(c=>{
+  c.addEventListener('click',()=>openThread(c.getAttribute('data-hero-thread'),null));
+ });
+}
+function setHeroMode(mode){
+ const isThread=mode==='thread';
+ vsTime.classList.toggle('active',!isThread);
+ vsThread.classList.toggle('active',isThread);
+ timeEntry.style.display=isThread?'none':'block';
+ threadEntry.classList.toggle('show',isThread);
+}
+vsTime.addEventListener('click',()=>{setHeroMode('time');beep(440);});
+vsThread.addEventListener('click',()=>{setHeroMode('thread');beep(440);});
+renderHeroThreads();
+
+
+/* ===== 底部短卡 ===== */
+const sheet=document.getElementById('sheet'),backdrop=document.getElementById('backdrop');
+function openSheet(i){
+  currentIndex=i;store.last=i;
+  lastTrigger=document.activeElement;
+  const n=NODES[i],meta=TYPE_META[n.type];
+  document.getElementById('sTag').textContent=meta.label;
+  document.getElementById('sTag').style.background=meta.color;
+  document.getElementById('sTitle').textContent=n.title;
+  document.getElementById('sYear').textContent=n.yearLabel+(n.approx?'（约）':'');
+  const im=IMG_META[n.id];
+  const sImg=document.getElementById('sImg');
+  const sFigure=document.getElementById('sFigure');
+  sFigure.classList.remove('fail','big','placeholder');
+  document.getElementById('imgZoom').textContent='查看大图';
+  sheet.scrollTop=0;
+  if(im){
+    sImg.alt=im.name;
+    sImg.onload=function(){sFigure.classList.remove('fail');sImg.style.transform='translateZ(0)';};
+    sImg.onerror=function(){sFigure.classList.add('fail');};
+    sImg.src=im.img;
+    window.__curImg=im.img;
+    document.getElementById('capName').textContent=im.name;
+    document.getElementById('capEra').textContent=im.era;
+    document.getElementById('capSource').textContent=im.source;
+    document.getElementById('capKind').textContent=im.kind;
+  }else{
+    sImg.removeAttribute('src');
+    sFigure.classList.add('placeholder');
+    document.getElementById('phTitle').textContent=n.title+'的文物图还在找';
+    document.getElementById('capName').textContent='暂无对应文物图';
+    document.getElementById('capEra').textContent=n.yearLabel;
+    document.getElementById('capSource').textContent='以后补真实出土文物或遗址';
+    document.getElementById('capKind').textContent=meta.label;
+  }
+  document.getElementById('sStory').textContent=n.story;
+  document.getElementById('sPoints').innerHTML=n.points.map(p=>'<li>'+p+'</li>').join('');
+  sheet.classList.add('show');backdrop.classList.add('show');
+  if(!store.seen.includes(n.id)){const s=store.seen;s.push(n.id);store.seen=s;renderJourney();}
+  document.getElementById('prevNode').disabled=(i===0);
+  document.getElementById('nextNode').disabled=(i===NODES.length-1);
+}
+function closeSheet(){sheet.classList.remove('show');backdrop.classList.remove('show');if(lastTrigger){lastTrigger.focus();lastTrigger=null;}}
+let lastTrigger=null;
+document.getElementById('sheetClose').addEventListener('click',closeSheet);
+backdrop.addEventListener('click',closeSheet);
+document.getElementById('imgZoom').addEventListener('click',function(){
+  const sFigure=document.getElementById('sFigure');
+  sFigure.classList.toggle('big');
+  this.textContent=sFigure.classList.contains('big')?'收起大图':'查看大图';
+  beep(440);
+});
+document.getElementById('prevNode').addEventListener('click',()=>{if(currentIndex>0)openSheet(currentIndex-1);});
+document.getElementById('nextNode').addEventListener('click',()=>{if(currentIndex<NODES.length-1)openSheet(currentIndex+1);});
+
+/* ===== toast ===== */
+let toastTimer;
+function toast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+/* ===== 简单音效（可静音） ===== */
+let audioCtx;
+function beep(freq){
+  if(store.muted)return;
+  try{
+    audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();
+    const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+    o.frequency.value=freq;o.type='sine';
+    g.gain.setValueAtTime(.12,audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.18);
+    o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+.18);
+  }catch(e){}
+}
+const muteBtn=document.getElementById('muteBtn');
+const ICON_SOUND='<svg viewBox="0 0 24 24" fill="none" stroke="#2b2620" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.5 8.5a5 5 0 0 1 0 7"></path><path d="M18.5 5.5a9 9 0 0 1 0 13"></path></svg>';
+const ICON_MUTED='<svg viewBox="0 0 24 24" fill="none" stroke="#2b2620" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="22" y1="9" x2="16" y2="15"></line><line x1="16" y1="9" x2="22" y2="15"></line></svg>';
+function paintMute(){
+  muteBtn.innerHTML=store.muted?ICON_MUTED:ICON_SOUND;
+  muteBtn.style.opacity=store.muted?.55:1;
+  muteBtn.title=store.muted?'已静音':'有声音';
+  muteBtn.setAttribute('aria-label',store.muted?'已静音，点击开启声音':'有声音，点击静音');
+}
+paintMute();
+muteBtn.addEventListener('click',()=>{store.muted=!store.muted;paintMute();if(!store.muted)beep(520);});
+/* ===== 推恩令实验 ===== */
+const kingdomEl=document.getElementById('kingdom');
+const splitBtn=document.getElementById('splitBtn');
+const resetBtn=document.getElementById('resetBtn');
+const belongEl=document.getElementById('belong');
+const belongText=document.getElementById('belongText');
+const revealEl=document.getElementById('reveal');
+const stageLabel=document.getElementById('stageLabel');
+const beforeChip=document.getElementById('beforeChip');
+const crownSVG='<svg class="crown-ico" viewBox="0 0 24 24" fill="currentColor"><path d="M3 7l4.5 4L12 4l4.5 7L21 7l-1.6 12H4.6z"/></svg>';
+const houSVG='<svg class="crown-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 12h6M12 9v6"/></svg>';
+const HOU=[
+ {cls:'hou',name:'次子 · 侯国'},
+ {cls:'hou h2',name:'三子 · 侯国'},
+ {cls:'hou h3',name:'幼子 · 侯国'}
+];
+let seenKing=false, seenHou=false;
+const hintAfterEl=document.getElementById('hintAfter');
+const btnRowEl=document.querySelector('.btn-row');
+function bindPlots(){
+  kingdomEl.querySelectorAll('.plot').forEach(p=>{
+    p.addEventListener('click',()=>{
+      kingdomEl.querySelectorAll('.plot').forEach(x=>x.classList.remove('picked'));
+      p.classList.add('picked');
+      if(p.hasAttribute('data-king')){
+        belongText.innerHTML='<b>王位还在，地变小了。</b><div class="line2">长子继承王位，可他能直接管的地，比父亲那时小了一大块。</div>';
+        seenKing=true;
+      }else if(p.hasAttribute('data-hou')){
+        const h=HOU[+p.getAttribute('data-hou')];
+        belongText.innerHTML='<b>纳入汉郡管辖。</b><div class="line2">这块"'+h.name+'"归汉郡和朝廷管，原来的诸侯王不能直接管。</div>';
+        seenHou=true;
+      }else{
+        belongText.innerHTML='<b>分封前，整块地归王国直接管。</b>';
+      }
+      let tail='';
+      if(seenKing&&seenHou){
+        tail='<div class="compare-done">比出来了：长子还是国王，可新分出去的侯国归汉郡和朝廷管，他能直接管的地就少了——这就是推恩令。</div>';
+      }else if(seenKing){
+        tail='<div class="go-next">再点一个侯国，看看有什么不同。</div>';
+      }else if(seenHou){
+        tail='<div class="go-next">再点长子的地，看看有什么不同。</div>';
+      }
+      belongText.innerHTML+=tail;
+      belongEl.classList.add('show');
+      hintAfterEl.classList.remove('show');
+      beep(440);
+      if(seenKing&&seenHou){revealEl.classList.add('show');revealEl.classList.remove('open');}
+      setTimeout(()=>belongEl.scrollIntoView({behavior:'auto',block:'nearest'}),60);
+    });
+  });
+}
+function renderWhole(){
+  kingdomEl.className='kingdom';
+  kingdomEl.innerHTML='<button class="plot whole" data-whole="1">'+crownSVG+'<div>国王的封地</div><div class="role">整块都归国王一个人管</div></button>';
+  bindPlots();
+}
+function renderSplit(){
+  kingdomEl.className='kingdom split';
+  const houst=HOU.map((h,i)=>'<button class="plot '+h.cls+'" data-hou="'+i+'">'+houSVG+'<div>'+h.name+'</div></button>').join('');
+  kingdomEl.innerHTML='<button class="plot king" data-king="1">'+crownSVG+'<div>国王（长子）</div></button><div class="hou-col">'+houst+'</div>';
+  bindPlots();
+}
+splitBtn.addEventListener('click',()=>{
+  renderSplit();
+  stageLabel.textContent='分封后 · 点一块看看';
+  beforeChip.textContent='1 王国 + 3 侯国（大小示意）';
+  splitBtn.disabled=true;
+  belongEl.classList.remove('show');
+  hintAfterEl.classList.add('show');
+  btnRowEl.classList.add('split-on');
+  ruleCompare.classList.add('show');
+  beep(520);
+});
+resetBtn.addEventListener('click',()=>{
+  renderWhole();
+  stageLabel.textContent='分封前 · 整块地原归王国管辖';
+  beforeChip.textContent='1 个王国';
+  revealEl.classList.remove('show');
+  revealEl.classList.remove('open');
+  hintAfterEl.classList.remove('show');
+  btnRowEl.classList.remove('split-on');
+  splitBtn.disabled=false;
+  belongEl.classList.remove('show');
+  seenKing=false;seenHou=false;
+  ruleCompare.classList.remove('show');
+  rcFeedback.classList.remove('show');
+  document.querySelectorAll('.rc-answer').forEach(x=>x.classList.remove('right','wrong'));
+  beep(360);
+});
+document.getElementById('revealToggle').addEventListener('click',()=>{
+  revealEl.classList.toggle('open');
+  beep(revealEl.classList.contains('open')?480:360);
+});
+renderWhole();
+
+/* 管辖线对照交互 */
+const ruleCompare=document.getElementById('ruleCompare');
+const rcFeedback=document.getElementById('rcFeedback');
+document.querySelectorAll('.rc-mode').forEach(m=>{
+  m.addEventListener('click',()=>{
+    document.querySelectorAll('.rc-mode').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.rc-pane').forEach(x=>x.classList.remove('active'));
+    m.classList.add('active');
+    document.getElementById(m.getAttribute('data-rc')==='assume'?'rcAssume':'rcHistory').classList.add('active');
+    beep(440);
+  });
+});
+document.querySelectorAll('.rc-answer').forEach(a=>{
+  a.addEventListener('click',()=>{
+    document.querySelectorAll('.rc-answer').forEach(x=>x.classList.remove('right','wrong'));
+    const ok=a.getAttribute('data-ok')==='1';
+    a.classList.add(ok?'right':'wrong');
+    rcFeedback.classList.add('show');
+    if(ok){
+      rcFeedback.textContent='对了。关键不在地切没切开，而在新分的侯国归谁管。改归汉郡，王直接管的地才真少了，这就是推恩令的作用。';
+      beep(560);
+    }else{
+      rcFeedback.textContent='再想想：这一画面里四块地还都归王管，他能直接管的地一块没少。切画面二看看管辖线指到了哪里。';
+      beep(280);
+    }
+  });
+});
+
+/* ===== 丝绸之路实验 ===== */
+/* type: main 主干按先后、全部经过；fork 分岔只经过选中的一个 */
+const SILK_PATH=[
+ {type:'main', nodes:[
+  {id:'changan',name:'长安',sub:'西汉都城',note:'你带着一匹从长安出发的丝绸，从这里启程。',in:[],out:['丝绸']},
+  {id:'zhangye',name:'张掖',sub:'河西走廊',note:'河西走廊是去西域的必经路，祁连山下能补水、换骆驼。',in:['骆驼'],out:['丝绸']},
+  {id:'dunhuang',name:'敦煌',sub:'出玉门关',note:'出玉门关就进西域。在这里把货交给常跑西域的商人，你不必再往前。',in:['补给'],out:['丝绸']}
+ ]},
+ {type:'fork', nodes:[
+  {id:'loulan',name:'楼兰',sub:'南道·沙漠绿洲',note:'楼兰是沙漠里的绿洲小国。这里能换到葡萄、石榴、苜蓿的种子。',in:['葡萄','石榴','苜蓿'],out:['丝绸']},
+  {id:'qiuci',name:'龟兹',sub:'北道·西域古国',note:'龟兹的乐舞很有名。丝绸继续往更西走，乐舞后来顺着这条路往东传。',in:['乐器','歌舞'],out:['丝绸']}
+ ]},
+ {type:'fork', nodes:[
+  {id:'dawan',name:'大宛',sub:'中亚产良马',note:'大宛的良种马又高又壮。你用丝绸换马，马后来被带回长安。',in:['良种马'],out:['丝绸']},
+  {id:'anxi',name:'安息',sub:'西亚中转站',note:'安息是西亚的贸易中转站，香料、宝石、玻璃在这里换。安息商人再把丝绸往欧洲送。',in:['香料','宝石','玻璃'],out:['丝绸']}
+ ]},
+ {type:'main', nodes:[
+  {id:'daqin',name:'大秦',sub:'欧洲（罗马）',note:'这匹丝绸经不同商人多次转手，终于到了欧洲的大秦，是沿路的人一段段把它送这么远的。',in:[],out:['丝绸']}
+ ]}
+];
+const silkMap=document.getElementById('silkMap');
+const silkNow=document.getElementById('silkNow');
+const silkChoices=document.getElementById('silkChoices');
+const silkReturn=document.getElementById('silkReturn');
+const silkCompare=document.getElementById('silkCompare');
+const silkGan=document.getElementById('silkGan');
+let silkLevel=0;            // 当前所在层
+let silkMainPos=0;          // 当前 main 层内已到达的节点索引
+const silkPicked={};        // fork 选择，如 {1:'loulan',2:'anxi'}
+const silkTrials=[];        // 已完成的趟次，用于并排对照
+const SILK_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="#a8442c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8c2.5 2 5.5 2 9 0s6.5-2 9 0"/><path d="M3 13c2.5 2 5.5 2 9 0s6.5-2 9 0"/><path d="M3 18c2.5 2 5.5 2 9 0s6.5-2 9 0"/></svg>';
+
+function pathNodes(){                // 实际经过的全部节点
+  const arr=[];
+  SILK_PATH.forEach((lv,li)=>{
+    if(lv.type==='main'){lv.nodes.forEach(n=>arr.push(n));}
+    else{const id=silkPicked[li];if(id)arr.push(lv.nodes.find(n=>n.id===id));}
+  });
+  return arr;
+}
+function nodeState(li,ni){
+  const lv=SILK_PATH[li];
+  if(li<silkLevel){
+    if(lv.type==='main')return 'done';
+    return silkPicked[li]===lv.nodes[ni].id?'done':'skip';
+  }
+  if(li>silkLevel)return 'locked';
+  if(lv.type==='main'){
+    if(ni<silkMainPos)return 'done';
+    if(ni===silkMainPos)return 'current';
+    return 'locked';
+  }
+  if(silkPicked[li])return silkPicked[li]===lv.nodes[ni].id?'picked':'skip';
+  return 'current';
+}
+function currentNode(){
+  const lv=SILK_PATH[silkLevel];
+  if(lv.type==='main')return lv.nodes[silkMainPos];
+  const id=silkPicked[silkLevel];
+  return id?lv.nodes.find(n=>n.id===id):null;
+}
+function infoHTML(node,label){
+  let html='<div class="silk-hold">'+SILK_ICON+(label||('丝绸现在在：'+node.name+'的商人手里'))+'</div>';
+  html+='<div style="margin-top:8px">'+node.note+'</div>';
+  if(node.in.length)html+='<div class="goods"><span class="silk-k">在这里换到</span>'+node.in.map(g=>'<span class="chip">'+g+'</span>').join('')+'</div>';
+  if(node.out.length)html+='<div class="goods"><span class="silk-k">继续往西</span>'+node.out.map(g=>'<span class="chip out">'+g+'</span>').join('')+'</div>';
+  return html;
+}
+function showNow(){
+  const node=currentNode();
+  if(!node){silkNow.innerHTML='<div>这一站有两个走法，点地图上的一个地方选一条。</div>';return;}
+  silkNow.innerHTML=infoHTML(node);
+}
+function renderSilk(){
+  let html='';
+  SILK_PATH.forEach((lv,li)=>{
+    html+='<div class="silk-level '+lv.type+'">'+lv.nodes.map((n,ni)=>{
+      const st=nodeState(li,ni);
+      const skipTag=st==='skip'?'<small class="skip-tag">没走这条</small>':'';
+      const holdTag=(st==='current'||st==='picked')?'<span class="silk-hold">'+SILK_ICON+'丝绸在这</span>':'';
+      return '<button class="silk-node '+st+'" data-li="'+li+'" data-ni="'+ni+'" type="button"><b>'+n.name+'</b><small>'+n.sub+'</small>'+skipTag+holdTag+'</button>';
+    }).join('')+'</div>';
+    if(li<SILK_PATH.length-1)html+='<div class="silk-link'+(li<silkLevel?' done':'')+'"></div>';
+  });
+  silkMap.innerHTML=html;
+  silkMap.querySelectorAll('.silk-node').forEach(b=>{
+    b.addEventListener('click',()=>{
+      const li=+b.getAttribute('data-li'),ni=+b.getAttribute('data-ni'),st=nodeState(li,ni);
+      if(st==='locked'){toast('还没到这一站，先往前走');beep(260);return;}
+      if(st==='skip'){toast('这趟没走这条，它在另一条路上');beep(300);return;}
+      if(li===silkLevel&&SILK_PATH[li].type==='fork'&&!silkPicked[li]){
+        silkPicked[li]=SILK_PATH[li].nodes[ni].id;beep(500);renderSilk();return;
+      }
+      silkNow.innerHTML=infoHTML(SILK_PATH[li].nodes[ni],'回看：'+SILK_PATH[li].nodes[ni].name);
+      beep(440);
+    });
+  });
+  showNow();
+  renderChoices();
+}
+function currentLvComplete(){
+  const lv=SILK_PATH[silkLevel];
+  if(lv.type==='main')return silkMainPos>=lv.nodes.length-1;
+  return !!silkPicked[silkLevel];
+}
+function renderChoices(){
+  const complete=currentLvComplete();
+  const lv=SILK_PATH[silkLevel];
+  if(silkLevel<SILK_PATH.length-1){
+    if(lv.type==='fork'&&!complete){
+      silkChoices.innerHTML='<div class="hint">点地图，选一个地方</div>';
+    }else{
+      const label=complete?'继续往前走':'继续往西';
+      silkChoices.innerHTML='<button class="choice" id="silkNext" type="button">'+label+'<span class="arrow">→</span></button>';
+      document.getElementById('silkNext').addEventListener('click',advance);
+    }
+  }else{
+    silkChoices.innerHTML=complete
+      ?'<button class="choice" id="silkEnd" type="button">看看回程，什么东西往东走？<span class="arrow">→</span></button>'
+      :'<div class="hint">先选一个地方</div>';
+    const eb=document.getElementById('silkEnd');
+    if(eb)eb.addEventListener('click',showSilkReturn);
+  }
+}
+function advance(){
+  const lv=SILK_PATH[silkLevel];
+  if(lv.type==='main'&&silkMainPos<lv.nodes.length-1){silkMainPos++;}
+  else{silkLevel++;silkMainPos=0;}
+  beep(500);renderSilk();
+}
+function showSilkReturn(){
+  const route=pathNodes(),back=[];
+  route.forEach(n=>(n.in||[]).forEach(g=>{if(!back.includes(g))back.push(g);}));
+  silkTrials.push({route:route.map(n=>n.name).join(' → '),back:back.slice()});
+  silkReturn.innerHTML='<h4>顺着同一张网，这些东西往东走</h4><div class="goods">'+
+    (back.length?back.map(g=>'<span class="chip">'+g+'</span>').join(''):'<span class="chip">这趟没换到东西</span>')+'</div>'+
+    '<div class="silk-flow"><div class="f west"><b>往西去</b>丝绸等中原物产，经商人一站站转手到欧洲。</div>'+
+    '<div class="f east"><b>往东来</b>'+(back.length?back.join('、'):'种子、香料、乐舞')+'，还有文化和技艺。</div></div>'+
+    '<p class="conclude">货靠人接力才走那么远。你选的路不同，带回的东西也不一样。</p>'+
+    '<button class="choice" id="silkAlt" type="button">试另一条走法，保留这趟对照</button>';
+  silkReturn.classList.add('show');beep(420);
+  showGan();renderCompare();
+  setTimeout(()=>silkReturn.scrollIntoView({behavior:'auto',block:'nearest'}),60);
+  document.getElementById('silkAlt').addEventListener('click',resetForAnother);
+}
+function showGan(){
+  silkGan.innerHTML='<h4>追问：汉使没到大秦，丝绸为什么还可能到？</h4>'+
+    '<div class="g-line">东汉使者甘英，《后汉书》说他走到条支，到了海边想渡海，最后停下，没到大秦（罗马）。</div>'+
+    '<div class="g-stop"><span class="g-pill">使者的线：停在条支</span><span class="g-pill">贸易的线：商人接力，丝绸可继续往西</span></div>'+
+    '<div class="g-q">人没到，货可以经别人接着走——这就是“一匹丝绸能比送它的人走得更远”。</div>';
+  silkGan.classList.add('show');
+}
+function renderCompare(){
+  if(silkTrials.length<1)return;
+  let html='<h4>几趟走法并排看</h4>';
+  silkTrials.forEach((t,i)=>{
+    html+='<div class="silk-trial"><div class="t-name">第'+(i+1)+'趟</div>'+
+      '<div class="t-route">路线：'+t.route+'</div>'+
+      '<div class="goods"><span class="chip">带回：'+(t.back.length?t.back.join('、'):'没换到')+'</span></div></div>';
+  });
+  if(silkTrials.length>=2){
+    html+='<div class="c-note">共同点：都从长安到大秦，丝绸都靠转手。差别：分岔走的站不同，带回的东西不同。</div>';
+  }
+  silkCompare.innerHTML=html;silkCompare.classList.add('show');
+}
+function resetForAnother(){
+  silkLevel=0;silkMainPos=0;
+  for(const k in silkPicked)delete silkPicked[k];
+  silkReturn.classList.remove('show');silkGan.classList.remove('show');
+  beep(360);renderSilk();
+}
+document.getElementById('silkReset').addEventListener('click',()=>{
+  silkLevel=0;silkMainPos=0;
+  for(const k in silkPicked)delete silkPicked[k];
+  silkTrials.length=0;
+  silkReturn.classList.remove('show');silkGan.classList.remove('show');silkCompare.classList.remove('show');
+  beep(360);renderSilk();
+});
+renderSilk();
+
+/* ===== 造纸断案 + 热身 ===== */
+const PAPER_INFO={
+ jian:{big:'竹简：太沉，占地方',body:'一篇长文要写一大堆竹片，穿起来一大捆，又重又占地方。好处是便宜，竹子到处都有。'},
+ bo:{big:'帛：又轻又软，可太贵',body:'帛是丝织品，卷起来小小一卷，轻，好写。可它跟丝绸一样贵，普通人用不起。'},
+ zhi:{big:'纸：又轻又便宜',body:'纸又轻又薄，一张能写不少字，原料便宜，普通人也用得起。'}
+};
+const evFeedback=document.getElementById('evFeedback');
+const cailunDeep=document.getElementById('cailunDeep');
+/* 证据断案 */
+document.querySelectorAll('.ev-answer').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.ev-answer').forEach(x=>x.classList.remove('right','wrong'));
+    const ok=b.getAttribute('data-ok')==='1';
+    b.classList.add(ok?'right':'wrong');
+    evFeedback.classList.add('show');
+    evFeedback.className='ev-feedback show '+(ok?'ok':'no');
+    if(ok){
+      evFeedback.textContent='对了。放马滩纸是西汉的，比蔡伦早两百多年，它一出现，“蔡伦以前没有纸”这句话就被推翻了。';
+      cailunDeep.classList.add('show');
+      beep(560);
+      setTimeout(()=>cailunDeep.scrollIntoView({behavior:'auto',block:'nearest'}),60);
+    }else{
+      evFeedback.textContent='再想想：蔡伦的记载是东汉的，它只能说明东汉怎么造纸，不能证明西汉有没有纸。点放马滩纸看看它的年代。';
+      beep(280);
+    }
+  });
+});
+/* 热身：三材料携带 */
+const paperResult=document.getElementById('paperResult');
+const paperSummary=document.getElementById('paperSummary');
+document.querySelectorAll('#paperChoices .pchoice').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const info=PAPER_INFO[b.getAttribute('data-pick')];
+    paperResult.innerHTML='<div class="big">'+info.big+'</div><div>'+info.body+'</div><button class="compare-btn" id="compareBtn" type="button">比一比三种</button>';
+    paperResult.classList.add('show');
+    paperSummary.classList.remove('show');
+    beep(480);
+    document.getElementById('compareBtn').addEventListener('click',showPaperSummary);
+  });
+});
+function showPaperSummary(){
+  paperSummary.innerHTML='<h4>三种写法，各有取舍</h4>'+
+   '<div class="row"><span class="k">竹简</span><span>便宜，可太沉、太占地方</span></div>'+
+   '<div class="row"><span class="k">帛</span><span>轻便好写，可太贵，普通人用不起</span></div>'+
+   '<div class="row"><span class="k">纸</span><span>又轻又便宜，能带、能推广</span></div>'+
+   '<div class="note">回到上面的断案：西汉已经有纸，蔡伦是改进不是发明。他扩大原料、改进工艺，让纸更好更便宜，后来才广泛使用。</div>';
+  paperSummary.classList.add('show');beep(420);
+}
+/* 重置：断案 + 热身都回到初始 */
+document.getElementById('paperReset').addEventListener('click',()=>{
+  paperResult.classList.remove('show');
+  paperSummary.classList.remove('show');
+  evFeedback.classList.remove('show');
+  cailunDeep.classList.remove('show');
+  document.querySelectorAll('.ev-answer').forEach(x=>x.classList.remove('right','wrong'));
+  document.getElementById('paperWarmup').open=false;
+  beep(360);
+});
+document.getElementById('sImgFail').addEventListener('click',function(){
+  const sFigure=document.getElementById('sFigure');
+  const sImg=document.getElementById('sImg');
+  sFigure.classList.remove('fail');
+  sImg.src=window.__curImg+'?r='+Date.now();
+});
+sheet.addEventListener('transitionend',function(){
+  const sImg=document.getElementById('sImg');
+  if(sImg.complete&&sImg.naturalWidth>0){sImg.style.transform='translateZ(0)';}
+});
+renderJourney();
+initContinue();
+
+</script>
+</body>
+</html>
