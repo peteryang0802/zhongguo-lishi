@@ -140,18 +140,12 @@ html{scroll-behavior:smooth}
 .rc-feedback{font-size:13.5px;margin-top:10px;line-height:1.55;display:none}
 .rc-feedback.show{display:block;animation:fade .2s ease}
 
-/* 滚雪球：侯国儿子代代再分 */
-.snowball{margin-top:20px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
-.snowball h3{margin:0 0 6px;font-size:17px}
-.sb-lead{font-size:14px;color:var(--sub);margin:0 0 12px;line-height:1.55}
-.sb-stage{display:grid;gap:3px;background:var(--paper);border-radius:12px;padding:10px;min-height:120px}
-.sb-cell{display:block;aspect-ratio:1;border-radius:4px}
-.sb-cell.king{background:var(--state)}
-.sb-cell.hou{background:#c9b896}
-.sb-controls{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
-.sb-controls .btn{min-height:44px;flex:1}
-.sb-controls .btn:disabled{opacity:.45}
-.sb-note{margin-top:12px;font-size:14px;font-weight:700;color:var(--state);line-height:1.55}
+/* 长期效应说明卡 */
+.longview{margin-top:20px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+.longview h3{margin:0 0 9px;font-size:17px;color:var(--state)}
+.lv-lead{font-size:14.5px;line-height:1.7;color:#4a4238;margin:0 0 10px}
+.lv-lead b{color:var(--state)}
+.lv-note{font-size:13px;color:var(--sub);line-height:1.6;margin:0;background:var(--paper);border-radius:10px;padding:9px 11px}
 
 /* 分封后引导 */
 .hint-after{
@@ -912,16 +906,11 @@ button:focus:not(:focus-visible){outline:none}
         <div class="rc-feedback" id="rcFeedback"></div>
       </div>
 
-      <!-- 滚雪球：侯国的儿子还能再分，代代累积越分越小 -->
-      <div class="snowball" id="snowball">
-        <h3>还没完：侯国的儿子，也会接着分</h3>
-        <p class="sb-lead">侯国也是一块封地，侯的儿子照样分。点一下“过一代”，看看地怎么变。</p>
-        <div class="sb-stage" id="sbStage"></div>
-        <div class="sb-controls">
-          <button class="btn primary" id="sbNext" type="button">过一代</button>
-          <button class="btn ghost" id="sbReset" type="button">回到第一代</button>
-        </div>
-        <div class="sb-note" id="sbNote"></div>
+      <!-- 长期效应：不是自动均分，而是每封一个侯国就归汉郡，王管的地一代代变少 -->
+      <div class="longview" id="longview">
+        <h3>一代代下来，王管的地是怎么少的？</h3>
+        <p class="lv-lead">不是地自己对半切。每一代，诸侯王都得<b>上奏、等皇帝批准</b>，才能把地分给儿子；新封的侯国一出现，就<b>归汉郡管</b>，王管不着。这样一代代下来，王能直接管的地一点点变少，并不按固定的几分之几来。</p>
+        <p class="lv-note">地块大小在这里只是示意，真正要紧的是管辖线指向谁。</p>
       </div>
     </div>
   </div>
@@ -2701,28 +2690,6 @@ document.querySelectorAll('.rc-answer').forEach(a=>{
   });
 });
 
-/* ===== 滚雪球：侯国的儿子代代再分，越分越小 ===== */
-const sbStage=document.getElementById('sbStage');
-const sbNote=document.getElementById('sbNote');
-const SB_NOTES=[
- '一开始，整块地都归王管。',
- '分一次，王直接管的只剩四分之一，另外三块是侯国。',
- '再过一代，侯国的儿子也分。王直接管的只剩十六分之一，侯国碎成一大片。',
- '代代分下去，王能直接管的只剩一点点，诸侯就算想造反，也没那个力气了。'
-];
-let sbGen=1;
-function renderSB(){
- const side=Math.pow(2,sbGen-1),total=side*side;
- sbStage.style.gridTemplateColumns='repeat('+side+',1fr)';
- let h='';
- for(let k=0;k<total;k++){h+='<span class="sb-cell '+(k===0?'king':'hou')+'"></span>';}
- sbStage.innerHTML=h;
- sbNote.textContent=SB_NOTES[sbGen-1];
- document.getElementById('sbNext').disabled=(sbGen>=4);
-}
-document.getElementById('sbNext').addEventListener('click',()=>{if(sbGen<4){sbGen++;renderSB();beep(520);}});
-document.getElementById('sbReset').addEventListener('click',()=>{sbGen=1;renderSB();beep(400);});
-renderSB();
 
 /* ===== 丝绸之路实验 ===== */
 /* type: main 主干按先后、全部经过；fork 分岔只经过选中的一个 */
