@@ -774,6 +774,13 @@ button:focus:not(:focus-visible){outline:none}
 .sheet-action-btn.model3d{
   background:linear-gradient(135deg,#2f6f8f,#4a93a8);border-color:transparent;color:#fff
 }
+/* 横屏低高度：舞台收矮，按钮和说明能往下滚动看到，不都堆在屏幕上方 */
+@media (orientation:landscape) and (max-height:520px){
+  #view3d{padding:0 12px 20px}
+  .s3d-stage{height:48vh;min-height:180px;max-height:280px}
+  .s3d-wrap{gap:10px}
+  .s3d-hint p{font-size:13px}
+}
 </style>
 </head>
 <body>
@@ -1818,7 +1825,7 @@ function makeCoin(THREE,o){
   mesh.add(faceMesh);
   return mesh;
 }
-function buildCoins(THREE,stage){
+function buildCoins(THREE,stage,onReady){
   const w=stage.clientWidth,h=stage.clientHeight;
   const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
@@ -1859,9 +1866,10 @@ function buildCoins(THREE,stage){
     edge:{phi:Math.PI/2,theta:0},
     back:{phi:Math.PI/2.35,theta:3*Math.PI/2}
   };
-  let raf,visible=true;
+  let raf,visible=true,firstFrame=true;
   function loop(){
     if(visible){controls.update();renderer.render(scene,camera);}
+    if(firstFrame){firstFrame=false;if(onReady)onReady();}
     raf=requestAnimationFrame(loop);
   }
   loop();
@@ -1892,7 +1900,7 @@ function buildCoins(THREE,stage){
 }
 
 /* ===== 都江堰场景：鱼嘴分水、飞沙堰泄洪、宝瓶口引水 ===== */
-function buildDujiangyan(THREE,stage){
+function buildDujiangyan(THREE,stage,onReady){
   const w=stage.clientWidth,h=stage.clientHeight;
   const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
@@ -1988,17 +1996,21 @@ function buildDujiangyan(THREE,stage){
     yuzui:{tgt:[0,0,-3.2],phi:1.05,theta:Math.PI/2,r:6},
     baoping:{tgt:[0.9,0,1.5],phi:1.0,theta:Math.PI/2,r:5}
   };
-  let raf,visible=true,last=performance.now();
+  let raf,visible=true,firstFrame=true,last=performance.now();
   function loop(now){
     const dt=Math.min(0.05,(now-last)/1000);last=now;
     if(visible){
-      for(let i=0;i<N;i++){
-        const p=parts[i];p.t+=p.spd*dt;if(p.t>=1)p.t-=1;
-        p.path.getPointAt(p.t,dummy.position);
-        dummy.updateMatrix();inst.setMatrixAt(i,dummy.matrix);
-      }
-      inst.instanceMatrix.needsUpdate=true;
+      try{
+        for(let i=0;i<N;i++){
+          const p=parts[i];p.t+=p.spd*dt;if(p.t>=1)p.t-=1;
+          if(p.t<0)p.t=0;else if(p.t>1)p.t=1;
+          p.path.getPointAt(p.t,dummy.position);
+          dummy.updateMatrix();inst.setMatrixAt(i,dummy.matrix);
+        }
+        inst.instanceMatrix.needsUpdate=true;
+      }catch(e){/* 单帧粒子出错不中断整个渲染循环 */}
       controls.update();renderer.render(scene,camera);
+      if(firstFrame){firstFrame=false;if(onReady)onReady();}
     }
     raf=requestAnimationFrame(loop);
   }
@@ -2050,13 +2062,21 @@ const S3D_UI={
     ]
   }
 };
-let current3d=null,current3dKey=null,fromNode3d=null,s3dToken=0;
+let current3d=null,current3dKey=null,fromNode3d=null,s3dToken=0,s3dTimer=null;
+function s3dHideLoading(){
+  const l=document.getElementById('loading3d');
+  if(l)l.style.display='none';
+}
+function s3dClearTimer(){if(s3dTimer){clearTimeout(s3dTimer);s3dTimer=null;}}
 async function open3D(key,fromIdx){
   const myToken=++s3dToken;
   current3dKey=key;
   fromNode3d=fromIdx;
   const stage=document.getElementById('stage3d');
   stage.classList.remove('is-fail');
+  const loadingEl=document.getElementById('loading3d');
+  loadingEl.style.display='flex';
+  document.getElementById('loading3dText').textContent='正在调出 3D……';
   document.getElementById('crumb3d').textContent=S3D_META[key].crumb;
   const vb=document.getElementById('viewBtns3d');
   vb.innerHTML='';
@@ -2075,12 +2095,24 @@ async function open3D(key,fromIdx){
     (n.cmp?'<div class="cmp">'+n.cmp.map(c=>'<span>'+c+'</span>').join('')+'</div>':'')+'</div>'
   ).join('');
   showView('3d');
+  s3dClearTimer();
+  let ready=false;
+  const onReady=()=>{if(myToken!==s3dToken||ready)return;ready=true;s3dClearTimer();s3dHideLoading();};
+  s3dTimer=setTimeout(()=>{
+    if(myToken!==s3dToken||ready)return;
+    s3dToken++;
+    if(current3d){current3d.destroy();current3d=null;}
+    document.getElementById('fail3dText').textContent='这次加载太慢，3D 没出来。可以再试一次，或先回到时间轴。';
+    document.getElementById('fail3dRetry').style.display='';
+    stage.classList.add('is-fail');
+  },8000);
   try{
     const THREE=await loadThree();
     if(myToken!==s3dToken)return;
-    current3d=key==='coins'?buildCoins(THREE,stage):buildDujiangyan(THREE,stage);
+    current3d=key==='coins'?buildCoins(THREE,stage,onReady):buildDujiangyan(THREE,stage,onReady);
   }catch(err){
     if(myToken!==s3dToken)return;
+    s3dClearTimer();
     const msg=(err&&err.message)||'';
     const isDevice=/webgl|context|shader|gpu|graphics/i.test(msg)||/webgl|context/i.test((err&&err.name)||'');
     document.getElementById('fail3dText').textContent=isDevice
@@ -2092,6 +2124,7 @@ async function open3D(key,fromIdx){
 }
 function close3D(){
   s3dToken++;
+  s3dClearTimer();
   if(current3d){current3d.destroy();current3d=null;}
   showView('home');renderJourney();
   const idx=fromNode3d;fromNode3d=null;
