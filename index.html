@@ -229,6 +229,7 @@ html{scroll-behavior:smooth}
 .sheet.show{transform:none}
 .sheet-grip{width:42px;height:5px;border-radius:3px;background:#d8cdb8;margin:4px auto 12px}
 .sheet .close{position:absolute;top:12px;right:14px;width:40px;height:40px;border-radius:12px;background:var(--paper);display:flex;align-items:center;justify-content:center}
+.sheet .close::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:46px;height:46px}
 .sheet .close svg{width:20px;height:20px}
 .sheet .s-tag{font-size:12px;color:#fff;padding:3px 10px;border-radius:14px;display:inline-block}
 .sheet h3{font-size:22px;margin:10px 0 4px;padding-right:44px}
@@ -983,6 +984,7 @@ button:focus:not(:focus-visible){outline:none}
 .lesson-intro{margin-bottom:14px}
 .li-title{font-size:22px;margin-bottom:7px}
 .li-sub{font-size:14.5px;color:#544b3e;margin:0}
+.li-note{font-size:14px;color:#7a5a2b;background:#f6ecd9;border-left:4px solid #c0964c;border-radius:0 10px 10px 0;padding:9px 13px;margin:10px 0 0}
 .lesson-foot{display:flex;flex-wrap:wrap;gap:11px;margin-top:22px}
 .lf-btn{
   min-height:48px;padding:0 18px;border-radius:13px;border:1px solid var(--line);
@@ -1463,7 +1465,7 @@ button:focus:not(:focus-visible){outline:none}
 <script>
 /* ===== 册注册表：初中六册，初三两册先锁定 ===== */
 const BOOKS=[
-  {id:'g7a',grade:'七年级',term:'上册',short:'七上',span:'史前—东汉',locked:false},
+  {id:'g7a',grade:'七年级',term:'上册',short:'七上',span:'史前—南北朝',locked:false},
   {id:'g7b',grade:'七年级',term:'下册',short:'七下',span:'隋唐—明清',locked:false},
   {id:'g8a',grade:'八年级',term:'上册',short:'八上',span:'鸦片战争—解放战争',locked:false},
   {id:'g8b',grade:'八年级',term:'下册',short:'八下',span:'新中国—新时代',locked:false},
@@ -3608,7 +3610,7 @@ let G8B_NODES=[
   points:['经济、科技、国防、外交等领域取得历史性成就、发生历史性变革','南水北调、高铁网络、载人航天等重大工程接连落地','这些成就，是新时代十年伟大变革的生动注脚','照片是南水北调东线的江都水利枢纽']},
  {id:56,year:2023,yearLabel:'2023年',type:'site',title:'活动课：新时代社会生活巨变',
   story:'不只是大工程，普通人的日子也在变。出门不带钱包，手机一刷就能坐车、买东西。',
-  points:['高铁、移动支付、网购、共享单车，被称中国的“新四大发明”','建成世界上规模最大的社会保障和医疗卫生体系，民生获得感越来越强','交通四通八达，城乡面貌焕然一新','这是活动课，照片是手机移动支付过闸机，看看身边还有哪些新变化']}
+  points:['高铁、移动支付、网购、共享单车，在中国用得最多、最方便，被叫作“新四大发明”','不过这几样最早的技术和想法不是中国发明的，中国是应用规模领先；“新四大发明”是 2017 年外国青年评选出来的流行说法，不是真的四大发明','建成世界上规模最大的社会保障和医疗卫生体系，民生获得感越来越强','交通四通八达，城乡面貌焕然一新','这是活动课，照片是手机移动支付过闸机，看看身边还有哪些新变化']}
 ];
 let G8B_IMG_META={
  1:{img:'assets/g8b01.jpg',name:'第一届政协会议会场',era:'1949年',source:'当时历史照片，代表举手表决',kind:'历史照片·当时'},
@@ -3659,13 +3661,13 @@ let G8B_IMG_META={
  46:{img:'assets/g8b46.jpg',name:'习马会握手',era:'2015年',source:'当时历史照片，新加坡',kind:'历史照片·当时'},
  47:{img:'assets/g8b47.jpg',name:'日内瓦万国宫演讲',era:'2017年',source:'当时历史照片，阐述人类命运共同体',kind:'历史照片·当时'},
  48:{img:'assets/g8b48.jpg',name:'中共十九大开幕',era:'2017年',source:'当时历史照片',kind:'历史照片·当时'},
- 49:{img:'assets/g8b49.jpg',name:'港珠澳大桥',era:'2020年',source:'当时历史照片，航拍',kind:'历史照片·当时'},
+ 49:{img:'assets/g8b49.jpg',name:'港珠澳大桥',era:'2018年',source:'当时历史照片，航拍',kind:'历史照片·当时'},
  50:{img:'assets/g8b50.jpg',name:'脱贫攻坚总结表彰大会',era:'2020年',source:'当时历史照片',kind:'历史照片·当时'},
  51:{img:'assets/g8b51.jpg',name:'庆祝建党百年大会',era:'2021年',source:'当时历史照片，“1921—2021”',kind:'历史照片·当时'},
  52:{img:'assets/g8b52.jpg',name:'阜平骆驼湾村',era:'2021年',source:'当时历史照片，航拍',kind:'历史照片·当时'},
  53:{img:'assets/g8b53.jpg',name:'十九届六中全会主席台',era:'2021年',source:'当时历史照片',kind:'历史照片·当时'},
  54:{img:'assets/g8b54.jpg',name:'中共二十大开幕',era:'2022年',source:'当时历史照片',kind:'历史照片·当时'},
- 55:{img:'assets/g8b55.jpg',name:'南水北调江都水利枢纽',era:'2022年',source:'当时历史照片',kind:'历史照片·当时'},
+ 55:{img:'assets/g8b55.jpg',name:'南水北调江都水利枢纽',era:'1961—1977年',source:'当时历史照片',kind:'历史照片·当时'},
  56:{img:'assets/g8b56.jpg',name:'移动支付过闸机',era:'2023年',source:'真实拍摄，社会生活场景',kind:'历史照片·实景'}
 };
 let G8B_PERIODS=[
@@ -4558,8 +4560,10 @@ function openLesson(no){
   currentLessonNo=no;
   lessonCrumb.textContent='第 '+no+' 课';
   renderLessonRuler(no);
+  var noteHtml='';
+  if(no===16)noteHtml='<p class="li-note">小提示：这两场战役在时间上比东汉灭亡稍早，是三国鼎立的背景，所以这里的年份看起来往回走了一点。</p>';
   lessonIntro.innerHTML='<h2 class="li-title">第 '+no+' 课 · '+lesson.title+'</h2>'+
-    '<p class="li-sub">这一课有 '+lesson.nodes.length+' 个知识点，按年代排好了。点卡片看细节，先自己想，再看证据。</p>';
+    '<p class="li-sub">这一课有 '+lesson.nodes.length+' 个知识点，按年代排好了。点卡片看细节，先自己想，再看证据。</p>'+noteHtml;
   renderLessonJourney(no);
   var fh='';
   if(no>1)fh+='<button class="lf-btn" data-foot="'+(no-1)+'" type="button">上一课：'+lessonByNo(no-1).title+'</button>';
@@ -4725,9 +4729,9 @@ document.getElementById('extraMystery').addEventListener('click',function(){
   go('/activity/'+(next||'paper'));
 });
 
-/* ===== 启动：迁移旧进度 → 渲染目录 → 走当前路由（默认首页）→ 预热图片 ===== */
+/* ===== 启动：迁移旧进度 → 进入默认册（对齐数据并刷新文案）→ 走当前路由 → 预热图片 ===== */
 migrateOldProgress();
-renderSidebar();
+enterBook(currentBookId);
 renderRoute();
 setTimeout(startWarmup,1500);
 
