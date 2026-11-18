@@ -228,8 +228,8 @@ html{scroll-behavior:smooth}
 }
 .sheet.show{transform:none}
 .sheet-grip{width:42px;height:5px;border-radius:3px;background:#d8cdb8;margin:4px auto 12px}
-.sheet .close{position:absolute;top:12px;right:14px;width:40px;height:40px;border-radius:12px;background:var(--paper);display:flex;align-items:center;justify-content:center}
-.sheet .close::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:46px;height:46px}
+.sheet .close{position:absolute;top:12px;right:14px;width:44px;height:44px;border-radius:12px;background:var(--paper);display:flex;align-items:center;justify-content:center}
+.sheet .close::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:48px;height:48px}
 .sheet .close svg{width:20px;height:20px}
 .sheet .s-tag{font-size:12px;color:#fff;padding:3px 10px;border-radius:14px;display:inline-block}
 .sheet h3{font-size:22px;margin:10px 0 4px;padding-right:44px}
@@ -251,7 +251,8 @@ html{scroll-behavior:smooth}
 .s-img-fail{display:none;position:absolute;inset:0;flex-direction:column;align-items:center;justify-content:center;gap:8px;height:150px;color:#7a5a17;font-size:14px;font-weight:600;background:#efe8d9}
 .s-figure.fail .s-img-fail{display:flex}
 .s-figure.fail img{display:none}
-.s-img-fail .retry{border:1px solid #b8860b;border-radius:12px;padding:7px 16px;font-size:13.5px;color:#8a6d3b}
+.s-img-fail .retry{border:1px solid #b8860b;border-radius:12px;padding:0 18px;min-height:44px;font-size:13.5px;font-weight:700;color:#8a6d3b;background:#fff;cursor:pointer}
+.s-img-fail-text{margin:0}
 .s-img-loading{display:none;position:absolute;inset:0;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#8a6d3b;font-size:13.5px;font-weight:700;background:#efe8d9;z-index:2}
 .s-figure.loading{min-height:200px}
 .s-figure.loading .s-img-loading{display:flex}
@@ -570,7 +571,7 @@ button:focus:not(:focus-visible){outline:none}
 }
 .quicknav::-webkit-scrollbar{display:none}
 .qn-btn{
-  flex:0 0 auto;min-height:42px;padding:0 16px;border-radius:20px;
+  flex:0 0 auto;min-height:44px;padding:0 16px;border-radius:20px;
   font-size:14px;font-weight:800;color:#5a4f42;
   background:var(--card);border:1px solid var(--line)
 }
@@ -586,7 +587,7 @@ button:focus:not(:focus-visible){outline:none}
   .view-switch{margin-bottom:10px}
   .hero-continue{margin-top:10px;min-height:46px}
   .quicknav{padding:8px 10px;margin:0 -16px 10px;gap:6px}
-  .qn-btn{flex:1 1 0;min-width:0;padding:0 2px;font-size:13px;min-height:40px;border-radius:16px;white-space:nowrap;overflow:hidden}
+  .qn-btn{flex:1 1 0;min-width:0;padding:0 2px;font-size:13px;min-height:44px;border-radius:16px;white-space:nowrap;overflow:hidden}
 }
 
 /* ===== 回顶部浮标 ===== */
@@ -662,7 +663,7 @@ button:focus:not(:focus-visible){outline:none}
 .thread-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .thread-chip{
  display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;
- color:#fff;border-radius:20px;padding:3px 10px;min-height:24px
+ color:#fff;border-radius:20px;padding:0 12px;min-height:44px
 }
 .thread-chip svg{width:12px;height:12px}
 .thread-chip[data-thread="money"]{background:#b07d2b}
@@ -753,6 +754,8 @@ button:focus:not(:focus-visible){outline:none}
   display:flex;align-items:center;gap:5px;min-height:44px;border-radius:12px;white-space:nowrap;
   background:var(--card);border:1px solid var(--line);padding:0 14px;font-size:14.5px;font-weight:700
 }
+.s3d-related{margin-left:auto;background:var(--person);border-color:var(--person);color:#fff}
+.s3d-related[hidden]{display:none}
 .topic-crumb{font-size:13.5px;color:var(--sub);font-weight:600}
 .topic-pane{display:none}
 .topic-pane.active{display:block;}
@@ -813,12 +816,17 @@ button:focus:not(:focus-visible){outline:none}
   background:var(--card);border:1.5px dashed #9fb8c2;color:#2f6d8f
 }
 .sheet-action-btn.model3d .sa-label{background:#e2f0f7;color:#2f6d8f}
-/* 横屏低高度：舞台收矮，按钮和说明能往下滚动看到，不都堆在屏幕上方 */
+/* 横屏低高度：模型在左、提示和按钮在右，紧邻两列，不用上下长滚找按钮 */
 @media (orientation:landscape) and (max-height:520px){
-  #view3d{padding:0 12px 20px}
-  .s3d-stage{height:48vh;min-height:180px;max-height:280px}
-  .s3d-wrap{gap:10px}
+  #view3d{padding:0 12px 20px;max-width:1000px}
+  .s3d-wrap{
+    display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
+    gap:12px;align-items:start;
+  }
+  .s3d-stage{grid-column:1;grid-row:1 / -1;height:calc(100vh - 96px);min-height:240px;max-height:none}
+  .s3d-hint,.s3d-viewbtns,.s3d-notes{grid-column:2}
   .s3d-hint p{font-size:13px}
+  .s3d-notes{max-height:calc(100vh - 96px);overflow-y:auto}
 }
 /* ===== 双端布局：手机抽屉 + 桌面常驻侧栏 ===== */
 :root{--sb-w:280px;--sb-w-desk:264px;}
@@ -840,7 +848,7 @@ button:focus:not(:focus-visible){outline:none}
   padding:14px 14px 12px;border-bottom:1px solid var(--line);
 }
 .sb-brand{font-size:17px;font-weight:800;letter-spacing:.5px}
-.sb-close{width:38px;height:38px;border-radius:10px;background:var(--paper);border:1px solid var(--line);display:flex;align-items:center;justify-content:center}
+.sb-close{width:44px;height:44px;border-radius:10px;background:var(--paper);border:1px solid var(--line);display:flex;align-items:center;justify-content:center}
 .sb-close svg{width:18px;height:18px}
 .sidebar-nav{flex:1;overflow-y:auto;padding:10px 10px 14px}
 .sidebar-foot{padding:10px 12px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
@@ -907,6 +915,12 @@ button:focus:not(:focus-visible){outline:none}
 .portal-head h2{font-size:27px;margin:0 0 8px}
 .portal-head p{font-size:15px;color:#544b3e;margin:0;max-width:60ch}
 .portal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.invalid-card{max-width:560px;margin:36px auto;padding:30px 26px;border-radius:20px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow)}
+.invalid-card h2{font-size:23px;margin:0 0 10px}
+.invalid-card p{font-size:15px;color:var(--sub);line-height:1.6;margin:0 0 20px}
+.invalid-actions{display:flex;flex-wrap:wrap;gap:12px}
+.inv-btn{min-height:48px;padding:0 22px;border-radius:13px;border:1px solid var(--line);background:var(--paper);font-size:15px;font-weight:700;color:#4a4034}
+.inv-btn.primary{background:var(--person);border-color:var(--person);color:#fff}
 .book-card{
   position:relative;text-align:left;border-radius:20px;padding:20px 18px 18px;min-height:158px;
   display:flex;flex-direction:column;gap:8px;color:#fff;overflow:hidden;
@@ -925,6 +939,7 @@ button:focus:not(:focus-visible){outline:none}
 .book-card.g9a{background:linear-gradient(150deg,#7a5a8f,#5c436e)}
 .book-card.g9b{background:linear-gradient(150deg,#3f6b6b,#2c4d4d)}
 .book-card.locked{filter:grayscale(.5)}
+.book-card:disabled{opacity:1}
 .book-card .bc-lock{
   position:absolute;top:14px;right:14px;font-size:12px;font-weight:800;
   background:rgba(255,255,255,.22);border-radius:20px;padding:4px 11px;
@@ -972,7 +987,9 @@ button:focus:not(:focus-visible){outline:none}
 }
 .lesson-topbar .back-btn svg{width:18px;height:18px}
 .lesson-crumb{font-size:13.5px;color:var(--sub);font-weight:700}
-.lesson-ruler{margin-bottom:16px;overflow-x:auto;padding:4px 2px 8px}
+.lesson-ruler{margin-bottom:16px;padding:2px 0 4px}
+.lr-pos{font-size:13px;font-weight:800;color:var(--person);margin-bottom:6px}
+.lr-track-outer{overflow-x:auto;padding:4px 2px 8px}
 .lr-track{display:flex;gap:7px;min-width:max-content}
 .lr-dot{
   width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--card);
@@ -1008,7 +1025,7 @@ button:focus:not(:focus-visible){outline:none}
 
 <!-- ===== 课目录侧栏：桌面常驻，手机抽屉 ===== -->
 <div class="sidebar-backdrop" id="sidebarBackdrop" hidden></div>
-<aside class="sidebar" id="sidebar" aria-label="课目录">
+<aside class="sidebar" id="sidebar" aria-label="课目录" inert>
   <div class="sidebar-head">
     <span class="sb-brand">我的历史课</span>
     <button class="icon-btn sb-close" id="sidebarClose" type="button" aria-label="关闭目录">
@@ -1047,6 +1064,18 @@ button:focus:not(:focus-visible){outline:none}
   <div class="portal-grid" id="portalGrid"></div>
 </section>
 
+<!-- 无效深链：给明确解释和可返回的入口，不抛代码错误、不白屏 -->
+<section class="view" id="invalidView" hidden>
+  <div class="invalid-card">
+    <h2 id="invalidTitle">这个链接打不开</h2>
+    <p id="invalidText"></p>
+    <div class="invalid-actions">
+      <button type="button" class="inv-btn" id="invalidHome">回我的首页</button>
+      <button type="button" class="inv-btn primary" id="invalidPortal">回选册目录</button>
+    </div>
+  </div>
+</section>
+
 <!-- ===== 主视图：学习首页 + 按课内容 ===== -->
 <main class="view active" id="homeView">
   <!-- 学习入口首页 -->
@@ -1081,7 +1110,10 @@ button:focus:not(:focus-visible){outline:none}
       </button>
       <span class="lesson-crumb" id="lessonCrumb"></span>
     </div>
-    <div class="lesson-ruler" id="lessonRuler" role="navigation" aria-label="课次年代尺"></div>
+    <div class="lesson-ruler" id="lessonRuler" role="navigation" aria-label="课次年代尺">
+      <div class="lr-pos" id="lrPos"></div>
+      <div class="lr-track-outer" id="lrTrackOuter"></div>
+    </div>
     <div class="lesson-intro" id="lessonIntro"></div>
     <div class="journey" id="journey"></div>
     <div class="lesson-foot" id="lessonFoot"></div>
@@ -1396,9 +1428,10 @@ button:focus:not(:focus-visible){outline:none}
   <div class="topic-topbar">
     <button class="back-btn" id="back3d" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-      时间轴
+      <span id="back3dText">时间轴</span>
     </button>
     <span class="topic-crumb" id="crumb3d"></span>
+    <button class="back-btn s3d-related" id="back3dLesson" type="button" hidden></button>
   </div>
   <div class="s3d-wrap">
     <div class="s3d-stage" id="stage3d">
@@ -1421,7 +1454,7 @@ button:focus:not(:focus-visible){outline:none}
 </div>
 
 <div class="backdrop" id="backdrop"></div>
-<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sTitle" tabindex="-1">
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sTitle" tabindex="-1" inert>
   <div class="sheet-grip"></div>
   <button class="close" id="sheetClose" aria-label="关闭">
     <svg viewBox="0 0 24 24" fill="none" stroke="#2b2620" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
@@ -1438,7 +1471,7 @@ button:focus:not(:focus-visible){outline:none}
       <div class="ph-title" id="phTitle">这一站的文物图还在找</div>
       <div class="ph-sub">先看下面的故事和要点，图以后补进来</div>
     </div>
-    <div class="s-img-fail" id="sImgFail">图片没加载出来<span class="retry">点这里重新加载</span></div>
+    <div class="s-img-fail"><span class="s-img-fail-text">图片没加载出来</span><button type="button" class="retry" id="sImgFail">点这里重新加载</button></div>
     <div class="s-img-loading" id="sImgLoading"><span class="s-spinner"></span><span>图片加载中…</span></div>
     <figcaption class="s-cap">
       <div class="cap-name" id="capName"></div>
@@ -1491,16 +1524,16 @@ let NODES=[
  /* ===== 第一单元 史前 ===== */
  {id:1,year:-1700000,yearLabel:'约170万年前',approx:true,type:'site',title:'元谋人',
   story:'这是我国目前已知最早的古人类之一。遗址里发现过炭屑，有研究者认为他们可能已经知道用火，这一点还在继续考证。',
-  points:['在云南元谋发现，距今约170万年','会制造和使用打制石器','遗址发现过炭屑，可能知道用火，但还没有完全定论','能不能制造工具，才是人和动物最根本的区别']},
+  points:['在云南元谋发现，距今约170万年','会制造和使用打制石器','遗址发现过炭屑，可能知道用火，但还没有完全定论','从打制石器能看出，他们已经会制作和使用工具']},
  {id:2,year:-700000,yearLabel:'约70万—20万年前',approx:true,type:'site',title:'北京人',
   story:'他们成群住在一起，会打石头做工具，还会把火保存下来。',
   points:['在北京周口店龙骨山发现，距今约70万到20万年','用打制石器，属于旧石器时代','会使用火，还会长时间保存火种，用火烤食物、取暖、赶野兽','过群居生活，一起干活、一起对付猛兽']},
  {id:3,year:-30000,yearLabel:'约3万年前',approx:true,type:'site',title:'山顶洞人',
-  story:'他们的模样已经和现代人差不多，会磨东西、钻孔，还会自己取火。',
-  points:['也在周口店龙骨山顶部的洞穴里，距今约3万年','模样和现代人基本一样','掌握磨光和钻孔技术，懂得人工取火，会用骨针缝衣服']},
+  story:'他们的模样已经和现代人差不多，会磨东西、钻孔，可能已经知道人工取火。',
+  points:['也在周口店龙骨山顶部的洞穴里，距今约3万年','模样和现代人基本一样','掌握磨光和钻孔技术，可能已经知道人工取火，会用骨针缝衣服']},
  {id:4,year:-10000,yearLabel:'约1万年前',approx:true,type:'event',title:'原始农业出现',
   story:'人们不再光靠打猎采果子，开始自己种庄稼、养牲口，慢慢定居下来。',
-  points:['距今约1万年，我国出现最早的人工栽培农作物','有了农业，人们开始建房子长期住下，这叫定居','新石器时代开始，工具从打制变成磨制']},
+  points:['距今约1万年，我国出现最早的人工栽培农作物','有了农业，人们开始建房子长期住下，这叫定居','新石器时代开始，逐渐使用磨制石器']},
  {id:5,year:-7000,yearLabel:'约7000年前',approx:true,type:'site',title:'河姆渡人',
   story:'住在长江边，种水稻，房子架在半空，不怕潮。',
   points:['在浙江余姚，长江流域，距今约7000年','种水稻，住干栏式建筑，通风防潮','用磨制石器，做黑陶，会挖水井，养猪养狗']},
@@ -1508,11 +1541,11 @@ let NODES=[
   story:'住在黄河边，种粟，房子一半在地下，暖和。',
   points:['在陕西西安半坡，黄河流域，距今约6000年','种粟，住半地穴式圆形房屋，保暖避风','做彩陶，上面有人面、鱼的花纹，用磨制石器']},
  {id:7,year:-5300,yearLabel:'约5300—4300年前',approx:true,type:'state',title:'良渚古城',
-  story:'城里有宫殿、有水利，玉器做得极精，已经像个早期国家。',
-  points:['在浙江杭州良渚，距今约5300到4300年','有古城、大型水利工程，玉琮、玉璧上刻着神徽','贫富已经分开，出现了贵族和平民，是早期国家的样子']},
+  story:'城里有宫殿、有水利，玉器做得极精，已经具备早期国家的样子。',
+  points:['在浙江杭州良渚，距今约5300到4300年','有古城、大型水利工程，玉琮、玉璧上刻着神徽','贫富已经分开，出现了贵族和平民，已经出现早期国家']},
  {id:8,year:-5000,yearLabel:'约五六千年前',approx:true,type:'event',title:'炎黄传说',
   story:'炎帝、黄帝两个部落联合，打败蚩尤，后人把他们当中华民族的祖先。',
-  points:['传说炎帝、黄帝部落联合，在涿鹿之战打败蚩尤','两个部落以后融合，形成华夏族，后人称自己是炎黄子孙','黄帝的手下传说发明了文字、舟车、养蚕，这是传说，不是确凿史实']},
+  points:['传说炎帝、黄帝部落联合，在涿鹿之战打败蚩尤','两个部落结成联盟，以后各族慢慢交融，形成华夏族，后人称自己是炎黄子孙','黄帝的手下传说发明了文字、舟车、养蚕，这是传说，不是确凿史实']},
  {id:9,year:-4200,yearLabel:'传说时代',approx:true,type:'event',title:'尧舜禹禅让',
   story:'位子不传给儿子，而是选贤能的人来接，大禹治水靠的是疏导。',
   points:['尧老了，把位子让给贤能的舜，舜又让给治水有功的禹，这叫禅让','禹治水一改堵的办法，开山疏导，把洪水引到海里','禹因为威望高，后来成了部落联盟的首领']},
@@ -1532,7 +1565,7 @@ let NODES=[
   points:['刻在龟甲和牛、羊等兽骨上的文字，叫甲骨文','内容多是占卜、祭祀、战争、收成，记得很具体','甲骨文是我国已发现的最早、体系较完整的成熟文字，汉字从它发展而来']},
  {id:14,year:-1200,yearLabel:'商周时期',approx:true,type:'event',title:'青铜器与金文',
   story:'当时的礼器、兵器多用青铜铸造，器物上还铸着字。',
-  points:['青铜是铜加锡、铅的合金，颜色金黄，古人称“金”','后母戊鼎是目前所见最重的青铜器，四羊方尊造型精巧','青铜器上铸刻的文字叫金文，又叫钟鼎文，西周毛公鼎铭文最多']},
+  points:['青铜是铜加锡、铅的合金，古人把铜称作“金”','司母戊鼎（也有学者称后母戊鼎）是目前所见最重的青铜器之一，四羊方尊造型精巧','青铜器上铸刻的文字叫金文，又叫钟鼎文，西周毛公鼎铭文最多']},
  {id:15,year:-1046,yearLabel:'公元前1046年',approx:false,type:'event',title:'牧野之战',
   story:'周武王带兵和商军在牧野决战，商军倒戈，商就亡了。',
   points:['商纣王荒淫残暴，周武王联合各部落在牧野决战','商军阵前倒戈，周军大胜，商朝灭亡','公元前1046年，周武王建立周朝，定都镐京，史称西周']},
@@ -1541,38 +1574,38 @@ let NODES=[
   points:['周王根据血缘远近和功劳大小，把宗亲和功臣分封到各地，建立诸侯国','诸侯要替周王守土、打仗、进贡、朝见','西周还通过血缘和礼乐制度，把贵族的等级固定下来']},
  {id:17,year:-841,yearLabel:'公元前841年',approx:false,type:'event',title:'国人暴动',
   story:'周厉王压制百姓，不让人说话，城里人忍无可忍，起来把他赶走。',
-  points:['周厉王贪财，把山川湖泽收归自己，还派人监视百姓，谁敢议论就杀','“道路以目”，熟人路上只敢用眼神打招呼','公元前841年，国人暴动，厉王被赶走，这是中国历史有确切纪年的开始']},
+  points:['周厉王贪财，把山川湖泽收归自己，还派人监视百姓，谁敢议论就杀','“道路以目”，熟人路上只敢用眼神打招呼','公元前841年，国人暴动，厉王被赶走；这一年也对应共和纪年，是中国历史有明确纪年的开端']},
  {id:18,year:-770,yearLabel:'公元前770年',approx:false,type:'event',title:'平王东迁',
   story:'犬戎攻破镐京，新的周王把都城东迁到洛邑，西周结束、春秋开始。',
   points:['公元前771年，犬戎攻破镐京，西周灭亡','公元前770年，周平王把都城东迁洛邑，今洛阳，史称东周','东周分两段：前段叫春秋，后段叫战国']},
  {id:19,year:-650,yearLabel:'春秋时期',approx:true,type:'event',title:'春秋争霸',
-  story:'周王衰微，强大的诸侯争当霸主，打出“尊王攘夷”的旗号。',
-  points:['王室衰微，诸侯不再听令，大的诸侯打着“尊王攘夷”旗号争当霸主','齐桓公任用管仲改革，第一个称霸，后来还有晋文公、楚庄王等','争霸战争多，可也让各民族往来更多，慢慢走向融合']},
+  story:'周王衰微，强大的诸侯争当霸主。',
+  points:['王室衰微，诸侯不再听令，强大的诸侯争当霸主','齐桓公任用管仲改革，打着“尊王攘夷”的旗号，第一个称霸，后来还有晋文公、楚庄王等','争霸战争多，可也让各民族往来更多，慢慢走向融合']},
  {id:20,year:-500,yearLabel:'春秋后期',approx:true,type:'event',title:'铁器牛耕',
   story:'铁做的农具和牛拉犁出现，种地快了，能开垦的地也多了。',
-  points:['春秋后期，铁制农具出现，牛耕开始使用','到战国，铁农具和牛耕推广，生产力大大提高','私田越开越多，旧的井田制度守不住，社会开始大变革']},
+  points:['春秋后期，铁制农具出现，牛耕开始使用','到战国，铁农具和牛耕推广，生产力大大提高','农业、手工业和商业都跟着发展，旧的井田制度慢慢松动，社会开始大变革']},
  {id:21,year:-475,yearLabel:'战国时期·前475年起',approx:true,type:'event',title:'战国七雄',
   story:'从这一年起算进战国。七雄并立不是一天形成的，是几十年间三家分晋、田氏代齐一步步来的。',
   points:['公元前475年常被当作战国时代的开始','晋国被韩、赵、魏三家瓜分：前453年三家灭智氏，前403年周天子正式承认三家为诸侯','齐国大夫田氏一步步掌权，前386年正式取代国君，就是田氏代齐','最终形成齐、楚、秦、燕、赵、魏、韩七雄并立，各国都想富国强兵、在兼并中取胜']},
  {id:23,year:-356,yearLabel:'公元前356年',approx:false,type:'event',title:'商鞅变法',
   story:'商鞅在秦国变法，奖耕战、立县制，让秦国一跃成为最强的国家。',
-  points:['公元前356年，秦孝公任用商鞅变法','政治上确立县制，由国君派官治理，废除贵族世袭特权','经济上废井田、允许土地买卖，奖励耕织，生产多的可免徭役','军事上奖励军功，按杀敌多少授爵位，军队战斗力大增','变法以后秦国国力、军力跃居七雄之首，为后来统一六国打下底子']},
+  points:['公元前356年，秦孝公任用商鞅变法','政治上确立县制，由国君派官治理，废除贵族世袭特权','经济上废井田、允许土地买卖，奖励耕织，生产粮食、布帛多的人可免徭役','军事上奖励军功，按杀敌多少授爵位，军队战斗力大增','变法以后秦国国力、军力跃居七雄之首，为后来统一六国打下底子']},
  {id:22,year:-340,yearLabel:'战国时期',approx:true,type:'event',title:'战国著名战役',
-  story:'兼并战争越打越大，留下好几个有名的计策和成语。',
+  story:'兼并战争越打越大，这几场战役分布在战国不同时期，留下好几个有名的计策和成语。',
   points:['桂陵之战：齐军围魏救赵，解了赵国之围','马陵之战：孙膑用减灶计诱敌，大败魏军','长平之战：赵括纸上谈兵，秦将白起全歼赵军主力，是战国最大的歼灭战，此后六国再难抗秦']},
- {id:25,year:-300,yearLabel:'战国时期',approx:true,type:'event',title:'百家争鸣',
+ {id:25,year:-300,yearLabel:'春秋战国时期',approx:true,type:'event',title:'百家争鸣',
   story:'同一个社会问题，各学派各有各的答法，思想空前活跃。',
-  points:['儒家：孔子讲“仁”、以德治国，孟子讲“仁政”、民贵君轻','道家：老子讲事物会向相反方向转化、无为而治，庄子讲顺应自然','墨家：墨子讲“兼爱”“非攻”，反对不义战争','法家：韩非讲以法治国、建立中央集权，最合当时君主的胃口','各家著书讲学、互相辩论，形成百家争鸣的局面']},
+  points:['儒家：春秋孔子讲“仁”、以德治国，战国孟子讲“仁政”、民贵君轻','道家：春秋老子讲事物会向相反方向转化、无为而治，战国庄子讲顺应自然','墨家：墨子讲“兼爱”“非攻”，反对不义战争','法家：韩非强调以法治国、树立君主权威、建立中央集权，最合当时君主的胃口','各家著书讲学、互相辩论，形成百家争鸣的局面']},
  {id:24,year:-256,yearLabel:'公元前256年',approx:false,type:'event',title:'都江堰',
-  story:'李冰父子在岷江修了一座水利，既能防洪又能灌溉，成都平原成了天府之国。',
-  points:['战国后期，秦国蜀郡太守李冰父子在岷江主持修建','由鱼嘴、飞沙堰、宝瓶口等组成，分水、排沙、控水，至今还在用','灌溉了大片农田，成都平原变成“水旱从人”的天府之国']},
+  story:'李冰在岷江主持修了一座水利，既能防洪又能灌溉，成都平原成了天府之国。',
+  points:['战国后期，秦国蜀郡太守李冰主持，由民众在岷江修建','由鱼嘴、飞沙堰、宝瓶口等组成，分水、排沙、控水，至今还在用','灌溉了大片农田，成都平原变成“水旱从人”的天府之国']},
  {id:26,year:-221,yearLabel:'公元前230—前221年',approx:false,type:'event',title:'秦灭六国',
   story:'秦国按顺序攻灭六国，结束了几百年的分裂。',
   points:['从公元前230年起，秦国先后攻灭韩、赵、魏、楚、燕、齐','公元前221年，六国全灭，秦国完成统一，结束了长期混战']},
  /* ===== 第三单元 秦汉 ===== */
  {id:27,year:-221,yearLabel:'公元前221年',approx:false,type:'event',title:'秦统一中国',
   story:'秦王嬴政称“始皇帝”，把全国的大权都攥在中央手里。',
-  points:['嬴政建立秦朝，定都咸阳，自称“始皇帝”，总揽军政大权','中央设丞相、太尉、御史大夫，分别管行政、军事、监察','地方废除分封，全面推行郡县制，长官由皇帝直接任免，不能世袭','这套中央集权的制度，以后各朝基本沿用']},
+  points:['嬴政建立秦朝，定都咸阳，自称“始皇帝”，总揽军政大权','中央设丞相、太尉、御史大夫，分别管行政、军事、监察','地方废除分封，全面推行郡县制，长官由朝廷直接任免，不能世袭','这套中央集权的制度，以后各朝基本沿用']},
  {id:28,year:-220,yearLabel:'秦统一后',approx:true,type:'event',title:'统一措施',
   story:'文字、货币、度量衡全统一，车也走同宽的道，各地再不能各搞各的。',
   points:['统一文字：以小篆为通用字体，后来又流行更简便的隶书','统一货币：废除六国旧钱，用圆形方孔的半两钱','统一度量衡，车轨同宽，修驰道、灵渠，北筑长城抵御匈奴','统一让各地交流方便，也巩固了大一统的局面']},
@@ -1581,7 +1614,7 @@ let NODES=[
   points:['秦朝徭役、赋税沉重，法律严酷，百姓苦不堪言','陈胜、吴广带队戍边，遇雨误期，按律当斩，便在大泽乡起义','“王侯将相宁有种乎”，起义虽败，却点燃了反秦的大火']},
  {id:30,year:-207,yearLabel:'公元前207年',approx:false,type:'event',title:'巨鹿之战',
   story:'项羽破釜沉舟，以少胜多，秦军主力就此被打垮。',
-  points:['项羽率楚军渡过漳水，砸破锅、凿沉船，只带三天干粮，以示必死','楚军以一当十，在巨鹿大败秦军主力，这一年秦朝灭亡']},
+  points:['项羽率楚军渡过漳水，砸破锅、凿沉船，只带三天干粮，以示必死','楚军以一当十，在巨鹿大败秦军主力','同年刘邦率军直抵咸阳，秦朝统治者投降，秦朝灭亡']},
  {id:31,year:-204,yearLabel:'公元前206—前202年',approx:true,type:'event',title:'楚汉之争',
   story:'项羽、刘邦争天下，刘邦会用人，最终把项羽逼到乌江自刎。',
   points:['秦亡后，项羽自立为西楚霸王，封刘邦为汉王，双方争夺天下，史称楚汉之争','刘邦任用张良、萧何、韩信，约法三章收民心；项羽刚愎自用','公元前202年，项羽兵败垓下、乌江自刎，刘邦胜出']},
@@ -1605,7 +1638,7 @@ let NODES=[
   points:['汉武帝采纳主父偃的建议，让诸侯王把封地再分给其他儿子作侯国','新封的侯国由皇帝定封号，归汉郡和中央管','随着封地逐步分出，诸侯王能直接管辖的地方减少，势力逐渐削弱']},
  {id:38,year:-119,yearLabel:'公元前119年',approx:false,type:'event',title:'漠北战役',
   story:'这一年卫青穿越大漠包围单于，霍去病挥师北进，是反击匈奴的高潮。',
-  points:['卫青、霍去病率精骑深入漠北，卫青包围单于，单于逃走','匈奴遭到沉重打击，再无力与西汉对抗，部分匈奴人开始西迁']},
+  points:['卫青、霍去病率精骑深入漠北，卫青包围单于，单于逃走','匈奴遭到沉重打击，再无力与西汉对抗，一部分匈奴人西迁，也有一部分归附西汉']},
  {id:52,year:-119,yearLabel:'公元前119年',approx:false,type:'event',title:'张骞第二次出使',
   story:'这一次人多、带的丝绸也多，回来时还带回了西域各国的使者。',
   points:['公元前119年，张骞带着三百多人、大量金币和丝绸再次出使西域，想联络乌孙','他派出副使，分别访问大宛、康居、大月氏、大夏、安息等国','此后汉朝和西域的使者、商人往来不断，通往西域的路真正走顺了']},
@@ -1620,7 +1653,7 @@ let NODES=[
   points:['西汉设置西域都护，管理西域36国，府治在乌垒城','西域都护颁行号令、调遣军队、征发粮草','标志着西域正式归属中央政权']},
  {id:53,year:-50,yearLabel:'西汉以来',approx:true,type:'event',title:'丝绸之路',
   story:'这条路不是一次走成的，是一代代使者、商人慢慢踩出来的。',
-  points:['路线从长安出发，经河西走廊、出西域，再到中亚、西亚，最远到达大秦（罗马）','往西去的有丝绸、漆器，还有铸铁、凿井等技术','往东来的有核桃、葡萄、苜蓿、石榴、香料和乐器，后来佛教也沿这条路传入','因为中国的丝绸最有名、运得最多，这条路就叫“丝绸之路”']},
+  points:['路线从长安出发，经河西走廊、出西域，运往中亚、西亚，再转运到更远的欧洲和北非','往西去的有丝绸、漆器，还有铸铁、凿井等技术','往东来的有核桃、葡萄、苜蓿、石榴、香料和乐器，后来佛教也沿这条路传入','因为中国的丝绸最有名、运得最多，这条路就叫“丝绸之路”']},
  {id:54,year:-40,yearLabel:'汉代',approx:true,type:'event',title:'海上丝绸之路',
   story:'除了走西北的沙漠，汉人还驾船从海上往南走。',
   points:['汉代的船从东南沿海的徐闻、合浦出发，沿南海航行','一路经过东南亚，最远到达印度半岛南端，《汉书·地理志》里记下了这条航线','它和陆上丝绸之路一海一陆，把中国和外面连起来']},
@@ -1632,10 +1665,10 @@ let NODES=[
   points:['绿林军攻入长安，王莽被杀，新朝灭亡']},
  {id:44,year:25,yearLabel:'公元25年',approx:false,type:'event',title:'刘秀建立东汉',
   story:'刘秀是西汉宗室，他统治时期社会安定，后来这一局面被称为光武中兴。',
-  points:['刘秀称帝，定都洛阳，史称东汉，他就是光武帝','多次释放奴婢、合并郡县、裁减官员、惩处贪官','允许北方少数民族内迁，缓和民族矛盾，社会安定，史称“光武中兴”']},
+  points:['刘秀称帝，定都洛阳，史称东汉，他就是光武帝','多次释放奴婢、合并郡县、裁减官员、惩处贪官','妥善处理北方民族迁居和边疆事务，缓和民族矛盾，社会安定，史称“光武中兴”']},
  {id:45,year:73,yearLabel:'公元73年',approx:false,type:'event',title:'班超经营西域',
   story:'班超“投笔从戎”，在西域经营30多年，儿子班勇后来继承父业。',
-  points:['班超出使西域，使西域各国重新与汉朝建立联系','他派甘英出使大秦（罗马），甘英经安息、抵条支，临海而止，虽没到大秦，却开辟了通往西亚的路线']},
+  points:['班超出使西域，使西域各国重新与汉朝建立联系','他派甘英出使大秦（罗马），甘英到达安息后受阻，没能继续前行，但开辟了通往西亚的路线']},
  {id:46,year:105,yearLabel:'公元105年',approx:true,type:'event',title:'蔡伦改进造纸',
   story:'蔡伦是改进不是发明，造纸术后来传遍了全世界。',
   points:['西汉时已经有麻纸，但质地粗糙、不好用','东汉蔡伦用树皮、麻头、破布、旧渔网改进工艺，纸便宜好用，人称“蔡侯纸”','纸逐渐取代简帛，造纸术是中国对世界文明的伟大贡献之一']},
@@ -1643,8 +1676,8 @@ let NODES=[
   story:'这是2024版教材里新增的内容。',
   points:['东汉把西域都护府改为西域长史府，继续行使管理西域的职权']},
  {id:48,year:160,yearLabel:'东汉末年',approx:true,type:'person',title:'医圣张仲景',
-  story:'他每月初一、十五打开衙门坐堂看病，“坐堂医生”就是这么来的。',
-  points:['写成《伤寒杂病论》，提出辨证分析、对症治疗','发展了“治未病”的预防思想，被后世尊称为“医圣”']},
+  story:'他总结临床经验，写了一部医书，把辨证施治的法子讲得很清楚。',
+  points:['写成《伤寒杂病论》，提出辨证施治、对症治疗','发展了“治未病”的预防思想，被后世尊称为“医圣”']},
  {id:49,year:170,yearLabel:'东汉末年',approx:true,type:'person',title:'名医华佗',
   story:'华佗模仿虎、鹿、熊、猿、鸟五种动物，编了一套“五禽戏”。',
   points:['发明“麻沸散”，让病人失去知觉后再做外科手术','创编“五禽戏”，帮助人们强身健体']},
@@ -1662,9 +1695,9 @@ let NODES=[
  {id:56,year:208,yearLabel:'公元208年',approx:false,type:'event',title:'赤壁之战',
   story:'曹操想顺势南下，结果在赤壁栽了个大跟头。',
   points:['208年，曹操大军南下，想灭掉孙权和刘备','孙刘联军用黄盖诈降、火攻，烧了曹军连在一起的战船','曹军大败退回北方，这一仗为三国鼎立埋下了伏笔']},
- {id:57,year:220,yearLabel:'公元220年',approx:false,type:'state',title:'三国鼎立',
-  story:'东汉没了，天下分成三块，谁也吃不掉谁。',
-  points:['220年曹丕废掉汉献帝，在洛阳称帝，国号魏','221年刘备在成都称帝，国号汉，史称蜀汉','229年孙权在建业称帝，国号吴，三国鼎立的局面形成']},
+ {id:57,year:229,yearLabel:'公元229年',approx:false,type:'state',title:'三国鼎立',
+  story:'东汉没了，天下分成三块，谁也吃不掉谁，到这一年三国鼎立的局面才算定下来。',
+  points:['220年曹丕逼汉献帝退位后称帝，定都洛阳，国号魏','221年刘备在成都称帝，国号汉，史称蜀汉','222年孙权称吴王；229年孙权称帝，吴国建立，定都建业，三国鼎立局面形成']},
  {id:58,year:280,yearLabel:'公元280年',approx:false,type:'event',title:'西晋统一',
   story:'分裂几十年，最后是司马家把天下又合到一起。',
   points:['266年司马炎废掉魏帝，建立晋朝，定都洛阳，史称西晋','280年西晋灭掉东吴，结束三国分裂，全国又统一','这方“晋归义羌侯”金印，是晋朝颁给内迁羌人首领的官印，能看出朝廷和周边民族的关系']},
@@ -1673,10 +1706,10 @@ let NODES=[
   points:['晋武帝死后，同姓的八个藩王为争权相互攻杀，史称八王之乱','内乱持续十几年，中原被打得残破，大量百姓遭殃','西晋从此元气大伤，周边各族趁机起兵']},
  {id:60,year:300,yearLabel:'东汉魏晋时期',approx:true,type:'event',title:'北方各族内迁',
   story:'北方的少数民族，早就一批批往内地搬。',
-  points:['东汉、魏、晋时期，匈奴、鲜卑、羯、氐、羌等族不断内迁，历史上叫“五胡”','他们大多迁到今天的陕西、山西、辽宁一带，和汉族杂居','内迁各族慢慢学汉人的农耕和生活，民族之间的界限在变']},
+  points:['东汉、魏、晋时期，匈奴、鲜卑、羯、氐、羌等族不断内迁，历史上叫“五胡”','各族从北方、西北不同方向迁入中原，和汉族杂居而处','内迁各族慢慢学汉人的农耕和生活，民族之间的界限在变','316年，内迁的匈奴人攻陷西晋都城，西晋灭亡']},
  {id:61,year:317,yearLabel:'公元317年',approx:false,type:'state',title:'东晋建立',
   story:'西晋亡了，皇族跑到南方，把晋朝又撑起来。',
-  points:['317年司马睿在建康称帝，史称东晋','朝廷靠南迁的北方士族和当地士族撑着，当时有“王与马，共天下”的说法','顾恺之是东晋大画家，《女史箴图》能让人看到东晋人物画的样子']},
+  points:['317年司马睿在世家大族拥戴下重建晋王朝，以建康为都城，史称东晋','朝廷靠南迁的北方士族和当地士族撑着，当时有“王与马，共天下”的说法','顾恺之是东晋大画家，《女史箴图》能让人看到东晋人物画的样子']},
  {id:62,year:350,yearLabel:'东晋',approx:true,type:'person',title:'“书圣”王羲之',
   story:'写字写到他这份上，后人直接称他“书圣”。',
   points:['王羲之是东晋书法家，笔法飘逸又有力','代表作《兰亭序》被称为“天下第一行书”，今天看到的多是唐代摹本（神龙本）','从他开始，书法的审美被抬到很高的位置']},
@@ -1707,9 +1740,18 @@ let NODES=[
  {id:71,year:530,yearLabel:'北朝',approx:true,type:'person',title:'农学家贾思勰',
   story:'他把种地、养殖的本事整理成一本书，流传很广。',
   points:['贾思勰是北朝农学家，做过地方官，留心农业生产','写成《齐民要术》，总结农、林、牧、副、渔等方面的生产技术','这是我国现存最早的一部完整农书，对后世农学影响很大']},
- {id:72,year:580,yearLabel:'南北朝',approx:true,type:'event',title:'活动课：从考古发现看中华文明',
+ {id:72,year:580,yearLabel:'史前至早期文明',approx:true,type:'event',title:'活动课：从考古发现看中华文明的起源',
   story:'这一课不记新朝代，换个法子，自己动手当一回考古的人。',
-  points:['考古是通过实物证据去还原过去，一件文物、一个遗址都能说话','学着从出土地、年代、器物特征去推断，先猜想，再用证据检验','把这一册见过的文物串起来，能看到中华文明怎么一步步延续、交融']}
+  points:['考古是通过实物证据去还原过去，一件文物、一个遗址都能说话','学着从出土地、年代、器物特征去推断，先猜想，再用证据检验','把这一册见过的文物串起来，能看到中华文明怎么一步步延续、交融']},
+ {id:73,year:-202,yearLabel:'西汉初年',approx:true,type:'event',title:'汉高祖休养生息',
+  story:'汉高祖吸取秦朝速亡的教训，让老百姓歇口气，好把生产恢复起来。',
+  points:['汉高祖吸取秦朝速亡的教训，主张清静无为，采取休养生息政策','让部分士兵还乡务农，把因战乱、饥荒成为奴婢的人释放为平民，增加农业劳动力','轻徭薄赋，减轻农民赋税，把田租定为十五税一','经过休养生息，汉初经济慢慢恢复，社会趋于稳定']},
+ {id:74,year:-134,yearLabel:'汉武帝时期',approx:true,type:'event',title:'罢黜百家 尊崇儒术',
+  story:'汉武帝想把思想也统一起来，董仲舒的建议正合他的心意。',
+  points:['汉武帝接受董仲舒的建议，把儒家学说立为正统思想，史称“罢黜百家，尊崇儒术”','儒家忠君守礼的思想，成了大一统政权的精神支柱','汉武帝在长安兴办太学，以《诗》《书》《礼》《易》《春秋》为教材，培养治国人才','儒士进入各级政府机构，儒学从此成为国家的统治思想，影响深远']},
+ {id:75,year:150,yearLabel:'东汉中后期',approx:true,type:'event',title:'外戚宦官交替专权',
+  story:'皇帝年纪小，外戚和宦官轮流把持朝政，政治越来越糟。',
+  points:['外戚是皇帝的母族、妻族，皇帝年幼时往往由外戚掌权','皇帝长大后依靠宦官除掉外戚，宦官得到宠信，又形成宦官专权','外戚和宦官轮流把持朝政、任用亲信，这种局面反复出现，叫外戚宦官交替专权','他们搜刮民财，政治腐朽、社会混乱，动摇了东汉的统治']}
 ];
 
 
@@ -1804,7 +1846,10 @@ const store={
   get topicDone(){try{return JSON.parse(localStorage.getItem('zg_topic_done')||'[]')}catch(e){return[]}},
   set topicDone(v){localStorage.setItem('zg_topic_done',JSON.stringify(v))},
   get warStep(){try{return JSON.parse(localStorage.getItem('zg_war_step')||'null')}catch(e){return null}},
-  set warStep(v){if(v===null)localStorage.removeItem('zg_war_step');else localStorage.setItem('zg_war_step',JSON.stringify(v))}
+  set warStep(v){if(v===null)localStorage.removeItem('zg_war_step');else localStorage.setItem('zg_war_step',JSON.stringify(v))},
+  /* 专题步骤按专题分键：丝路/造纸/推恩各存各的，不再互相覆盖 */
+  topicStepOf(key){try{return JSON.parse(localStorage.getItem('zg_topic_step_'+key)||'null')}catch(e){return null}},
+  setTopicStepOf(key,v){if(v===null)localStorage.removeItem('zg_topic_step_'+key);else localStorage.setItem('zg_topic_step_'+key,JSON.stringify(v))}
 };
 let currentIndex=0;
 
@@ -1977,16 +2022,16 @@ let LESSONS=[
  {no:8,unit:2,title:'夏商周时期的科技与文化',nodes:[12,13]},
  {no:9,unit:3,title:'秦统一中国',nodes:[25,26,27]},
  {no:10,unit:3,title:'秦末农民大起义',nodes:[28,29,30]},
- {no:11,unit:3,title:'西汉建立和“文景之治”',nodes:[31,32,33]},
- {no:12,unit:3,title:'大一统王朝的巩固',nodes:[34,36,37,39,40]},
- {no:13,unit:3,title:'东汉的兴衰',nodes:[44,45,46,52,53]},
+ {no:11,unit:3,title:'西汉建立和“文景之治”',nodes:[32,72,33]},
+ {no:12,unit:3,title:'大一统王朝的巩固',nodes:[34,31,36,37,39,40,73]},
+ {no:13,unit:3,title:'东汉的兴衰',nodes:[44,45,46,74,52,53]},
  {no:14,unit:3,title:'丝绸之路的开通与经营西域',nodes:[35,38,41,42,43,47,49]},
  {no:15,unit:3,title:'秦汉时期的科技与文化',nodes:[48,50,51]},
  {no:16,unit:4,title:'三国鼎立',nodes:[54,55,56]},
  {no:17,unit:4,title:'西晋的短暂统一和北方各族的内迁',nodes:[57,58,59]},
- {no:18,unit:4,title:'东晋南朝政治和江南地区开发',nodes:[60,63,64,65]},
- {no:19,unit:4,title:'北朝政治和北方民族大交融',nodes:[68,69]},
- {no:20,unit:4,title:'三国两晋南北朝时期的科技与文化',nodes:[66,70,61,62,67]},
+ {no:18,unit:4,title:'东晋南朝政治和江南地区开发',nodes:[60,64,65]},
+ {no:19,unit:4,title:'北朝政治和北方民族大交融',nodes:[63,68,69]},
+ {no:20,unit:4,title:'三国两晋南北朝时期的科技与文化',nodes:[61,62,66,67,70]},
  {no:21,unit:4,title:'活动课：从考古发现看中华文明',nodes:[71]}
 ];
 function lessonByNo(no){return LESSONS.find(l=>l.no===no);}
@@ -2008,6 +2053,7 @@ function buildNodeCard(i){
   node.type='button';
   node.className='j-node'+(n.approx?' approx':'')+(P.isNodeSeen(i)?' seen':'')+(topic?' is-topic':'');
   node.setAttribute('data-type',n.type);
+  node.setAttribute('data-node-index',i);
   let html='<span class="j-dot"></span>'+
     '<div class="j-top"><span class="j-year">'+n.yearLabel+'</span>'+
     '<span class="j-type-tag">'+TYPE_META[n.type].label+'</span></div>'+
@@ -2020,7 +2066,7 @@ function buildNodeCard(i){
     html+='<span class="thread-tags">';
     thIds.forEach(tid=>{
       const th=THREADS.find(x=>x.id===tid);
-      html+='<span class="thread-chip" data-thread="'+tid+'">'+THREAD_ICONS[th.icon]+'话题·'+th.name+'</span>';
+      html+='<span class="thread-chip" role="link" tabindex="0" data-thread="'+tid+'">'+THREAD_ICONS[th.icon]+'话题·'+th.name+'</span>';
     });
     html+='</span>';
   }
@@ -2028,9 +2074,13 @@ function buildNodeCard(i){
   const idx=i;
   node.addEventListener('click',()=>openSheet(idx));
   node.querySelectorAll('.thread-chip').forEach(chip=>{
-    chip.addEventListener('click',e=>{
+    const goThread=e=>{
       e.stopPropagation();
       go('/thread/'+chip.getAttribute('data-thread'));
+    };
+    chip.addEventListener('click',goThread);
+    chip.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();goThread(e);}
     });
   });
   return node;
@@ -2055,6 +2105,17 @@ function renderJourney(){
 /* ===== 视图切换 ===== */
 const portalView=document.getElementById('portalView');
 const homeView=document.getElementById('homeView'),topicView=document.getElementById('topicView'),threadViewEl=document.getElementById('threadView'),view3dEl=document.getElementById('view3d');
+const invalidView=document.getElementById('invalidView');
+/* 无效深链：藏起所有正常视图，给解释和返回入口，焦点落到卡片 */
+function showInvalidRoute(text){
+  [portalView,homeView,topicView,threadViewEl,view3dEl].forEach(function(el){
+    el.classList.remove('active');el.hidden=true;
+  });
+  document.getElementById('invalidText').textContent=text;
+  invalidView.hidden=false;
+  window.scrollTo(0,0);
+  setTimeout(function(){document.getElementById('invalidHome').focus({preventScroll:true});},0);
+}
 let currentTopic=null;
 function showView(v){
   portalView.classList.toggle('active',v==='portal');
@@ -2075,15 +2136,21 @@ function showView(v){
 }
 function saveTopicStep(){
   if(currentTopic==='silk'){
-    store.topicStep={level:silkLevel,mainPos:silkMainPos,picked:silkPicked,trials:silkTrials};
+    store.setTopicStepOf('silk',{level:silkLevel,mainPos:silkMainPos,picked:silkPicked,trials:silkTrials});
   }else if(currentTopic==='tuen'){
-    store.topicStep={seenKing:seenKing,seenHou:seenHou};
+    store.setTopicStepOf('tuen',{seenKing:seenKing,seenHou:seenHou,tuenJudge:tuenJudge});
   }else if(currentTopic==='paper'){
-    store.topicStep={cailunDeep:cailunDeep.classList.contains('show')};
+    store.setTopicStepOf('paper',{
+      cailunDeep:cailunDeep.classList.contains('show'),
+      paperEv:paperEv,paperQ1:paperQ1,paperQ2:paperQ2,
+      paperResult:paperResult.classList.contains('show'),
+      paperResultHTML:paperResult.classList.contains('show')?paperResult.innerHTML:null,
+      paperSummary:paperSummary.classList.contains('show')
+    });
   }
 }
 function restoreTopicStep(key){
-  const s=store.topicStep;
+  const s=store.topicStepOf(key);
   if(!s)return;
   if(key==='silk'){
     silkLevel=s.level||0;silkMainPos=s.mainPos||0;
@@ -2092,11 +2159,65 @@ function restoreTopicStep(key){
     silkTrials.length=0;
     if(Array.isArray(s.trials))s.trials.forEach(t=>silkTrials.push(t));
     renderSilk();
+    /* 走完至少一趟：重建回程、甘英和对照区，刷新不丢 */
+    if(silkTrials.length>0){
+      const last=silkTrials[silkTrials.length-1];
+      silkReturn.innerHTML=silkReturnHTML(last.back);
+      silkReturn.classList.add('show');
+      document.getElementById('silkAlt').addEventListener('click',resetForAnother);
+      showGan();
+      renderCompare();
+    }
   }else if(key==='tuen'){
     applyTuenRestore(s);
   }else if(key==='paper'){
-    if(s.cailunDeep)cailunDeep.classList.add('show');
+    applyPaperRestore(s);
   }
+}
+/* 造纸专题刷新恢复：首题、迁移两问、热身，各自回到刷新前的状态 */
+function applyPaperRestore(s){
+  if(s.paperEv===true||s.paperEv===false){
+    paperEv=s.paperEv;
+    const evs=document.querySelectorAll('.ev-answer');
+    const evEl=evs[s.paperEv?0:1];
+    if(evEl)evEl.classList.add(s.paperEv?'right':'wrong');
+    evFeedback.classList.add('show');
+    evFeedback.className='ev-feedback show '+(s.paperEv?'ok':'no');
+    evFeedback.textContent=s.paperEv
+      ?'对了。放马滩纸是西汉的，比蔡伦早两百多年，它一出现，“蔡伦以前没有纸”这句话就被推翻了。'
+      :'再想想：蔡伦的记载是东汉的，它只能说明东汉怎么造纸，不能证明西汉有没有纸。点放马滩纸看看它的年代。';
+  }
+  if(s.cailunDeep)cailunDeep.classList.add('show');
+  if(s.paperQ1===true||s.paperQ1===false){
+    paperQ1=s.paperQ1;
+    tq2.hidden=false;
+    const a1=document.querySelectorAll('#tq1 .t-answer');
+    const el1=a1[s.paperQ1?0:1];
+    if(el1)el1.classList.add(s.paperQ1?'right':'wrong');
+    tFeedback.classList.add('show');
+    tFeedback.className='t-feedback show '+(s.paperQ1?'ok':'no');
+    tFeedback.textContent=s.paperQ1
+      ?'对。这张纸是西汉的，年代比蔡伦早，又是麻纸——所以它能证明西汉那个时候已经有纸。你不是记住了“放马滩”这个名字，是靠“年代更早、又是纸”自己推出来的。'
+      :'再想想：一张纸只能证明“有纸”，证明不了“人人都在用”。';
+  }
+  if(s.paperQ2===true||s.paperQ2===false){
+    paperQ2=s.paperQ2;
+    const a2=document.querySelectorAll('#tq2 .t-answer');
+    const el2=a2[s.paperQ2?0:1];
+    if(el2)el2.classList.add(s.paperQ2?'right':'wrong');
+    tFeedback.classList.add('show');
+    if(s.paperQ2){
+      tFeedback.className='t-feedback show ok';
+      tFeedback.textContent='没错。一张纸躺在墓里，看不出当时有多少人在用、普不普及。要知道这个，得看多不多地方出土、工艺便不便宜。“有没有”和“普不普及”，是两回事。';
+    }
+  }
+  if(s.paperResult&&s.paperResultHTML){
+    paperResult.innerHTML=s.paperResultHTML;
+    paperResult.classList.add('show');
+    const cb=document.getElementById('compareBtn');
+    if(cb)cb.addEventListener('click',showPaperSummary);
+  }
+  if(s.paperSummary)showPaperSummary();
 }
 function openTopic(key,resume){
   /* 统一走路由：地址可分享，浏览器返回能回原课 */
@@ -2128,8 +2249,8 @@ const THREE_URL='./vendor/three.module.js';
 /* 节点索引 -> 3D 场景：都江堰 id24(索引23)；钱币 id28(索引27)、id39(索引38) */
 let NODE_3D_MAP={24:'dujiangyan',27:'coins',39:'coins'};
 let S3D_META={
-  coins:{name:'翻看秦半两与汉五铢',crumb:'时间轴 → 3D 钱币'},
-  dujiangyan:{name:'3D 看都江堰',crumb:'时间轴 → 3D 都江堰'}
+  coins:{name:'翻看秦半两与汉五铢',crumb:'时间轴 → 3D 钱币',backLesson:9},
+  dujiangyan:{name:'3D 看都江堰',crumb:'时间轴 → 3D 都江堰',backLesson:6}
 };
 let __threePromise=null;
 function loadThree(){
@@ -2393,8 +2514,14 @@ function buildDujiangyan(THREE,stage,onReady){
   const scene=new THREE.Scene();
   scene.environment=makeEnvMap(THREE,renderer);
   const camera=new THREE.PerspectiveCamera(45,w/h,0.1,120);
+  /* 窄屏水平 FOV 小，按比例拉远，让岷江、成都平原等标签整体入框，不被边裁掉 */
+  function fitOverallRadius(aspect){
+    var needHalfWidth=7.2;
+    var r=needHalfWidth/(Math.tan(THREE.MathUtils.degToRad(22.5))*aspect);
+    return Math.max(11,Math.min(26,r));
+  }
   const controls=new DragOrbit(THREE,camera,stage,{
-    target:new THREE.Vector3(0,0,-0.5),radius:13,minRadius:4,maxRadius:17,
+    target:new THREE.Vector3(0,0,-0.5),radius:fitOverallRadius(w/h),minRadius:4,maxRadius:26,
     phi:0.7,theta:0.6,minPhi:0.22,maxPhi:Math.PI/2.02
   });
   const key=new THREE.DirectionalLight(0xfff4e0,2.2);
@@ -2473,10 +2600,11 @@ function buildDujiangyan(THREE,stage,onReady){
   inst.frustumCulled=false;scene.add(inst);
   const dummy=new THREE.Object3D();
   const VIEWS={
-    overall:{tgt:[0,0,-0.5],phi:0.7,theta:0.6,r:13},
+    overall:{tgt:[0,0,-0.5],phi:0.7,theta:0.6,r:'fit'},
     yuzui:{tgt:[0,0,-3.2],phi:1.05,theta:Math.PI/2,r:6},
     baoping:{tgt:[0.9,0,1.5],phi:1.0,theta:Math.PI/2,r:5}
   };
+  let currentViewId='overall';
   let raf,visible=true,firstFrame=true,last=performance.now();
   function loop(now){
     const dt=Math.min(0.05,(now-last)/1000);last=now;
@@ -2501,10 +2629,19 @@ function buildDujiangyan(THREE,stage,onReady){
   function onResize(){
     const nw=stage.clientWidth,nh=stage.clientHeight;
     camera.aspect=nw/nh;camera.updateProjectionMatrix();renderer.setSize(nw,nh);
+    /* 横竖屏切换后，整体视图按新比例重新拉远，标签继续入框 */
+    if(currentViewId==='overall')controls.setView(undefined,undefined,fitOverallRadius(nw/nh));
   }
   window.addEventListener('resize',onResize);
   return {
-    setView:id=>{const v=VIEWS[id];if(v){controls.setTarget(new THREE.Vector3(v.tgt[0],v.tgt[1],v.tgt[2]));controls.setView(v.phi,v.theta,v.r);}},
+    setView:id=>{
+      const v=VIEWS[id];
+      if(!v)return;
+      currentViewId=id;
+      controls.setTarget(new THREE.Vector3(v.tgt[0],v.tgt[1],v.tgt[2]));
+      var r=v.r==='fit'?fitOverallRadius(stage.clientWidth/stage.clientHeight):v.r;
+      controls.setView(v.phi,v.theta,r);
+    },
     destroy(){
       cancelAnimationFrame(raf);
       document.removeEventListener('visibilitychange',onVis);
@@ -2564,6 +2701,21 @@ async function enter3D(key){
   loadingEl.style.display='flex';
   document.getElementById('loading3dText').textContent='正在调出 3D……';
   document.getElementById('crumb3d').textContent=S3D_META[key].crumb;
+  /* 返回文案：从卡片进，标明回哪张卡；直达，给相关课入口 */
+  var backText=document.getElementById('back3dText');
+  var relatedBtn=document.getElementById('back3dLesson');
+  if(fromNode3d!=null){
+    backText.textContent='回'+NODES[fromNode3d].title+'卡片';
+    relatedBtn.hidden=true;
+  }else{
+    backText.textContent='回时间轴';
+    var bl=S3D_META[key].backLesson;
+    if(bl){
+      relatedBtn.hidden=false;
+      relatedBtn.textContent='去第'+bl+'课：'+lessonByNo(bl).title;
+      relatedBtn.onclick=function(){go('/lesson/'+bl);};
+    }else{relatedBtn.hidden=true;}
+  }
   const vb=document.getElementById('viewBtns3d');
   vb.innerHTML='';
   S3D_UI[key].views.forEach((v,i)=>{
@@ -2858,7 +3010,7 @@ BOOK_DATA.g7a={
 /* ===== 数据：七年级下册（g7b），独立编号，先建第一单元 隋唐 ===== */
 let G7B_NODES=[
  {id:1,year:581,yearLabel:'581年',type:'state',title:'隋朝建立与统一',
-  story:'东汉以后乱了三百多年，最后是杨家把天下重新拢到一块。',
+  story:'分裂了很久，最后是杨家把天下重新拢到一块，结束了长期分裂的局面。',
   points:['581年，杨坚夺取北周政权，建立隋朝，他就是隋文帝','589年，隋军灭掉南方的陈，结束了长期分裂','隋文帝勤俭，统一后人口、粮食慢慢涨上来','先想一想，分裂几百年后重新统一，最要紧的得先做什么']},
  {id:2,year:605,yearLabel:'605年',type:'site',title:'大运河',
   story:'隋炀帝干了件大事，挖一条南北走向的大河，把几大水系串起来。',
@@ -2874,11 +3026,11 @@ let G7B_NODES=[
   points:['618年，李渊称帝，建立唐朝','李世民是唐太宗，年号贞观（627—649）','他虚心纳谏，敢重用提意见的魏征，轻徭薄赋','政治清明、国力渐强，史称“贞观之治”','皇帝肯听反对意见，这事你怎么看']},
  {id:6,year:629,yearLabel:'629年',type:'person',title:'玄奘西行',
   story:'一个和尚独自往西天取经，路上的艰险，壁画里都画着。',
-  points:['贞观年间，玄奘从长安出发，西行去天竺（今印度）取经','走过大漠雪山，学成后带回大量佛经，还写了《大唐西域记》','这幅是西夏石窟壁画，旁边已经有个猴形随从，比《西游记》成书早','壁画是文物，小说是后来的创作，两码事，别混']},
+  points:['贞观年间，玄奘从长安出发，西行去天竺（今印度）取经','走过大漠雪山，学成后带回大量佛经；他口述见闻，由弟子记录整理成《大唐西域记》','这幅是西夏石窟壁画，旁边已经有个猴形随从，比《西游记》成书早','壁画是文物，小说是后来的创作，两码事，别混']},
  {id:7,year:630,yearLabel:'630年',type:'event',title:'日本遣唐使',
   story:'日本一批批派人坐船渡海来唐朝，学制度、学文化，风浪里九死一生。',
   points:['从630年起，日本派出十几批遣唐使','使团里有留学生、学问僧，来学唐朝的制度、文字和技术','渡海风险很大，不少船翻在海里','这幅古画是日本人画的遣唐使船，看看那时的船怎么闯风浪']},
- {id:8,year:634,yearLabel:'634年前后',type:'event',title:'步辇图',
+ {id:8,year:634,yearLabel:'唐代（具体年份无考）',type:'event',title:'步辇图',
   story:'吐蕃派人来求亲，唐太宗接见使者的场面，被画了下来。',
   points:['《步辇图》传为唐代阎立本所画，现在能看到的是宋代摹本','画的是唐太宗接见吐蕃使者禄东赞','没有画背景，全靠人物的神态和身份说话','现存故宫，是汉藏友好往来的实物见证']},
  {id:9,year:641,yearLabel:'641年',type:'event',title:'文成公主入藏',
@@ -2892,7 +3044,7 @@ let G7B_NODES=[
   points:['唐玄宗前期年号开元（713—741），政局稳定、经济繁荣，史称“开元盛世”','农业、手工业兴旺，唐三彩是当时陶器的代表','唐三彩多是陪葬明器，黄、绿、白等釉色，马和骆驼最常见','这件三彩马是出土文物，比画像更能说明当时的手艺']},
  {id:12,year:753,yearLabel:'753年',type:'person',title:'鉴真东渡',
   story:'一位失明的老和尚，几次渡海失败，最后把佛法带到了日本。',
-  points:['鉴真六次东渡，第五次失败后双目失明，753年终于到日本','他在日本传授佛经，还带去建筑、医药、雕塑','奈良唐招提寺由他主持修建，这尊夹纻漆坐像就是他，日本奉为国宝','同是唐朝高僧，玄奘是“走进来”，鉴真是“走出去”，方向别记反']},
+  points:['鉴真六次东渡，第五次失败后双目失明，753年终于到日本','他在日本传授佛经，还带去建筑、医药、雕塑','奈良唐招提寺由他主持修建，这尊夹纻漆坐像就是他，日本奉为国宝','同是唐朝高僧，玄奘西行取经又返回长安译经，鉴真东渡日本传法，方向别记反']},
  {id:13,year:755,yearLabel:'755年',type:'event',title:'安史之乱',
   story:'一场叛乱把盛唐拦腰打断，唐朝从此由盛转衰。',
   points:['755年，安禄山和史思明发动叛乱，史称“安史之乱”，到763年才平定','叛军一度攻下洛阳、长安，唐玄宗逃往四川，路上有马嵬驿之变','这幅是形势图，箭头标着叛军和唐军的进退路线','打仗使北方残破，人口大量南迁，唐朝再没回到从前']},
@@ -2919,7 +3071,7 @@ let G7B_NODES=[
   points:['1004年，辽军大举南下，打到黄河边的澶州，宰相寇准力劝宋真宗亲征','双方议和，约为兄弟之国，宋每年给辽银10万两、绢20万匹，称“岁币”，以白沟河为界','这就是“澶渊之盟”，此后宋辽长期没大仗','先猜一猜，花钱买和平，到底是亏了还是值了，说说你的理由']},
  {id:21,year:1023,yearLabel:'1023年',type:'event',title:'交子（世界最早的纸币）',
   story:'四川买卖人嫌铁钱太重，就有了一张纸当钱用的办法。',
-  points:['北宋前期，四川地区出现“交子”，1023年官府设交子务，是世界上公认最早的纸币','当时四川用铁钱，买匹绢要扛很重的钱，纸币轻便，利于做大生意','交子没有实物留下来，这是据宋代钞版的拓印示意，不是真钞','想想看，一张纸能当钱，靠的是什么让人信它']},
+  points:['北宋前期，四川地区民间先出现“交子”，这是世界上最早的纸币；后来官府在1023年设立交子务，把纸币发行收归官办','当时四川用铁钱，买匹绢要扛很重的钱，纸币轻便，利于做大生意','交子没有实物留下来，这是据宋代钞版的拓印示意，不是真钞','想想看，一张纸能当钱，靠的是什么让人信它']},
  {id:22,year:1038,yearLabel:'1038年',type:'state',title:'西夏的建立',
   story:'西北的党项人也立了国，还造出了自己的方块字。',
   points:['1038年，党项首领元昊称帝，国号大夏，史称西夏，位置在今宁夏、甘肃一带','西夏仿照汉字造了西夏文，笔画繁复，用来写文书、刻经','后来宋夏连年打仗，双方都吃不消，最后议和，宋给西夏岁赐','这块残碑上的字就是西夏文，是出土文物，对照汉字看像不像']},
@@ -2937,7 +3089,7 @@ let G7B_NODES=[
   points:['北宋司马光主持编写《资治通鉴》，1084年成书，是一部编年体通史','它按年份记史，从战国写到五代，目的是让治国者从往事里吸取教训','书名是宋神宗赐的，意思是“鉴于往事，有资于治道”','这是司马光的画像，后世所绘，非当时写真']},
  {id:27,year:1100,yearLabel:'北宋末年',type:'event',title:'指南针用于航海',
   story:'一根磁针浮在水上，阴雨天看不见日月星，也能辨出方向。',
-  points:['战国时已有“司南”，北宋时造出人工磁化的指南针，并开始用于航海','海上遇到阴天，没法靠日月星辰定位，指南针解决了这个难题','后来指南针经阿拉伯人传到欧洲，为大航海准备了条件','这是北宋水浮法指南针，国博文物，看针怎么浮在水面']},
+  points:['先秦以来的文献里记载了“司南”，它可能是用天然磁石制成的指南工具；北宋时造出人工磁化的指南针，并开始用于航海','海上遇到阴天，没法靠日月星辰定位，指南针解决了这个难题','后来指南针经阿拉伯人传到欧洲，为大航海准备了条件','这是展示水浮法的指南针模型，看针怎么浮在水面']},
  {id:28,year:1115,yearLabel:'1115年',type:'state',title:'金（女真）的兴起',
   story:'东北山林里的女真人强大起来，建立了自己的政权。',
   points:['1115年，女真首领完颜阿骨打建立政权，国号金','金崛起很快，后来联合北宋灭了辽，又把矛头转向北宋','这件铜坐龙是金上京遗址出土的文物，黑龙江省博物馆藏，是金代的标志','文物不会说谎，从它能看出金人也用“龙”做自己的象征']},
@@ -2948,7 +3100,7 @@ let G7B_NODES=[
   story:'金军攻破东京，把两个皇帝和满朝人都掳走，北宋就这么亡了。',
   points:['1125年金灭辽，1127年金军攻破北宋都城东京，掳走宋徽宗、宋钦宗和大量宗室、工匠、礼器，史称“靖康之变”','北宋积蓄的府库被一扫而空，北方大乱','这是现代漫画，画金军押着徽钦二帝，不是古画，看个意思','记住这个年份，它是北宋和南宋的分界']},
  {id:31,year:1140,yearLabel:'1140年',type:'person',title:'岳飞抗金',
-  story:'南宋一员大将北伐连打胜仗，眼看要收复旧都，却被朝廷召回。',
+  story:'南宋一员大将北伐连打胜仗，金军后撤，却被朝廷急着召回。',
   points:['南宋初年，岳飞率“岳家军”北伐抗金，1140年在郾城大败金军精锐，史称郾城大捷','他治军严明，“冻死不拆屋，饿死不掳掠”，金人感叹“撼山易，撼岳家军难”','后来宋高宗和秦桧急于求和，连下十二道金牌召他回师，岳飞最终遇害','这幅是年画风格的岳飞像，非当时写真，“岳”字旗是他的标志']},
  {id:32,year:1200,yearLabel:'南宋',type:'event',title:'经济重心南移',
   story:'全国的财赋和粮食，慢慢从北方转到了江南，到南宋彻底定了下来。',
@@ -2970,7 +3122,7 @@ let G7B_NODES=[
   points:['元军南下时，文天祥散尽家财起兵抗元，兵败被俘','他被押往大都，忽必烈亲自劝降，许以高官，他宁死不从，1283年从容就义','狱中他写下《正气歌》，《过零丁洋》里“人生自古谁无死，留取丹心照汗青”传诵至今','这幅画他身披铁链，是后人所绘，非当时写真']},
  {id:38,year:1287,yearLabel:'元代',type:'person',title:'马可·波罗来华',
   story:'一个威尼斯商人沿着丝路来到中国，回去写的书让欧洲人对东方着了迷。',
-  points:['元朝时，意大利人马可·波罗随父亲和叔父经陆路来到中国，在华游历、做官约17年','他回国后口述成《马可·波罗行纪》，盛赞大都、杭州的繁华和东方的富庶','这本书激起欧洲人对东方的向往，也推动后来的航海家去找新航路','这是后世欧洲人画的马可·波罗像，非当时写真；他到底来没来过中国，至今还有争论']},
+  points:['元朝时，意大利旅行家马可·波罗在忽必烈时期沿丝绸之路来到中国，游历很多地方','他回国后口述成《马可·波罗行纪》，盛赞大都、杭州等城市的繁华和东方的富庶','这本书激起欧洲人对中国的向往，也推动后来的航海家去找新航路','这是后世欧洲人画的马可·波罗像，非当时写真']},
  {id:39,year:1290,yearLabel:'元代',type:'person',title:'关汉卿与元曲',
   story:'大都城里一个写戏的高手，把底层人的冤屈搬上了舞台。',
   points:['元代城市里有专门演出杂剧的场所，元曲包括散曲和杂剧，是当时最流行的文艺形式','关汉卿是元曲的代表人物，代表作《窦娥冤》写一个弱女子被冤杀，临刑前发下三桩誓愿','他和马致远、郑光祖、白朴并称“元曲四大家”','这是关汉卿的画像，后人所绘，非当时写真']},
@@ -2984,20 +3136,20 @@ let G7B_NODES=[
   story:'皇帝把大权一把抓，还专门设了个机构，盯着大臣和百姓的一举一动。',
   points:['朱元璋废除丞相，把权力分给六部，六部直接对皇帝负责，皇权大大加强','他设立锦衣卫，由皇帝直接指挥，监视官民，可随意侦查、逮捕','科举考试题目出自“四书五经”，答卷用八股文格式，束缚读书人的思想','这枚是锦衣卫的木印，中国国家博物馆藏，是当时的实物']},
  {id:43,year:1405,yearLabel:'1405年',type:'event',title:'郑和下西洋',
-  story:'一支两百多艘大船的船队，从中国出发，七次远航，到过三十多个国家。',
-  points:['1405到1433年，郑和奉明成祖之命七次下“西洋”（今东南亚到印度洋一带）','船队规模大、船只多、航程远，最远到达红海沿岸和非洲东海岸','带去丝绸、瓷器，换回香料、珍宝，也让沿途各国见识到明朝的强盛','这是后世绘制的郑和船队木版画，非当时写真']},
+  story:'这支船队七次远航，最多时一次有两百多艘船，到过三十多个国家。',
+  points:['1405到1433年，郑和奉明成祖之命七次下“西洋”（今东南亚到印度洋一带）','船队规模大，最多时有船200多艘，最少一次也有60余艘，最远到达红海沿岸和非洲东海岸','带去丝绸、瓷器，换回香料、珍宝，也让沿途各国见识到明朝的强盛','这是后世绘制的郑和船队木版画，非当时写真']},
  {id:44,year:1420,yearLabel:'1420年',type:'site',title:'北京城与明长城',
   story:'明朝一边修起宏伟的都城，一边把长城加高加固，留下今天看到的样子。',
-  points:['明成祖时大规模营建北京城，宫城（紫禁城）布局严整，是古代城市建筑的杰作','为防御北方蒙古势力，明朝多次修筑长城，今天看到的长城主要是明长城','明长城东起鸭绿江边、西至嘉峪关，绵延万里，工程浩大','这是八达岭明长城的实景，长城是遗址，不是想象出来的']},
+  points:['1420年前后北京城主要营建告成，宫城（紫禁城）布局严整，是古代城市建筑的杰作','为防御北方蒙古势力，明朝跨多年、多次修筑长城，今天看到的长城主要是明长城','明长城东起鸭绿江边、西至嘉峪关，绵延万里，工程浩大','这是八达岭明长城的实景，长城是遗址，不是想象出来的']},
  {id:45,year:1421,yearLabel:'1421年',type:'event',title:'迁都北京',
   story:'皇帝把都城从南京搬到北京，天子亲自守在靠近北方边境的地方。',
   points:['1421年，明成祖朱棣正式迁都北京，加强对北方的控制','北京从此成为明清两代的都城，紫禁城是皇宫所在','迁都也带动了南北经济文化交流和北方的开发','这是故宫（紫禁城）的全景，现代实景']},
  {id:46,year:1550,yearLabel:'明朝中后期',type:'event',title:'高产作物传入',
   story:'几种从海外传来的作物，耐旱、产量高，让更多人能填饱肚子。',
-  points:['明朝中后期，原产美洲的玉米、甘薯、马铃薯等传入中国','这些作物耐旱、对土地要求不高、产量大，能在山地、贫瘠地种','粮食多了，人口随之增长，也让更多土地得到开垦','这是现代整理的高产作物科普图，非古画']},
+  points:['明朝中后期，原产美洲的玉米、甘薯、花生等传入中国，马铃薯等也在这一时期引进','这些作物耐旱、对土地要求不高、产量大，能在山地、贫瘠地种','粮食多了，人口随之增长，也让更多土地得到开垦','这是现代整理的高产作物科普图，非古画']},
  {id:47,year:1553,yearLabel:'1553年',type:'event',title:'葡萄牙攫取澳门居住权',
-  story:'一伙葡萄牙人借口晾晒货物，赖在一个小半岛上不走，一住就是几百年。',
-  points:['1553年，葡萄牙人以晾晒被水浸湿的货物为由，登上澳门','他们通过贿赂当地官员，攫取了在澳门的居住权，后来长期居留','这是西方殖民者在中国最早的长期据点，澳门也成为中西交汇的窗口','这是澳门大三巴牌坊的实景，是当年教堂留下的遗址']},
+  story:'一伙葡萄牙人借口晾晒货物上岸，在澳门取得租住权，长期居留。',
+  points:['1553年，葡萄牙人借口遇到风浪、晾晒货物，请求在澳门上岸','他们缴纳白银、买通地方官员，搭篷建屋，取得在澳门的租住权','明政府在澳门设守澳官、驻扎军队，对澳门仍行使管理','这时取得的只是租住权，到晚清才另订条约，性质不一样','这是澳门大三巴牌坊的实景，是当年教堂留下的遗址']},
  {id:48,year:1561,yearLabel:'1561年',type:'person',title:'戚继光抗倭',
   story:'沿海一带倭寇烧杀抢掠，一位将军训练新军，把倭寇打得不敢再来。',
   points:['明朝中期，日本的一些武士、商人和海盗组成“倭寇”，骚扰东南沿海','戚继光在台州九战九捷，平定浙东倭患，又率军进入福建、广东','他训练的“戚家军”纪律严明、作战勇敢，与俞大猷一起基本肃清倭寇','这是戚继光的明代画像，是后世人物画像']},
@@ -3012,7 +3164,7 @@ let G7B_NODES=[
   points:['1616年，女真首领努尔哈赤统一女真各部，建立后金，他就是后来的清太祖','他创立八旗制度，把族人编入八旗，平时生产、战时出征，兵民合一','后金与明朝对抗，逐渐夺取辽东大片土地，为后来清朝奠基','这是故宫南薰殿藏的努尔哈赤像，后世宫廷画像']},
  {id:52,year:1636,yearLabel:'1636年',type:'state',title:'皇太极改国号清',
   story:'他的儿子继位后，改了国号，势力越来越强，已经在为入关做准备。',
-  points:['努尔哈赤之子皇太极继位后，发展生产、改革内政，势力不断壮大','1636年，皇太极改国号为清，他就是清太宗，族名也改为满洲','清军多次绕道入关，明朝东北防线岌岌可危','这是故宫博物院藏的皇太极像，后世宫廷画像']},
+  points:['努尔哈赤之子皇太极继位后，发展生产、改革内政，势力不断壮大','1635年皇太极先定族称为满洲；1636年才改国号为大清，他就是清太宗','清军多次绕道入关，明朝东北防线岌岌可危','这是故宫博物院藏的皇太极像，后世宫廷画像']},
  {id:53,year:1637,yearLabel:'明代',type:'person',title:'宋应星与《天工开物》',
   story:'一位读书人不爱空谈，跑到田间作坊，把各行各业的手艺都记了下来。',
   points:['明代科学家宋应星写成《天工开物》，记录农业和手工业的生产技术','书里几乎涵盖当时所有重要生产部门，配有插图，被称为“中国17世纪的工艺百科全书”','同时代徐光启还写了《农政全书》，总结古代农学','这是《天工开物》明崇祯年间刻本，中国国家博物馆藏']},
@@ -3038,8 +3190,8 @@ let G7B_NODES=[
   story:'皇帝在宫里设了一间小办公室，几个亲信大臣跪着听旨，大事全由皇帝一人拍板。',
   points:['雍正帝为处理西北军务，1729年前后设立军机处，后来成为常设机构','军机大臣完全听命于皇帝，军国大事全由皇帝裁决，地方军政首脑也直接听皇帝指挥','军机处的设立，标志着我国封建君主专制进一步强化，达到顶峰','这是故宫里军机处值房的实景']},
  {id:61,year:1757,yearLabel:'1757年',type:'event',title:'闭关锁国与广州十三行',
-  story:'朝廷关上大门，只留广州一处通商，还指定一批商人专门跟洋人打交道。',
-  points:['清朝统治者担心国家领土受侵犯，又怕沿海人民跟外人交往生事，推行“闭关锁国”','后来只开放广州一处通商，由“广州十三行”统一经营、管理对外贸易','这一政策使中国错失向西方学习先进科学技术的机会，逐渐落伍于世界','这是清代外销画《十三行商馆》，广东省博物馆藏，是当时的画作']},
+  story:'到1757年，朝廷只留广州一处作为西方商船来华的口岸，由特许的十三行统一经营外贸。',
+  points:['清朝统治者担心国家领土受侵犯，又怕沿海人民跟外人交往生事，推行“闭关锁国”','1757年关闭其他港口，只留广州一处作为西方商船来华口岸；由朝廷特许的广州十三行统一经营对外贸易','十三行承销外商进口货物、代外商收购出口商品，还负责管理外国商人','这一政策使中国错失向西方学习先进科学技术的机会，逐渐落伍于世界','这是清代外销画《十三行商馆》，广东省博物馆藏，是当时的画作']},
  {id:62,year:1762,yearLabel:'1762年',type:'event',title:'伊犁将军与平定大小和卓',
   story:'西北边疆有人叛乱，皇帝派兵平定，又设将军常驻，把这片土地守了下来。',
   points:['乾隆帝时，新疆回部大小和卓发动叛乱，清军在当地人民支持下平定叛乱','清朝设置伊犁将军，管辖包括巴尔喀什湖在内的整个新疆地区，驻军设哨','此前清军还平定了准噶尔部，加强了对西北地区的管辖','这是清代《乾隆平定准部回部战图》铜版画，故宫藏，是宫廷画作']},
@@ -3140,8 +3292,8 @@ let G7B_UNITS=[
 ];
 let G7B_LESSONS=[
  {no:1,unit:1,title:'隋朝统一与灭亡',nodes:[0,1,3]},
- {no:2,unit:1,title:'唐朝建立与“贞观之治”',nodes:[4]},
- {no:3,unit:1,title:'“开元盛世”与唐朝经济的繁荣',nodes:[9,10]},
+ {no:2,unit:1,title:'唐朝建立与“贞观之治”',nodes:[4,9]},
+ {no:3,unit:1,title:'“开元盛世”与唐朝经济的繁荣',nodes:[10]},
  {no:4,unit:1,title:'安史之乱与唐朝衰亡',nodes:[12,15]},
  {no:5,unit:1,title:'隋唐时期的民族交往与交融',nodes:[7,8]},
  {no:6,unit:1,title:'隋唐时期的中外文化交流',nodes:[5,6,11]},
@@ -3156,7 +3308,7 @@ let G7B_LESSONS=[
  {no:15,unit:3,title:'明朝的统治',nodes:[40,41,44]},
  {no:16,unit:3,title:'明朝的对外关系',nodes:[42,46,47]},
  {no:17,unit:3,title:'明朝的灭亡和清朝的建立',nodes:[50,51,53,54]},
- {no:18,unit:3,title:'统一多民族封建国家的巩固和发展',nodes:[55,56,58,61,62]},
+ {no:18,unit:3,title:'清朝的边疆治理',nodes:[55,56,58,61,62]},
  {no:19,unit:3,title:'清朝君主专制的强化',nodes:[57,59,60]},
  {no:20,unit:3,title:'明清时期社会经济的发展',nodes:[45,49]},
  {no:21,unit:3,title:'明清时期的科技与文化',nodes:[43,48,52,63]},
@@ -3176,23 +3328,23 @@ BOOK_DATA.g7b={
 /* ================= g8a 八年级上册（鸦片战争—解放战争，51节点） ================= */
 let G8A_NODES=[
  {id:1,year:1839,yearLabel:'1839年',type:'event',title:'林则徐虎门销烟',
-  story:'鸦片把人抽得人不人鬼不鬼，银子还哗哗往外流。有个大臣看不下去，要把它一把火烧了。',
-  points:['清朝后期，英国把鸦片大量偷卖到中国，换走白银，还害了中国人的身子','1839年，林则徐到广州禁烟，逼着外国鸦片贩子交出鸦片','他在虎门海滩把收缴的鸦片当众销毁，前后二十多天','想一想，鸦片不禁，国家会变成什么样']},
+  story:'鸦片把人抽得人不人鬼不鬼，银子还哗哗往外流。有个大臣看不下去，要把它彻底销毁。',
+  points:['清朝后期，英国把鸦片大量偷卖到中国，换走白银，还害了中国人的身子','1839年，林则徐到广州禁烟，逼着外国鸦片贩子交出鸦片','他在虎门海滩挖池灌水、撒盐，把鸦片泡进去再抛生石灰，用浸泡的办法化尽，不是火烧，前后二十多天','想一想，鸦片不禁，国家会变成什么样']},
  {id:2,year:1840,yearLabel:'1840年',type:'event',title:'鸦片战争爆发',
   story:'销烟是出了气，可英国人不干了，开着军舰打过来，刀枪根本不在一个档次。',
-  points:['1840年，英国借口虎门销烟，发动战争，军舰直接开到中国海面','清军的刀矛弓箭，挡不住英军的坚船利炮','这是形势图，箭头标着英军进攻的路线','先猜一猜，海上门户被打开，接下来会发生什么']},
+  points:['英国完成工业革命后想打开中国市场、倾销商品；1840年借口虎门销烟发动战争，军舰直接开到中国海面','清军的刀矛弓箭，挡不住英军的坚船利炮','这是形势图，箭头标着英军进攻的路线','先猜一猜，海上门户被打开，接下来会发生什么']},
  {id:3,year:1842,yearLabel:'1842年',type:'event',title:'中英《南京条约》',
   story:'打不过，只好坐下来签字。这一笔，把中国拖进了一个新世道。',
   points:['1842年，清政府被迫跟英国签订《南京条约》','割香港岛给英国，赔两千一百万银元，还开放广州、厦门等五处通商口岸','关税要跟英国商量，中国自己说了不算','这是中国近代第一个不平等条约，从此开始沦为半殖民地半封建社会']},
  {id:4,year:1851,yearLabel:'1851年',type:'event',title:'金田起义',
-  story:'老百姓被压得活不下去，一个信“拜上帝教”的人带头造反，一下聚起上万人。',
+  story:'老百姓被压得活不下去，一个创立“拜上帝会”的人带头造反，一下聚起上万人。',
   points:['洪秀全创立“拜上帝会”，在广西一带传教，聚拢了很多穷苦农民','1851年，他在广西金田村起义，建号太平天国，起义军叫太平军','一路上穷苦人纷纷加入，队伍越滚越大','想一想，农民为什么肯丢下活路去拼命']},
  {id:5,year:1853,yearLabel:'1853年',type:'state',title:'定都天京',
   story:'起义军顺着长江一路打，打下一座大城，干脆在那儿建了国都，还立了新规矩。',
   points:['1853年，太平军攻下南京，改名天京，作为太平天国的都城','颁布《天朝田亩制度》，想分田到户，让人人有地种','同时派兵北伐、西征，跟清军分庭抗礼','这个制度听起来挺好，可在当时很难真正落地，看历史要多想一步']},
  {id:6,year:1856,yearLabel:'1856年',type:'event',title:'第二次鸦片战争爆发',
   story:'洋人尝着甜头，想再要更多好处，要求修约被拒，又打了起来。',
-  points:['鸦片战争后，英法等国不满足既得利益，想进一步打开中国市场','1856年，英法联合发动第二次鸦片战争','这是形势图，看联军从哪儿登陆、怎么逼近北京','猜一猜，这回他们会不会比上次走得更远']},
+  points:['鸦片战争后，英法等国不满足既得利益，想进一步打开中国市场','1856年，英国、法国分别以“亚罗号事件”和“马神甫事件”为借口，在俄美支持下发动第二次鸦片战争','这是形势图，看联军从哪儿登陆、怎么逼近北京','猜一猜，这回他们会不会比上次走得更远']},
  {id:7,year:1860,yearLabel:'1860年',type:'event',title:'火烧圆明园',
   story:'北京西北有座绝世园林，里头的宝贝堆成山。联军闯进去，抢完还放了一把火。',
   points:['1860年，英法联军攻入北京，闯进圆明园','他们把能抢的珍宝抢光，抢不走的就砸，最后放火烧园，大火烧了三天','这是大水法遗址，今天还立在那儿，像块伤疤','看着断石头，想一想落后会挨什么']},
@@ -3207,13 +3359,13 @@ let G8A_NODES=[
   points:['定都后太平天国领导集团内部争权，发生内讧，互相残杀，力量大损','清军在曾国藩等率领下层层围困，1864年天京陷落，太平天国失败','这是天京保卫战的形势图','想一想，一场规模这么大的农民起义，为什么最后没成']},
  {id:11,year:1875,yearLabel:'1875年',type:'event',title:'左宗棠收复新疆',
   story:'西北一大片地盘被人占了，一位老将军带兵出征，硬是把地收了回来。',
-  points:['19世纪70年代，中亚阿古柏在沙俄、英国支持下侵占新疆，沙俄还占了伊犁','李鸿章主张先顾海防，左宗棠力主收复新疆，朝廷最后同意','1875年左宗棠率军西征，缓进急战，陆续收复失地，后来又通过谈判收回伊犁','先猜一猜，为什么守住新疆这件事这么要紧']},
+  points:['1865年，中亚浩罕国军事头目阿古柏率兵入侵新疆，英、俄在背后支持，沙俄还占了伊犁','李鸿章主张先顾海防，左宗棠力主收复新疆，朝廷最后同意','1875年清政府任命左宗棠为钦差大臣、督办新疆军务；1876年他才指挥清军入疆，采取先北后南、缓进急战，陆续收复失地，后来又通过谈判收回伊犁','先猜一猜，为什么守住新疆这件事这么要紧']},
  {id:12,year:1894,yearLabel:'1894年',type:'event',title:'甲午中日战争爆发',
   story:'旁边的日本学了西洋本事，也学着来欺负人，先在朝鲜挑起事端，接着把战火烧到中国。',
   points:['明治维新后日本国力上升，盯上了朝鲜和中国','1894年，日本利用朝鲜事端挑起战争，这年是甲午年，史称甲午中日战争','战火很快从朝鲜烧到中国境内和海上','这是当时日本人画的战争锦绘，看他们怎么记录这场仗']},
  {id:13,year:1894,yearLabel:'1894年',type:'event',title:'黄海海战·邓世昌',
   story:'黄海面上，两支舰队硬碰硬。有位舰长打光了炮弹，开着伤舰要去撞敌舰。',
-  points:['1894年黄海海战，北洋舰队跟日本舰队激战','致远舰管带邓世昌在舰身中弹、炮弹打光后，下令开足马力冲撞日舰，不幸被鱼雷击中','全舰官兵大多壮烈殉国，邓世昌落水后拒绝救援，与舰同沉','这幅油画里掌舵的就是邓世昌，想一想什么叫以身殉国']},
+  points:['1894年黄海海战，北洋舰队跟日本舰队激战','致远舰中炮甚多、受伤严重，邓世昌下令鼓轮怒驶，想撞击日舰同归于尽，因敌炮丛集，还没靠近就沉没了','全舰官兵大多壮烈殉国，邓世昌落水后拒绝救援，与舰同沉','这幅油画里掌舵的就是邓世昌，想一想什么叫以身殉国']},
  {id:14,year:1894,yearLabel:'1894年',type:'person',title:'孙中山成立兴中会',
   story:'有个广东人越看越觉得，光靠朝廷改良没指望，得换条路。他先在海外拉起一个小团体。',
   points:['孙中山早年在海外学医、奔走，越来越倾向用革命推翻清政府','1894年，他在檀香山成立兴中会，提出“振兴中华”','这是中国第一个资产阶级革命团体，当时人还很少','这是兴中会旧址和孙中山的肖像，看看这位先行者从哪儿起步']},
@@ -3222,7 +3374,7 @@ let G8A_NODES=[
   points:['1895年，清政府被迫跟日本签订《马关条约》','割辽东半岛、台湾全岛及所有附属各岛屿、澎湖列岛给日本（辽东后来在三国干涉下“赎回”）','赔日本军费白银二亿两，还允许日本在通商口岸开厂','这是当时签订条约的画面，中国人的民族危机一下重了许多']},
  {id:16,year:1897,yearLabel:'1897年',type:'event',title:'列强瓜分中国狂潮',
   story:'一看中国这么好欺负，各国纷纷扑上来抢地盘、划势力范围，像在分一块肥肉。',
-  points:['甲午战争后，列强争先恐后在中国抢夺利权、强租海港、划分势力范围','沙俄占东北，德国占山东，法国盯着华南，英国占了威海卫和新界','当时有幅《时局图》，用熊、鹰、老虎等动物代表各国，一眼看出瓜分的危局','这幅画是谢缵泰画的，看图想一想，再不动手国家会怎样']},
+  points:['甲午战争后，列强争先恐后在中国抢夺利权、强租海港、划分势力范围','德国强租胶州湾、势力范围在山东；俄国强租旅大、势力范围在长城以北和东北；英国强租威海卫和九龙、势力范围在长江流域','当时有幅《时局图》，用熊、鹰、老虎等动物代表各国，一眼看出瓜分的危局','这幅画是谢缵泰画的，看图想一想，再不动手国家会怎样']},
  {id:17,year:1898,yearLabel:'1898年',type:'event',title:'戊戌变法',
   story:'有一群读书人想照着日本那样，从上到下改制度。皇帝被说动了，可这场变法只撑了一百零三天。',
   points:['康有为、梁启超等维新派上书，主张变法图强，学习西方制度','1898年（戊戌年），光绪帝下“明定国是”诏书，开始变法，改革政治、教育、工商业','变法触动了顽固派利益，慈禧太后发动政变，囚禁光绪，杀害谭嗣同等“戊戌六君子”','变法失败说明，在当时靠皇帝自上而下改良这条路很难走通']},
@@ -3234,12 +3386,12 @@ let G8A_NODES=[
   points:['1901年（辛丑年），清政府被迫同十一国签订《辛丑条约》','赔款白银四亿五千万两，分三十九年还清，本息合计约十亿两','清政府保证禁止人民反帝，还允许列强在山海关到北京一线驻军','这是李鸿章等签字的文件，从此清政府彻底成了列强统治中国的工具']},
  {id:20,year:1905,yearLabel:'1905年',type:'state',title:'中国同盟会成立',
   story:'各地的革命小团体越来越多，孙中山把它们拢到一起，组成一个全国性的大党。',
-  points:['1905年，兴中会、华兴会、光复会等在日本东京合并成立中国同盟会','孙中山任总理，提出“驱除鞑虏，恢复中华，创立民国，平均地权”，后来概括为三民主义','同盟会是第一个全国性的资产阶级革命政党','这幅油画描绘了同盟会成立的场面，革命力量从此有了统一的旗号']},
+  points:['1905年，孙中山在日本东京联合兴中会、华兴会、光复会等革命团体的成员，成立中国同盟会','孙中山任总理，提出“驱除鞑虏，恢复中华，创立民国，平均地权”，后来概括为三民主义','同盟会是第一个全国性的资产阶级革命政党','这幅油画描绘了同盟会成立的场面，革命力量从此有了统一的旗号']},
  {id:21,year:1911,yearLabel:'1911年',type:'event',title:'武昌起义',
   story:'革命党人在湖北新军中悄悄发展，一次意外走漏消息，逼得他们提前动手，第一枪在武昌打响。',
   points:['同盟会成立后多次起义都失败了，革命党人继续在湖北新军里宣传、发展力量','1911年10月，起义计划暴露，革命士兵当机立断，10月10日在武昌发动起义','一夜之间占领武昌，随后各省纷纷响应，宣布独立','这年是辛亥年，这场革命史称辛亥革命，看看油画里冲锋的场面']},
  {id:22,year:1912,yearLabel:'1912年',type:'state',title:'中华民国成立',
-  story:'各省代表聚到南方，推举一个人当临时大总统，亚洲第一个共和国宣告成立。',
+  story:'各省代表聚到南方，推举一个人当临时大总统，中华民国临时政府宣告成立。',
   points:['1912年1月1日，孙中山在南京宣誓就职，宣告中华民国临时政府成立','改用公历，以中华民国纪年，还成立了临时参议院','五色旗成为国旗，代表汉满蒙回藏五族共和','这幅油画就是孙中山就职的场面，两千多年的帝制要到头了']},
  {id:23,year:1912,yearLabel:'1912年',type:'event',title:'清帝退位',
   story:'朝廷手里已没兵没权，只剩一对孤儿寡母。一份诏书下来，皇帝自己退了位。',
@@ -3267,13 +3419,13 @@ let G8A_NODES=[
   points:['1924年，国民党一大召开，第一次国共合作正式形成','孙中山在广州黄埔创办陆军军官学校，即黄埔军校，蒋介石任校长，周恩来任政治部主任','军校实行政治教育和军事训练并重，培养出大批北伐骨干','这是黄埔军校正门，猜猜这所学校后来会影响多少大事']},
  {id:31,year:1926,yearLabel:'1926年',type:'event',title:'北伐战争',
   story:'革命政府挥师北上，要把各路军阀一个个收拾掉。军队有了主义，打起仗来势如破竹。',
-  points:['1926年，广东国民政府出师北伐，目标是吴佩孚、孙传芳、张作霖三大军阀','北伐军尤其是叶挺独立团英勇善战，连克汀泗桥、贺胜桥，被称为“铁军”','不到半年就从珠江流域打到长江流域，震动全国','这是北伐战争形势图，看箭头怎么一路向北']},
+  points:['1926年，广东国民政府出师北伐，目标是吴佩孚、孙传芳、张作霖三大军阀','叶挺率领的第四军独立团当先锋，连克汀泗桥、贺胜桥；第四军因此赢得“铁军”的美誉','不到半年就从珠江流域打到长江流域，震动全国','这是北伐战争形势图，看箭头怎么一路向北']},
  {id:32,year:1927,yearLabel:'1927年',type:'event',title:'南昌起义',
   story:'合作突然破裂，革命者遭到屠杀。他们没有屈服，在一座城市打响了武装反抗的第一枪。',
   points:['1927年，蒋介石、汪精卫先后叛变革命，第一次国共合作破裂，大批共产党人和群众被杀害','1927年8月1日，周恩来、贺龙、叶挺、朱德、刘伯承等在南昌发动武装起义','起义占领南昌城，打响了武装反抗国民党反动派的第一枪，这一天后来成为建军节','这是黎冰鸿画的南昌起义，现藏军博']},
  {id:33,year:1927,yearLabel:'1927年',type:'event',title:'秋收起义·三湾改编',
   story:'另一位领导人在湖南扯旗起义，受挫后果断把队伍带上山，还在途中把军队重新整顿。',
-  points:['1927年秋收时节，毛泽东在湘赣边界领导秋收起义，最初攻打大城市受挫','他决定放弃原定计划，转向敌人力量薄弱的农村，途中在三湾对部队进行改编','三湾改编把支部建在连上，确立了党对军队的绝对领导','这是三湾改编的油画，军队从此有了魂']},
+  points:['1927年秋收时节，毛泽东在湘赣边界领导秋收起义，最初攻打大城市受挫','他决定放弃原定计划，转向敌人力量薄弱的农村，途中在三湾对部队进行改编','三湾改编把支部建在连上，从组织上确立了党对军队的领导','这是三湾改编的油画，军队从此有了魂']},
  {id:34,year:1928,yearLabel:'1928年',type:'site',title:'井冈山会师',
   story:'两支部队在一座大山里会师，握在一起的手，撑起了第一个农村革命根据地。',
   points:['毛泽东率秋收起义部队上了井冈山，建立起中国第一个农村革命根据地','1928年，朱德、陈毅率南昌起义余部和湘南起义部队来到井冈山，与毛泽东会师','两军合编为中国工农红军第四军，朱德任军长、毛泽东任党代表','这是何孔德画的井冈山会师，毛朱握手的场面成了经典']},
@@ -3285,15 +3437,15 @@ let G8A_NODES=[
   points:['由于指挥失误，红军没能打破国民党军第五次“围剿”，1934年10月从中央苏区出发，开始长征','出发地之一是江西于都，将士们连夜渡过河上的浮桥','这是于都长征渡口的刻字石和浮桥','先猜一猜，前有堵截后有追兵，这支队伍靠什么走下去']},
  {id:37,year:1935,yearLabel:'1935年',type:'event',title:'遵义会议',
   story:'走到贵州一座小城，队伍停下来开会，重新选定了掌舵人，局面一下扭转。',
-  points:['长征初期损失惨重，1935年1月，中共中央在遵义召开政治局扩大会议','会议纠正了错误的军事指挥，确立了毛泽东在党中央和红军的领导地位','遵义会议在危急关头挽救了党、红军和中国革命，是党史上一个生死攸关的转折点','这是遵义会议的油画，看看会场里的气氛']},
+  points:['长征初期损失惨重，1935年1月，中共中央在遵义召开政治局扩大会议','会议纠正了错误的军事指挥，事实上确立了毛泽东在党中央和红军的领导地位，开始形成新的中央领导集体','遵义会议在危急关头挽救了党、红军和中国革命，是党史上一个生死攸关的转折点','这是遵义会议的油画，看看会场里的气氛']},
  {id:38,year:1936,yearLabel:'1936年',type:'event',title:'红军三大主力会师',
   story:'两万五千里，翻过雪山草地，几路红军终于在西北汇合，长征走到了尽头。',
-  points:['红军长征途中强渡大渡河、飞夺泸定桥、翻雪山、过草地，历经艰险','1936年10月，红一、红二、红四方面军在甘肃会宁等地会师，长征胜利结束','长征的胜利保存了党和红军的骨干，也打开了中国革命的新局面','这是会宁会师的纪念塔，数一数塔有几层']},
+  points:['红军长征途中强渡大渡河、飞夺泸定桥、翻雪山、过草地，历经艰险','1936年10月，红四、红二方面军分别到达甘肃会宁和将台堡（将台堡在今宁夏），与前来接应的红一方面军会师，长征胜利结束','长征的胜利保存了党和红军的骨干，也打开了中国革命的新局面','这是会宁会师的纪念塔，数一数塔有几层']},
  {id:39,year:1936,yearLabel:'1936年',type:'event',title:'西安事变',
-  story:'一位将军劝蒋介石抗日劝不动，干脆把他扣了起来，逼他停止内战、一致对外。',
+  story:'两位将军劝蒋介石抗日劝不动，干脆把他扣了起来，逼他停止内战、一致对外。',
   points:['1936年，蒋介石坚持“攘外必先安内”，亲自到西安督战“剿共”','12月12日，张学良、杨虎城发动“兵谏”，扣押蒋介石，提出停止内战、联共抗日','中国共产党从全民族利益出发，主张和平解决，蒋介石最终接受停止内战、联共抗日','这是张学良、杨虎城的合影，事变的和平解决拉开了国共第二次合作的序幕']},
  {id:40,year:1937,yearLabel:'1937年',type:'event',title:'七七事变',
-  story:'又一次，一个士兵“失踪”成了借口。日军炮轰一座桥，全民族的全面抗战就此打响。',
+  story:'又一次，一个士兵“失踪”成了借口。日军要进城搜查被拒，炮轰宛平城，全民族的全面抗战就此打响。',
   points:['1937年7月7日夜，日军在北平卢沟桥附近演习，借口一名士兵失踪，要求进入宛平城，被拒后炮轰宛平城','中国守军奋起抵抗，七七事变（卢沟桥事变）爆发，标志着中国全民族抗战的开始','这是杨克山、崔开玺画的《七七事变·卢沟桥》，现藏中国美术馆','看画面里的硝烟，想一想这一枪为什么关系到全民族']},
  {id:41,year:1937,yearLabel:'1937年',type:'event',title:'南京大屠杀',
   story:'一座城沦陷后，日军对手无寸铁的平民和放下武器的士兵，犯下了惨绝人寰的罪行。',
@@ -3303,13 +3455,13 @@ let G8A_NODES=[
   points:['1938年春，日军进攻山东台儿庄，中国军队在李宗仁等指挥下顽强抵抗','守城部队跟日军展开巷战、白刃战，死守不退，外围部队随后合围','战役歼敌一万多人，是抗战以来中国正面战场取得的最大一场胜仗','这是军博藏的《台儿庄大捷》油画，看看巷战的惨烈']},
  {id:43,year:1940,yearLabel:'1940年',type:'event',title:'百团大战',
   story:'敌后战场，八路军在华北大地上同时出击，把日军的铁路、公路掀了个底朝天。',
-  points:['为粉碎日军的“囚笼政策”，1940年下半年，八路军在彭德怀指挥下，以105个团约20万人在华北发动大规模进攻','作战重点是破袭正太铁路等交通线，掀翻铁轨、炸毁桥梁，拔除日伪据点','百团大战是抗战相持阶段八路军在敌后发动的规模最大、持续时间最长的战役','这是纪念馆里军民合力掀翻铁轨的场景']},
+  points:['为粉碎日军的“囚笼政策”，1940年8月至次年1月，彭德怀指挥八路军100多个团，在华北对日军发起大规模主动进攻','作战重点是破袭正太铁路等交通线，掀翻铁轨、炸毁桥梁，拔除日伪据点','百团大战是抗战相持阶段八路军在敌后发动的规模最大、持续时间最长的战役','这是纪念馆里军民合力掀翻铁轨的场景']},
  {id:44,year:1945,yearLabel:'1945年',type:'event',title:'中共七大',
   story:'抗战胜利在望，党在延安召开一次大会，把自己的指导思想写进了党章。',
   points:['1945年4月到6月，中共七大在延安杨家岭中央大礼堂召开','大会制定了打败日本侵略者、建立新中国的政治路线，把毛泽东思想确立为党的指导思想并写入党章','大会强调要放手发动群众，壮大人民力量','这是杨家岭七大会场的内景，看看主席台和旗帜']},
  {id:45,year:1945,yearLabel:'1945年',type:'event',title:'日本投降·抗战胜利',
   story:'打了十四年，终于等到这一天。日本代表在投降书上签字，全民族的苦撑熬出了头。',
-  points:['1945年8月15日，日本天皇宣布无条件投降；9月2日，日本代表在密苏里号上正式签署投降书','9月9日，中国战区受降仪式在南京举行','中国抗日战争取得完全胜利，台湾也回到祖国怀抱，这是近代以来中国反抗外敌第一次取得完全胜利','这是密苏里号上日本代表签字的历史照片']},
+  points:['1945年8月15日，日本天皇宣布无条件投降；9月2日，日本代表在密苏里号上正式签署投降书','9月9日，中国战区受降仪式在南京举行','1945年10月25日台湾光复，台湾回到祖国怀抱；抗日战争是近代以来中国人民反抗外敌入侵第一次取得完全胜利的民族解放战争','这是密苏里号上日本代表签字的历史照片']},
  {id:46,year:1945,yearLabel:'1945年',type:'event',title:'重庆谈判',
   story:'战火刚停，内战的阴云又压上来。为争和平，一位领导人冒险飞赴重庆，跟对手当面谈。',
   points:['抗战胜利后，蒋介石三次电邀毛泽东到重庆商谈国内和平，一面却在加紧调兵','为争取和平、戳穿对方阴谋，1945年8月毛泽东亲赴重庆谈判','10月10日双方签订“双十协定”，商定避免内战、和平建国，但协定很快被国民党撕毁','这是谈判期间毛泽东和蒋介石的合影']},
@@ -3484,7 +3636,7 @@ let G8B_NODES=[
   points:['王进喜是石油工人，人称“铁人”，用身体搅拌泥浆制服井喷','焦裕禄在河南兰考带群众治风沙盐碱，被称“党的好干部”','雷锋全心全意为人民服务，邓稼先为“两弹一星”隐姓埋名','照片里的王进喜一身皮帽，是大庆油田的标志']},
  {id:14,year:1964,yearLabel:'1964年',type:'event',title:'“两弹一星”',
   story:'大国手里都有核武器，没有就容易被人卡脖子。科学家在戈壁滩上，硬是把原子弹搞响了。',
-  points:['1964年10月，我国第一颗原子弹爆炸成功','1966年导弹核武器试验成功，1970年第一颗人造地球卫星上天','打破了大国的核垄断，撑起了国家安全','照片是原子弹爆炸后升起的蘑菇云']},
+  points:['1964年10月，我国第一颗原子弹爆炸成功','1966年导弹核武器试验成功，1967年第一颗氢弹爆炸成功，1970年第一颗人造地球卫星上天','打破了大国的核垄断，撑起了国家安全','照片是原子弹爆炸后升起的蘑菇云']},
  {id:15,year:1966,yearLabel:'1966年',type:'event',title:'“文化大革命”开始',
   story:'一场由领导人错误发动、被人利用的运动，一搞就是十年，国家和老百姓吃了大苦头。',
   points:['1966年，“文化大革命”全面发动，红卫兵四处串联、破“四旧”','大批干部和群众受到冲击，社会秩序大乱','1976年粉碎“四人帮”，这场十年动乱才结束','这是一段要深刻吸取教训的历史，照片是当年的红卫兵']},
@@ -3492,8 +3644,8 @@ let G8B_NODES=[
   story:'新中国成立二十多年，在联合国的席位一直被台湾那边占着。这一年，终于把位子拿回来了。',
   points:['1971年，第26届联合国大会通过决议，恢复中华人民共和国的一切合法权利','把台湾国民党当局的代表从联合国驱逐出去','这是中国外交的重大胜利，国际地位明显提高','照片里仰天大笑的是中国代表团团长乔冠华，人称“乔的笑”']},
  {id:17,year:1972,yearLabel:'1972年',type:'event',title:'尼克松访华',
-  story:'敌对了二十多年，美国总统突然主动跑来握手。这一握，两个大国的关系开始松动。',
-  points:['1972年，美国总统尼克松访华，毛泽东、周恩来同他会面','双方在上海发表《中美联合公报》，中美关系开始走向正常化','两国结束长期对抗，世界格局都跟着变','照片是毛泽东会见尼克松时握手']},
+  story:'改善关系是两国共同的需要。先有乒乓外交、基辛格秘密访华铺路，1972年尼克松才来中国，这一握，两国关系开始走向正常化。',
+  points:['1971年“乒乓外交”打开局面，7月基辛格秘密访华，同周恩来会谈','1972年，美国总统尼克松访华，毛泽东、周恩来同他会面','双方在上海发表《中美联合公报》，两国关系开始走向正常化；正式建交要到1979年','照片是毛泽东会见尼克松时握手']},
  {id:18,year:1972,yearLabel:'1972年',type:'event',title:'中日建交',
   story:'美国先松了口，旁边的日本也赶紧跟上。这一年，两国正式把外交关系建起来。',
   points:['1972年，日本首相田中角荣访华','中日两国正式建立外交关系，结束战后的不正常状态','此后两国在经济、文化上的往来越来越多','照片是周恩来和田中角荣会谈']},
@@ -3505,7 +3657,7 @@ let G8B_NODES=[
   points:['1978年，《光明日报》发表《实践是检验真理的唯一标准》','文章引发全国大讨论，冲破了“两个凡是”的束缚','这是一次深刻的思想解放运动，为后来的转折作了准备','照片是《光明日报》当天的头版']},
  {id:21,year:1978,yearLabel:'1978年',type:'event',title:'家庭联产承包责任制',
   story:'大锅饭干多干少一个样，农民没劲头。安徽一个村子的农民偷偷按了手印，把地包到户，一年就翻了身。',
-  points:['1978年，安徽凤阳小岗村农民秘密立约，把土地包产到户','交够国家的、留足集体的，剩下都是自己的，积极性一下起来','这种做法后来推广全国，叫家庭联产承包责任制','照片是当年的契约和带头的十八户农民']},
+  points:['1978年，安徽凤阳小岗村农民秘密立约，实行包干到户、自负盈亏','交够国家的、留足集体的，剩下都是自己的，积极性一下起来','这种做法后来推广全国，叫家庭联产承包责任制，各地有包产到户、包干到户两种形式','照片是当年的契约和带头的十八户农民']},
  {id:22,year:1978,yearLabel:'1978年',type:'event',title:'中共十一届三中全会',
   story:'同一年冬天，党开了个会，决定不再以阶级斗争为纲，把劲儿都转到搞经济、搞建设上来。',
   points:['1978年12月，中共十一届三中全会在北京召开','作出把工作中心转移到经济建设上来、实行改革开放的决策','重新确立解放思想、实事求是的思想路线','这是新中国成立以来党的历史上具有深远意义的伟大转折']},
@@ -3540,7 +3692,7 @@ let G8B_NODES=[
   story:'现代战争变了，拼的不再只是人数，而是科技和信息。军队开始裁军提质，朝着信息化走。',
   points:['20世纪90年代起，人民军队推进中国特色军事变革','核心是信息化，走科技强军之路，提高打赢现代战争的能力','1997年宣布三年裁军50万，走精兵之路','照片是1999年国庆阅兵中的坦克方队']},
  {id:33,year:1999,yearLabel:'1999年',type:'event',title:'澳门回归',
-  story:'香港回了家，澳门也跟上。这一年冬天，被葡萄牙占了四百多年的澳门，也回到祖国怀抱。',
+  story:'香港回了家，澳门也跟上。从明代葡萄牙人陆续在澳门居住、到晚清另订条约，几百年的旧账，到1999年冬天终于了结，澳门回到祖国怀抱。',
   points:['1999年12月20日，中葡举行澳门政权交接仪式','澳门特别行政区成立，澳门回归祖国','这是“一国两制”构想的又一次成功实践','照片是澳门政权交接的现场']},
  {id:34,year:2000,yearLabel:'2000年',type:'event',title:'人民生活总体达到小康',
   story:'改革二十多年，老百姓的日子一天天好起来。到世纪之交，总体上达到了小康，虽然还不全面。',
@@ -3549,8 +3701,8 @@ let G8B_NODES=[
   story:'国家发展起来，朋友也要越交越多。这一年，几场重要的多边活动接连办起来。',
   points:['2001年，博鳌亚洲论坛成立，是首个把总部设在中国的国际会议组织','同年上海合作组织成立，中国、俄罗斯等六国携手维护地区安全','10月，亚太经合组织（APEC）领导人非正式会议在上海举行','照片是上合组织六国元首在上海的合影']},
  {id:36,year:2001,yearLabel:'2001年',type:'event',title:'加入世界贸易组织',
-  story:'要更深地融进世界经济，就得进这个全球最大的贸易组织。谈了十几年，这一年终于签字入世。',
-  points:['2001年12月，中国正式成为世界贸易组织（WTO）成员','标志着对外开放进入新阶段，更深地融入经济全球化','既带来广阔市场和机遇，也要面对更激烈的国际竞争','照片是在多哈签字入世的现场']},
+  story:'要更深地融进世界经济，就得进这个全球最大的贸易组织。谈了十五年，2001年11月在多哈会议上通过、签字，到12月正式成为这个组织的成员。',
+  points:['2001年11月，卡塔尔多哈会议审议通过并签署加入议定书','2001年12月，中国正式成为世界贸易组织（WTO）成员','标志着对外开放进入新阶段，更深地融入经济全球化，是对外开放的里程碑','既带来广阔市场和机遇，也要面对更激烈的国际竞争','照片是在多哈签字入世的现场']},
  {id:37,year:2002,yearLabel:'2002年',type:'event',title:'中共十六大',
   story:'进入新世纪，党要把发展的接力棒往下传。这次大会把“三个代表”重要思想确立为指导思想。',
   points:['2002年，中共十六大召开','“三个代表”重要思想被确立为党的指导思想，写入党章','提出在本世纪头二十年，全面建设惠及十几亿人口的更高水平的小康','照片是江泽民在十六大作报告']},
@@ -3562,13 +3714,13 @@ let G8B_NODES=[
   points:['2007年，中共十七大召开','把科学发展观写入党章，提出深入贯彻落实科学发展观','首次概括“中国特色社会主义理论体系”，把几条理论成果串起来','照片是胡锦涛在十七大作报告']},
  {id:40,year:2008,yearLabel:'2008年',type:'event',title:'亚丁湾护航',
   story:'索马里海盗猖獗，中国商船在海外遇险。海军第一次派出舰队远赴亚丁湾，在大洋上保护同胞。',
-  points:['2008年底，中国海军派出舰艇编队赴亚丁湾、索马里海域护航','这是中国首次使用军事力量赴海外维护国家战略利益','一批“杀手锏”装备陆续列装，科技强军见到实效','照片是执行护航任务的舰艇编队']},
+  points:['2008年底，中国海军派出舰艇编队赴亚丁湾、索马里海域护航','这是中国海军首次在远海保护重要运输线安全，也是首次组织海上作战力量赴海外履行国际人道主义义务','一批“杀手锏”装备陆续列装，科技强军见到实效','照片是执行护航任务的舰艇编队']},
  {id:41,year:2010,yearLabel:'2010年',type:'event',title:'世界第二大经济体',
   story:'几十年高速增长，中国经济的块头越来越大。这一年，经济总量超过日本，成为世界第二。',
   points:['2010年，中国国内生产总值超过日本，成为世界第二大经济体','经济总量迈上40万亿元台阶，制造业规模跃居世界前列','2008年北京奥运会、2010年上海世博会，让世界重新认识中国','照片是上海世博会的中国馆夜景']},
  {id:42,year:2011,yearLabel:'2011年',type:'event',title:'利比亚撤侨',
-  story:'北非国家突然战乱，大量中国人被困。国家紧急调动海陆空力量，几天内把同胞接回了家。',
-  points:['2011年，利比亚局势动荡，中国展开大规模海外撤侨','十天左右撤出三万多名中国公民，体现“外交为民”','形成全方位外交布局：大国是关键、周边是首要、发展中国家是基础、多边是舞台','照片是撤侨包机里“祖国接你们回家”的横幅']},
+  story:'北非国家突然战乱，大量中国人被困。国家紧急调动海陆空力量，历时10余天，把同胞接回了家。',
+  points:['2011年，利比亚局势动荡，中国展开大规模海外撤侨','历时10余天，把35860名中国公民（包括港澳台同胞）安全撤出，体现“外交为民”','形成全方位外交布局：大国是关键、周边是首要、发展中国家是基础、多边是舞台','照片是撤侨包机里“祖国接你们回家”的横幅']},
  {id:43,year:2012,yearLabel:'2012年',type:'event',title:'中国梦提出',
   story:'国家博物馆有个《复兴之路》展览，讲近代以来中国人怎么一步步求复兴。参观时，一个新提法传开了：中国梦。',
   points:['2012年11月，参观《复兴之路》展览时提出实现中华民族伟大复兴的中国梦','中国梦的基本内涵是国家富强、民族振兴、人民幸福','提出“两个一百年”奋斗目标，凝聚起全社会的力量','照片就是《复兴之路》展览的真实展厅']},
@@ -3583,13 +3735,13 @@ let G8B_NODES=[
   points:['2015年11月，两岸领导人在新加坡会面，人称“习马会”','这是1949年以来两岸领导人的首次会面','双方肯定“九二共识”，推动两岸关系和平发展','照片是两岸领导人握手的瞬间']},
  {id:47,year:2017,yearLabel:'2017年',type:'event',title:'构建人类命运共同体',
   story:'各国同在一个地球，气候、疫情、贫困这些事谁也躲不开。一种理念提出：大家是休戚与共的命运共同体。',
-  points:['2014年提出中国特色大国外交，2017年在日内瓦系统阐述人类命运共同体','主张各国相互尊重、平等协商，共同应对全球性挑战','这一理念被多次写入联合国文件，产生广泛国际影响','照片是在日内瓦万国宫发表演讲']},
+  points:['2013年3月在莫斯科首次提出人类命运共同体理念；2017年在日内瓦系统阐述，同年理念写入联合国安理会决议','主张各国相互尊重、平等协商，共同应对全球性挑战，建设持久和平、共同繁荣、清洁美丽的世界','这一理念被多次写入联合国文件，次年载入宪法，产生广泛国际影响','照片是在日内瓦万国宫发表演讲']},
  {id:48,year:2017,yearLabel:'2017年',type:'event',title:'中共十九大',
   story:'改革开放近四十年，国家站到了新的历史方位。这次大会把新时代的指导思想确立下来。',
   points:['2017年，中共十九大召开','指出中国特色社会主义进入新时代，社会主要矛盾已经转化','习近平新时代中国特色社会主义思想被确立为党的指导思想，写入党章','照片是十九大开幕的会场']},
  {id:49,year:2020,yearLabel:'2020年',type:'event',title:'香港国安法和粤港澳大湾区',
   story:'香港一度出现乱局，国家出手稳住；同时，大湾区和跨海大桥，让港澳和内地贴得更紧。',
-  points:['2020年，香港特别行政区维护国家安全法通过施行','坚持“爱国者治港”“爱国者治澳”，“一国两制”行稳致远','粤港澳大湾区加快建设，港珠澳大桥通车，把三地连在一起','照片是航拍港珠澳大桥']},
+  points:['2020年，香港特别行政区维护国家安全法通过施行','坚持“爱国者治港”“爱国者治澳”，“一国两制”行稳致远','2018年10月23日港珠澳大桥开通，粤港澳大湾区加快建设，把三地连在一起','照片是航拍港珠澳大桥']},
  {id:50,year:2020,yearLabel:'2020年',type:'event',title:'脱贫攻坚全面胜利',
   story:'大山深处还有人吃不饱、穿不暖。国家立下军令状，几百万干部驻村，一户一户帮着拔穷根。',
   points:['精准扶贫、精准脱贫，做到“一个都不能少”','2020年底，现行标准下农村贫困人口全部脱贫，历史性解决绝对贫困','近一亿人脱贫，创造了人类减贫史上的奇迹','照片是全国脱贫攻坚总结表彰大会']},
@@ -3601,7 +3753,7 @@ let G8B_NODES=[
   points:['2021年，全面建成小康社会，第一个百年奋斗目标如期实现','国内生产总值稳居世界第二，建成世界上规模最大的教育、社保、医疗体系','生态文明建设大步推进，天更蓝、山更绿','照片是曾经贫困的河北阜平骆驼湾村，如今换了新貌']},
  {id:53,year:2021,yearLabel:'2021年',type:'event',title:'中共十九届六中全会',
   story:'每到重要历史节点，党都会总结过去。这次全会通过一份历史决议，看清来路，也看清去向。',
-  points:['2021年11月，中共十九届六中全会召开','通过党的历史上第三个历史决议，总结百年奋斗的重大成就和历史经验','提出“两个确立”，对新时代事业发展具有决定性意义','照片是十九届六中全会的主席台']},
+  points:['2021年11月，中共十九届六中全会召开','通过党的历史上第三个历史决议，总结百年奋斗的重大成就和历史经验','“两个确立”：确立习近平同志党中央的核心、全党的核心地位，确立习近平新时代中国特色社会主义思想的指导地位，对新时代事业发展具有决定性意义','照片是十九届六中全会的主席台']},
  {id:54,year:2022,yearLabel:'2022年',type:'event',title:'中共二十大',
   story:'新的征程怎么开局？这次大会擘画了以中国式现代化全面推进民族复兴的蓝图。',
   points:['2022年，中共二十大召开','中心任务是团结带领全国各族人民全面建成社会主义现代化强国','系统阐述中国式现代化，明确分两步走的战略安排','照片是二十大开幕的会场']},
@@ -3610,7 +3762,10 @@ let G8B_NODES=[
   points:['经济、科技、国防、外交等领域取得历史性成就、发生历史性变革','南水北调、高铁网络、载人航天等重大工程接连落地','这些成就，是新时代十年伟大变革的生动注脚','照片是南水北调东线的江都水利枢纽']},
  {id:56,year:2023,yearLabel:'2023年',type:'site',title:'活动课：新时代社会生活巨变',
   story:'不只是大工程，普通人的日子也在变。出门不带钱包，手机一刷就能坐车、买东西。',
-  points:['高铁、移动支付、网购、共享单车，在中国用得最多、最方便，被叫作“新四大发明”','不过这几样最早的技术和想法不是中国发明的，中国是应用规模领先；“新四大发明”是 2017 年外国青年评选出来的流行说法，不是真的四大发明','建成世界上规模最大的社会保障和医疗卫生体系，民生获得感越来越强','交通四通八达，城乡面貌焕然一新','这是活动课，照片是手机移动支付过闸机，看看身边还有哪些新变化']}
+  points:['高铁、移动支付、网购、共享单车，在中国用得最多、最方便，被叫作“新四大发明”','不过这几样最早的技术和想法不是中国发明的，中国是应用规模领先；“新四大发明”是 2017 年外国青年评选出来的流行说法，不是真的四大发明','建成世界上规模最大的社会保障和医疗卫生体系，民生获得感越来越强','交通四通八达，城乡面貌焕然一新','这是活动课，照片是手机移动支付过闸机，看看身边还有哪些新变化']},
+ {id:57,year:1992,yearLabel:'1992年',type:'event',title:'“九二共识”',
+  story:'两岸两个民间机构坐下来谈，用各自口头表达的办法，把一个中国这个底线说清楚了。',
+  points:['1992年，海峡两岸关系协会与台湾海峡交流基金会开始事务性商谈','双方达成各自以口头方式表述“海峡两岸均坚持一个中国原则”的共识，人称“九二共识”','核心要义是海峡两岸同属一个中国，共同努力谋求国家统一','后来的两岸交流和领导人会面，都建立在这个共识之上']}
 ];
 let G8B_IMG_META={
  1:{img:'assets/g8b01.jpg',name:'第一届政协会议会场',era:'1949年',source:'当时历史照片，代表举手表决',kind:'历史照片·当时'},
@@ -3706,15 +3861,15 @@ let G8B_LESSONS=[
  {no:8,unit:3,title:'伟大的历史转折',nodes:[19,21]},
  {no:9,unit:3,title:'改革开放的起步',nodes:[20,22]},
  {no:10,unit:3,title:'改革开放和社会主义现代化建设的全面展开',nodes:[23,24]},
- {no:11,unit:3,title:'社会主义初级阶段基本路线',nodes:[25,26,27]},
- {no:12,unit:4,title:'加快改革开放和社会主义现代化建设步伐',nodes:[28,30,35]},
- {no:13,unit:4,title:'中国特色社会主义事业取得新成就',nodes:[29,32,33]},
+ {no:11,unit:3,title:'社会主义初级阶段基本路线',nodes:[25,26]},
+ {no:12,unit:4,title:'加快改革开放和社会主义现代化建设步伐',nodes:[27,28,30,35]},
+ {no:13,unit:4,title:'中国特色社会主义事业取得新成就',nodes:[29,32,33,56]},
  {no:14,unit:4,title:'国防和外交工作新局面',nodes:[31,34]},
  {no:15,unit:5,title:'开始全面建设小康社会',nodes:[36,37]},
  {no:16,unit:5,title:'夺取全面建设小康社会新胜利',nodes:[38,40]},
  {no:17,unit:5,title:'推进国防军队建设和外交工作',nodes:[39,41]},
- {no:18,unit:6,title:'擘画中国梦宏伟蓝图',nodes:[42,47]},
- {no:19,unit:6,title:'决胜全面建成小康社会',nodes:[49,51]},
+ {no:18,unit:6,title:'擘画中国梦宏伟蓝图',nodes:[42]},
+ {no:19,unit:6,title:'决胜全面建成小康社会',nodes:[47,49,51]},
  {no:20,unit:6,title:'维护国家安全和推进祖国统一',nodes:[44,45,48]},
  {no:21,unit:6,title:'构建人类命运共同体与中国特色大国外交',nodes:[43,46]},
  {no:22,unit:7,title:'实现第一个百年奋斗目标',nodes:[50,52]},
@@ -3769,13 +3924,29 @@ function schedulePreload(i){
 }
 /* ===== 后台全量预热：空闲时按顺序、串行拉完全部图片，点开即显示；切后台暂停，不抢当前带宽 ===== */
 let warmList=null,warmPos=0,warmBusy=false,warmWait=false;
+/* 预热范围：门户不预取；首页只备第 1 课几张；课视图备当前课 + 下一点，不一口气拉整册 */
+let warmScope='portal';
 function buildWarmList(){
   if(warmList)return warmList;
   warmList=[];
-  NODES.forEach(n=>{
-    const m=IMG_META[n.id];
-    if(m){const s=toWebp(m.img);if(warmList.indexOf(s)<0)warmList.push(s);}
-  });
+  var cap=warmScope==='lesson'?6:3;
+  var pushNode=function(nodeIdx){
+    if(warmList.length>=cap)return;
+    var m=IMG_META[NODES[nodeIdx].id];
+    if(m){var s=toWebp(m.img);if(warmList.indexOf(s)<0)warmList.push(s);}
+  };
+  if(warmScope==='lesson'&&currentLessonNo!=null){
+    var cur=lessonByNo(currentLessonNo);
+    if(cur){
+      cur.nodes.forEach(pushNode);
+      var nxt=lessonByNo(currentLessonNo+1);
+      if(nxt)nxt.nodes.forEach(pushNode);
+    }
+  }else if(warmScope==='home'){
+    var first=lessonByNo(1);
+    if(first)first.nodes.forEach(pushNode);
+  }
+  /* portal：warmList 留空，warmAdvance 自然无事可做 */
   return warmList;
 }
 function warmAdvance(){
@@ -3866,11 +4037,18 @@ function setEvBadge(ev){
 }
 function openSheet(i){
   const wasOpen=sheet.classList.contains('show');
-  if(!wasOpen)pauseWarmup();
+  if(!wasOpen){
+    pauseWarmup();
+    /* 卡片占一层历史：按一次返回收卡，再按才回目录；翻页不重复压 */
+    history.pushState({zgSheet:true},'');
+    sheetPushed=true;
+    /* 打开：移出 inert，卡片内控件可聚焦 */
+    sheet.inert=false;
+  }
   currentIndex=i;
-  /* 最近视图只用于"继续"，记录当前课，不自动弹专题 */
+  /* 最近视图只用于"继续"，记录当前课和具体卡，不自动弹专题 */
   var curLesson=LESSON_OF_NODE[i];
-  if(curLesson!=null)P.setLast({type:'lesson',no:curLesson});
+  if(curLesson!=null)P.setLast({type:'lesson',no:curLesson,nodeTitle:NODES[i].title});
   /* 记录关闭后回到哪张卡：首次打开记下，翻页时保持；用索引而非 DOM 引用，避免重建后失效 */
   if(!wasOpen)returnNodeIndex=i;
   const n=NODES[i],meta=TYPE_META[n.type];
@@ -3927,7 +4105,7 @@ function openSheet(i){
     const b=document.createElement('button');
     b.type='button';b.className='sheet-action-btn topic';
     b.innerHTML='<span class="sa-label">动手试试</span><span class="sa-title">'+TOPIC_NAME[topic]+'</span><span class="sa-go">›</span>';
-    b.addEventListener('click',()=>{closeSheet();openTopic(topic);});
+    b.addEventListener('click',()=>{closeSheetForNav();openTopic(topic);});
     actionsEl.appendChild(b);
   }
   const s3d=NODE_3D_MAP[i];
@@ -3935,7 +4113,7 @@ function openSheet(i){
     const b=document.createElement('button');
     b.type='button';b.className='sheet-action-btn model3d';
     b.innerHTML='<span class="sa-label">还想看 3D（可选）</span><span class="sa-title">'+S3D_META[s3d].name+'</span><span class="sa-go">›</span>';
-    b.addEventListener('click',()=>{closeSheet();open3D(s3d,i);});
+    b.addEventListener('click',()=>{closeSheetForNav();open3D(s3d,i);});
     actionsEl.appendChild(b);
   }
   sheet.classList.add('show');backdrop.classList.add('show');
@@ -3949,16 +4127,32 @@ function openSheet(i){
   /* 焦点移入详情卡，键盘不再落到背后卡片 */
   setTimeout(()=>{document.getElementById('sheetClose').focus({preventScroll:true});},60);
 }
-function closeSheet(){
+let sheetPushed=false;
+/* 纯 DOM 收卡，不碰历史记录 */
+function closeSheetDom(){
  clearImgTimer();sheet.classList.remove('show');backdrop.classList.remove('show');
- /* 实时在当前 DOM 找对应卡片，renderJourney 重建后也能准确回到原卡 */
+ /* 关闭：inert 让卡片内控件移出焦点和读屏树 */
+ sheet.inert=true;
+ /* 用全局节点索引稳定定位触发卡，覆盖第一课以外和翻页场景 */
  const ri=returnNodeIndex;
  if(ri!==null){
-  const target=document.querySelectorAll('.j-node')[ri];
+  const target=document.querySelector('.j-node[data-node-index="'+ri+'"]');
   if(target){target.focus({preventScroll:true});}
  }
  returnNodeIndex=null;
  resumeWarmup();
+}
+/* 用户主动关闭（关闭键/遮罩/Esc）：收卡并回退 pushState 占的那层 */
+function closeSheet(){
+ const pushed=sheetPushed;
+ closeSheetDom();
+ sheetPushed=false;
+ if(pushed)history.back();
+}
+/* 收卡并导航到专题/3D：清掉本层标记，避免历史栈多一层 */
+function closeSheetForNav(){
+ if(sheetPushed){history.replaceState(null,'');sheetPushed=false;}
+ closeSheetDom();
 }
 let returnNodeIndex=null;
 document.getElementById('sheetClose').addEventListener('click',closeSheet);
@@ -4039,6 +4233,7 @@ const HOU=[
  {cls:'hou h3',name:'幼子 · 侯国'}
 ];
 let seenKing=false, seenHou=false;
+let tuenJudge=null; /* 末尾判断题：null未答、true答对、false答错 */
 const hintAfterEl=document.getElementById('hintAfter');
 const btnRowEl=document.querySelector('.btn-row');
 function bindPlots(){
@@ -4115,6 +4310,16 @@ function applyTuenRestore(s){
   belongEl.classList.add('show');
   hintAfterEl.classList.remove('show');
   if(seenKing&&seenHou){revealEl.classList.add('show');revealEl.classList.remove('open');}
+  /* 恢复末尾判断题的答案和反馈 */
+  tuenJudge=(s.tuenJudge===true||s.tuenJudge===false)?s.tuenJudge:null;
+  if(tuenJudge!==null){
+    const ans=document.querySelectorAll('.rc-answer')[tuenJudge?1:0];
+    if(ans)ans.classList.add(tuenJudge?'right':'wrong');
+    rcFeedback.classList.add('show');
+    rcFeedback.textContent=tuenJudge
+      ?'对了。关键不在地切没切开，而在新分的侯国归谁管。改归汉郡，王直接管的地才真少了，这就是推恩令的作用。'
+      :'再想想：这一画面里四块地还都归王管，他能直接管的地一块没少。切画面二看看管辖线指到了哪里。';
+  }
 }
 splitBtn.addEventListener('click',()=>{
   renderSplit();
@@ -4137,11 +4342,14 @@ resetBtn.addEventListener('click',()=>{
   btnRowEl.classList.remove('split-on');
   splitBtn.disabled=false;
   belongEl.classList.remove('show');
-  seenKing=false;seenHou=false;
+  seenKing=false;seenHou=false;tuenJudge=null;
   ruleCompare.classList.remove('show');
   rcFeedback.classList.remove('show');
   document.querySelectorAll('.rc-answer').forEach(x=>x.classList.remove('right','wrong'));
   beep(360);
+  /* 只清当前专题：步骤键和完成状态都复位，不影响别的专题 */
+  store.setTopicStepOf('tuen',null);
+  P.setActivityDone('tuen',false);
 });
 document.getElementById('revealToggle').addEventListener('click',()=>{
   revealEl.classList.toggle('open');
@@ -4167,6 +4375,7 @@ document.querySelectorAll('.rc-answer').forEach(a=>{
     const ok=a.getAttribute('data-ok')==='1';
     a.classList.add(ok?'right':'wrong');
     rcFeedback.classList.add('show');
+    tuenJudge=ok;
     if(ok){
       rcFeedback.textContent='对了。关键不在地切没切开，而在新分的侯国归谁管。改归汉郡，王直接管的地才真少了，这就是推恩令的作用。';
       beep(560);
@@ -4174,6 +4383,7 @@ document.querySelectorAll('.rc-answer').forEach(a=>{
       rcFeedback.textContent='再想想：这一画面里四块地还都归王管，他能直接管的地一块没少。切画面二看看管辖线指到了哪里。';
       beep(280);
     }
+    saveTopicStep();
   });
 });
 
@@ -4309,16 +4519,19 @@ function advance(){
   else{silkLevel++;silkMainPos=0;}
   beep(500);renderSilk();
 }
-function showSilkReturn(){
-  const route=pathNodes(),back=[];
-  route.forEach(n=>(n.in||[]).forEach(g=>{if(!back.includes(g))back.push(g);}));
-  silkTrials.push({route:route.map(n=>n.name).join(' → '),back:back.slice()});
-  silkReturn.innerHTML='<h4>顺着同一张网，这些东西往东走</h4><div class="goods">'+
+function silkReturnHTML(back){
+  return '<h4>顺着同一张网，这些东西往东走</h4><div class="goods">'+
     (back.length?back.map(g=>'<span class="chip">'+g+'</span>').join(''):'<span class="chip">这趟没换到东西</span>')+'</div>'+
     '<div class="silk-flow"><div class="f west"><b>往西去</b>丝绸、漆器，还有铸铁、凿井的技术，经商人一站站转手到欧洲。</div>'+
     '<div class="f east"><b>往东来</b>'+(back.length?back.join('、'):'种子、香料、乐舞')+'，还有文化和技艺。</div></div>'+
     '<p class="conclude">货靠人接力才走那么远，你选的路不同，带回的东西也不一样。长安到安息这一段，有《史记》《汉书》和出土文物支持；安息再往西到大秦，汉朝没人直接走到，是模拟路线，不保证每趟都到。</p>'+
     '<button class="choice" id="silkAlt" type="button">试另一条走法，保留这趟对照</button>';
+}
+function showSilkReturn(){
+  const route=pathNodes(),back=[];
+  route.forEach(n=>(n.in||[]).forEach(g=>{if(!back.includes(g))back.push(g);}));
+  silkTrials.push({route:route.map(n=>n.name).join(' → '),back:back.slice()});
+  silkReturn.innerHTML=silkReturnHTML(back);
   silkReturn.classList.add('show');beep(420);
   markTopicDone('silk');
   showGan();renderCompare();
@@ -4357,6 +4570,9 @@ document.getElementById('silkReset').addEventListener('click',()=>{
   silkTrials.length=0;
   silkReturn.classList.remove('show');silkGan.classList.remove('show');silkCompare.classList.remove('show');
   beep(360);renderSilk();
+  /* 只清当前专题：步骤键和完成状态都复位，不影响别的专题 */
+  store.setTopicStepOf('silk',null);
+  P.setActivityDone('silk',false);
 });
 renderSilk();
 
@@ -4368,6 +4584,9 @@ const PAPER_INFO={
 };
 const evFeedback=document.getElementById('evFeedback');
 const cailunDeep=document.getElementById('cailunDeep');
+let paperEv=null;   /* 证据断案首题：null未答、true/false */
+let paperQ1=null;   /* 迁移第一问 */
+let paperQ2=null;   /* 迁移第二问 */
 /* 证据断案 */
 document.querySelectorAll('.ev-answer').forEach(b=>{
   b.addEventListener('click',()=>{
@@ -4376,17 +4595,18 @@ document.querySelectorAll('.ev-answer').forEach(b=>{
     b.classList.add(ok?'right':'wrong');
     evFeedback.classList.add('show');
     evFeedback.className='ev-feedback show '+(ok?'ok':'no');
+    paperEv=ok;
     if(ok){
       evFeedback.textContent='对了。放马滩纸是西汉的，比蔡伦早两百多年，它一出现，“蔡伦以前没有纸”这句话就被推翻了。';
       cailunDeep.classList.add('show');
       markTopicDone('paper');
-      saveTopicStep();
       beep(560);
       /* 就地展开，不自动滚动，保证反馈留在同一屏，孩子自己往下看 */
     }else{
       evFeedback.textContent='再想想：蔡伦的记载是东汉的，它只能说明东汉怎么造纸，不能证明西汉有没有纸。点放马滩纸看看它的年代。';
       beep(280);
     }
+    saveTopicStep();
   });
 });
 /* 热身：三材料携带 */
@@ -4421,7 +4641,11 @@ document.getElementById('paperReset').addEventListener('click',()=>{
   tFeedback.classList.remove('show');
   tq2.hidden=true;
   document.querySelectorAll('.t-answer').forEach(x=>x.classList.remove('right','wrong'));
+  paperEv=null;paperQ1=null;paperQ2=null;
   beep(360);
+  /* 只清当前专题：步骤键和完成状态都复位，不影响别的专题 */
+  store.setTopicStepOf('paper',null);
+  P.setActivityDone('paper',false);
 });
 /* 迁移关：把"看年代→判断能证明什么"用到没见过的新纸上 */
 const tFeedback=document.getElementById('tFeedback');
@@ -4434,6 +4658,7 @@ document.querySelectorAll('.t-answer').forEach(b=>{
     b.classList.add(ok?'right':'wrong');
     tFeedback.classList.add('show');
     tFeedback.className='t-feedback show '+(ok?'ok':'no');
+    if(q==='1')paperQ1=ok;else paperQ2=ok;
     if(q==='1'){
       if(ok){
         tFeedback.textContent='对。这张纸是西汉的，年代比蔡伦早，又是麻纸——所以它能证明西汉那个时候已经有纸。你不是记住了“放马滩”这个名字，是靠“年代更早、又是纸”自己推出来的。';
@@ -4452,6 +4677,7 @@ document.querySelectorAll('.t-answer').forEach(b=>{
         tFeedback.textContent='再想想：它就是麻纸残片，“是不是纸”这一点已经能确定了。';beep(280);
       }
     }
+    saveTopicStep();
   });
 });
 document.getElementById('sImgFail').addEventListener('click',function(){
@@ -4515,6 +4741,10 @@ function renderSidebar(){
     b.addEventListener('click',function(){go('/lesson/'+b.getAttribute('data-lesson'));closeSidebar();});
   });
 }
+function lessonActivity(no){
+  for(var key in ACTIVITY_LESSON){if(ACTIVITY_LESSON[key]===no)return key;}
+  return null;
+}
 function renderHomeCatalog(){
   var h='';
   UNITS_G7A.forEach(function(u){
@@ -4526,10 +4756,12 @@ function renderHomeCatalog(){
       h+='<div class="hc-grid">';
       u.lessons.forEach(function(no){
         var l=lessonByNo(no);
+        var act=lessonActivity(no);
+        var actTxt=act?(' · 动手'+(P.isActivityDone(act)?'已做':'未做')):'';
         h+='<button class="hc-card '+lessonStatus(no)+'" data-lesson="'+no+'" type="button">'+
           '<span class="hc-no">第 '+no+' 课</span>'+
           '<span class="hc-title">'+l.title+'</span>'+
-          '<span class="hc-meta">'+l.nodes.length+' 个知识点 · '+statusText(no)+'</span></button>';
+          '<span class="hc-meta">已看 '+P.lessonSeenCount(no)+'/'+l.nodes.length+' 张'+actTxt+'</span></button>';
       });
       h+='</div>';
     }
@@ -4544,24 +4776,33 @@ function refreshNavStates(){renderSidebar();renderHomeCatalog();}
 
 /* 课视图顶部年代尺：15 课横向，当前课高亮，可点跳课，保留历史顺序感 */
 function renderLessonRuler(no){
+  document.getElementById('lrPos').textContent='第 '+no+' 课 / 共 '+LESSONS.length+' 课';
   var h='<div class="lr-track">';
   LESSONS.forEach(function(l){
     h+='<button class="lr-dot'+(l.no===no?' active':'')+'" data-lr="'+l.no+'" type="button" aria-label="第'+l.no+'课 '+l.title+'"><span class="lr-num">'+l.no+'</span></button>';
   });
   h+='</div>';
-  lessonRuler.innerHTML=h;
-  lessonRuler.querySelectorAll('[data-lr]').forEach(function(b){
+  var outer=document.getElementById('lrTrackOuter');
+  outer.innerHTML=h;
+  outer.querySelectorAll('[data-lr]').forEach(function(b){
     b.addEventListener('click',function(){go('/lesson/'+b.getAttribute('data-lr'));});
   });
+  /* 当前课主动滚入可视区，晚段课不用手动横滑找 */
+  var activeDot=outer.querySelector('.lr-dot.active');
+  if(activeDot){
+    setTimeout(function(){activeDot.scrollIntoView({behavior:'auto',inline:'center',block:'nearest'});},0);
+  }
 }
 function openLesson(no){
   var lesson=lessonByNo(no);
   if(!lesson)return;
   currentLessonNo=no;
+  warmScope='lesson';
+  warmList=null;warmPos=0;
   lessonCrumb.textContent='第 '+no+' 课';
   renderLessonRuler(no);
   var noteHtml='';
-  if(no===16)noteHtml='<p class="li-note">小提示：这两场战役在时间上比东汉灭亡稍早，是三国鼎立的背景，所以这里的年份看起来往回走了一点。</p>';
+  if(currentBookId==='g7a'&&no===16)noteHtml='<p class="li-note">小提示：这两场战役在时间上比东汉灭亡稍早，是三国鼎立的背景，所以这里的年份看起来往回走了一点。</p>';
   lessonIntro.innerHTML='<h2 class="li-title">第 '+no+' 课 · '+lesson.title+'</h2>'+
     '<p class="li-sub">这一课有 '+lesson.nodes.length+' 个知识点，按年代排好了。点卡片看细节，先自己想，再看证据。</p>'+noteHtml;
   renderLessonJourney(no);
@@ -4576,6 +4817,7 @@ function openLesson(no){
   lessonView.hidden=false;
   showView('home');
   P.setLast({type:'lesson',no:no});
+  startWarmup();
   window.scrollTo(0,0);
 }
 
@@ -4624,7 +4866,9 @@ function renderPortal(){
       '<span class="bc-title">'+b.grade+b.term+'历史</span>'+
       '<span class="bc-span">'+b.span+'</span>';
     if(b.locked){
-      inner+='<span class="bc-lock">即将上线</span><span class="bc-go">敬请期待</span>';
+      /* 锁定卡不可聚焦、无动作，但仍可读 */
+      card.disabled=true;
+      inner+='<span class="bc-lock">暂未开放</span><span class="bc-go">敬请期待</span>';
     }else{
       inner+='<span class="bc-go">进入这一册 ›</span>';
     }
@@ -4637,6 +4881,8 @@ function renderPortal(){
 }
 function showPortal(){
   currentLessonNo=null;
+  warmScope='portal';
+  warmList=null;warmPos=0;
   showView('portal');
   renderPortal();
   window.scrollTo(0,0);
@@ -4669,52 +4915,95 @@ function updateContinueButton(){
   var last=P.getLast();
   if(last&&last.type==='lesson'&&lessonByNo(last.no)){
     btn.hidden=false;
-    btn.textContent='继续第 '+last.no+' 课：'+lessonByNo(last.no).title;
+    /* 标明具体卡，让孩子知道会落到哪，而不是只给课号 */
+    btn.textContent='继续看第 '+last.no+' 课'+(last.nodeTitle?' · '+last.nodeTitle:'：'+lessonByNo(last.no).title);
   }else{
     btn.hidden=true;
   }
 }
 function showHome(){
   currentLessonNo=null;
+  warmScope='home';
+  warmList=null;warmPos=0;
   lessonView.hidden=true;
   appHome.hidden=false;
   showView('home');
   renderHomeCatalog();
   updateContinueButton();
+  startWarmup();
   window.scrollTo(0,0);
 }
 function renderRoute(){
+  /* 兜底：任何路由变化都先收掉旧卡，不让弹窗盖在新页面上 */
+  if(sheet.classList.contains('show')){
+    if(sheetPushed){history.replaceState(null,'');sheetPushed=false;}
+    closeSheetDom();
+  }
   var r=parseRoute();
   if(r.name==='portal'){showPortal();return;}
-  /* 数据没做好的册，回门户，不白屏 */
-  if(r.book&&!BOOK_DATA[r.book]){showPortal();return;}
+  /* 册校验：先看有没有这册，再看是否锁定、有没有数据，都给明确解释 */
+  var b=r.book?bookById(r.book):null;
+  if(r.book&&!b){showInvalidRoute('没有“'+r.book+'”这一册，可能是链接写错了。');return;}
+  if(r.book&&b.locked){showInvalidRoute(b.grade+b.term+'还没开放，先看前面四册吧。');return;}
+  if(r.book&&!BOOK_DATA[r.book]){showInvalidRoute('这一册的内容还没做好。');return;}
   if(r.book&&currentBookId!==r.book){enterBook(r.book);}
   if(r.name==='book'){showHome();return;}
-  if(r.name==='lesson'){openLesson(+r.id);return;}
-  if(r.name==='activity'){enterActivity(r.id);return;}
-  if(r.name==='thread'){enterThread(r.id);return;}
-  if(r.name==='3d'){enter3D(r.id);return;}
-  showPortal();
+  if(r.name==='lesson'){
+    var no=parseInt(r.id,10);
+    if(!Number.isInteger(no)||!lessonByNo(no)){showInvalidRoute('没有第 '+r.id+' 课，这一册共 '+LESSONS.length+' 课。');return;}
+    openLesson(no);return;
+  }
+  if(r.name==='activity'){
+    if(!TOPIC_PANE||!TOPIC_PANE[r.id]){showInvalidRoute('没有“'+r.id+'”这个动手专题。');return;}
+    enterActivity(r.id);return;
+  }
+  if(r.name==='thread'){
+    if(!THREADS.some(x=>x.id===r.id)){showInvalidRoute('没有“'+r.id+'”这个话题。');return;}
+    enterThread(r.id);return;
+  }
+  if(r.name==='3d'){
+    if(!S3D_META||!S3D_META[r.id]){showInvalidRoute('没有“'+r.id+'”这个 3D 场景。');return;}
+    enter3D(r.id);return;
+  }
+  showInvalidRoute('这个地址不对，可能是链接写错了。');
 }
+/* 按浏览器返回：若卡片开着，先收卡（这一步 hash 不变，不触发 hashchange）*/
+window.addEventListener('popstate',function(){
+  if(sheet.classList.contains('show')){
+    sheetPushed=false;
+    closeSheetDom();
+  }
+});
 window.addEventListener('hashchange',renderRoute);
 
 /* 侧栏开关（手机抽屉；桌面常驻）*/
+function isMobileLayout(){return !window.matchMedia('(min-width:1024px)').matches;}
 function openSidebar(){
   sidebar.classList.add('open');
   sidebarBackdrop.hidden=false;
   document.body.classList.add('sb-on');
+  /* 打开：移出 inert，焦点进抽屉，键盘不再落到背后 */
+  sidebar.inert=false;
+  setTimeout(()=>{document.getElementById('sidebarClose').focus({preventScroll:true});},60);
 }
 function closeSidebar(){
   sidebar.classList.remove('open');
   sidebarBackdrop.hidden=true;
   document.body.classList.remove('sb-on');
+  /* 手机关闭：inert 让抽屉移出焦点和读屏树；桌面常驻不 inert */
+  if(isMobileLayout())sidebar.inert=true;
+  document.getElementById('menuBtn').focus({preventScroll:true});
 }
+/* 桌面常驻：初始就移除 inert；手机保持关闭态 inert */
+if(!isMobileLayout())sidebar.inert=false;
 document.getElementById('menuBtn').addEventListener('click',openSidebar);
 document.getElementById('sidebarClose').addEventListener('click',closeSidebar);
 sidebarBackdrop.addEventListener('click',closeSidebar);
 document.getElementById('lessonBack').addEventListener('click',function(){go('/');});
 
 /* 首页与侧栏按钮 */
+document.getElementById('invalidHome').addEventListener('click',function(){go('/');});
+document.getElementById('invalidPortal').addEventListener('click',function(){go('/portal');});
 document.getElementById('startBtn').addEventListener('click',function(){go('/lesson/1');});
 document.getElementById('continueBtn').addEventListener('click',function(){
   var last=P.getLast();
