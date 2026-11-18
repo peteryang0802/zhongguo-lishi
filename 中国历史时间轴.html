@@ -850,6 +850,7 @@ button:focus:not(:focus-visible){outline:none}
   font-size:14px;font-weight:700;color:#5a4a30;padding:8px 12px;
 }
 .sb-more svg{width:22px;height:22px;flex:none}
+.sb-more[hidden]{display:none}
 
 /* 侧栏单元与课次 */
 .sb-unit{margin-bottom:12px}
@@ -961,6 +962,7 @@ button:focus:not(:focus-visible){outline:none}
 }
 .extra-card .ec-title{font-size:15px;font-weight:800;color:#4a3f2c}
 .extra-card .ec-sub{font-size:12.5px;color:#6b6052}
+.extra-card[hidden]{display:none}
 
 /* ===== 课视图 ===== */
 .lesson-topbar{display:flex;align-items:center;gap:12px;padding:6px 0 12px}
@@ -1050,7 +1052,7 @@ button:focus:not(:focus-visible){outline:none}
   <section class="app-home" id="appHome">
     <div class="home-hero">
       <h2>今天学哪一课？</h2>
-      <p>按统编教材七年级上册排好，从史前到东汉共 15 课。点课名直接进，不用先猜朝代。</p>
+      <p id="homeHeroDesc">按统编教材七年级上册排好，从史前到东汉共 15 课。点课名直接进，不用先猜朝代。</p>
       <div class="home-actions">
         <button class="btn primary big" id="startBtn" type="button">开始第 1 课</button>
         <button class="btn ghost big" id="continueBtn" type="button" hidden>继续上次</button>
@@ -2853,6 +2855,109 @@ BOOK_DATA.g7a={
   periods:PERIODS,mysteries:MYSTERIES
 };
 
+/* ===== 数据：七年级下册（g7b），独立编号，先建第一单元 隋唐 ===== */
+let G7B_NODES=[
+ {id:1,year:581,yearLabel:'581年',type:'state',title:'隋朝建立与统一',
+  story:'东汉以后乱了三百多年，最后是杨家把天下重新拢到一块。',
+  points:['581年，杨坚夺取北周政权，建立隋朝，他就是隋文帝','589年，隋军灭掉南方的陈，结束了长期分裂','隋文帝勤俭，统一后人口、粮食慢慢涨上来','先想一想，分裂几百年后重新统一，最要紧的得先做什么']},
+ {id:2,year:605,yearLabel:'605年',type:'site',title:'大运河',
+  story:'隋炀帝干了件大事，挖一条南北走向的大河，把几大水系串起来。',
+  points:['605年起，隋炀帝下令开凿大运河','以洛阳为中心，北到涿郡（今北京），南到余杭（今杭州）','连接海河、黄河、淮河、长江、钱塘江五大水系','挖河累死很多人，可南北交通、运粮从此方便，看事情要分两面']},
+ {id:3,year:605,yearLabel:'约605年',type:'site',title:'赵州桥',
+  story:'河北有座石桥，一千四百年过去还立在那儿，拱的设计很巧。',
+  points:['赵州桥又叫安济桥，在河北赵县，隋朝工匠李春设计','一个大拱，肩膀上还有四个小拱，既省料又能泄洪水','是世界上现存最古老的石拱桥之一','先猜一猜，那几个小拱除了好看，还能帮上什么忙']},
+ {id:4,year:618,yearLabel:'618年',type:'event',title:'隋朝灭亡',
+  story:'隋朝跟秦朝有点像，都很强，也都二世就亡了。',
+  points:['隋炀帝连年征发民力：挖运河、修宫殿、打高句丽，百姓受不了','各地农民起义，618年隋炀帝在江都被部下杀死，隋朝灭亡','对比一下秦和隋，为什么强盛的王朝反而垮得快','这是隋炀帝的画像，后世画的，不是当时照片']},
+ {id:5,year:618,yearLabel:'618年',type:'state',title:'唐朝建立与贞观之治',
+  story:'李家趁乱起兵建立唐朝，第二位皇帝李世民开创了一个治世。',
+  points:['618年，李渊称帝，建立唐朝','李世民是唐太宗，年号贞观（627—649）','他虚心纳谏，敢重用提意见的魏征，轻徭薄赋','政治清明、国力渐强，史称“贞观之治”','皇帝肯听反对意见，这事你怎么看']},
+ {id:6,year:629,yearLabel:'629年',type:'person',title:'玄奘西行',
+  story:'一个和尚独自往西天取经，路上的艰险，壁画里都画着。',
+  points:['贞观年间，玄奘从长安出发，西行去天竺（今印度）取经','走过大漠雪山，学成后带回大量佛经，还写了《大唐西域记》','这幅是西夏石窟壁画，旁边已经有个猴形随从，比《西游记》成书早','壁画是文物，小说是后来的创作，两码事，别混']},
+ {id:7,year:630,yearLabel:'630年',type:'event',title:'日本遣唐使',
+  story:'日本一批批派人坐船渡海来唐朝，学制度、学文化，风浪里九死一生。',
+  points:['从630年起，日本派出十几批遣唐使','使团里有留学生、学问僧，来学唐朝的制度、文字和技术','渡海风险很大，不少船翻在海里','这幅古画是日本人画的遣唐使船，看看那时的船怎么闯风浪']},
+ {id:8,year:634,yearLabel:'634年前后',type:'event',title:'步辇图',
+  story:'吐蕃派人来求亲，唐太宗接见使者的场面，被画了下来。',
+  points:['《步辇图》传为唐代阎立本所画，现在能看到的是宋代摹本','画的是唐太宗接见吐蕃使者禄东赞','没有画背景，全靠人物的神态和身份说话','现存故宫，是汉藏友好往来的实物见证']},
+ {id:9,year:641,yearLabel:'641年',type:'event',title:'文成公主入藏',
+  story:'唐朝把一位公主嫁到高原，带去的不只是嫁妆，还有手艺和文化。',
+  points:['641年，文成公主嫁给吐蕃赞普松赞干布','她带去蔬菜种子、工匠、医药和书籍，中原技术传到吐蕃','布达拉宫和这段和亲有关，后来历代重修，成了宫堡式建筑群','这是今天的实景，不是唐朝原样，这点要分清']},
+ {id:10,year:690,yearLabel:'690年',type:'person',title:'武则天',
+  story:'中国历史上唯一的女皇帝，她的故事到今天还被人讲。',
+  points:['武则天晚年称帝，690年改国号为周','她是中国历史上唯一的女皇帝','重用人才，也用酷吏，科举在她手里进一步发展','这幅是清代人画的像，不是当时写真']},
+ {id:11,year:713,yearLabel:'713年',type:'event',title:'开元盛世与经济繁荣',
+  story:'唐朝到了最鼎盛的时候，富足到什么程度，看留下的陶器就知道。',
+  points:['唐玄宗前期年号开元（713—741），政局稳定、经济繁荣，史称“开元盛世”','农业、手工业兴旺，唐三彩是当时陶器的代表','唐三彩多是陪葬明器，黄、绿、白等釉色，马和骆驼最常见','这件三彩马是出土文物，比画像更能说明当时的手艺']},
+ {id:12,year:753,yearLabel:'753年',type:'person',title:'鉴真东渡',
+  story:'一位失明的老和尚，几次渡海失败，最后把佛法带到了日本。',
+  points:['鉴真六次东渡，第五次失败后双目失明，753年终于到日本','他在日本传授佛经，还带去建筑、医药、雕塑','奈良唐招提寺由他主持修建，这尊夹纻漆坐像就是他，日本奉为国宝','同是唐朝高僧，玄奘是“走进来”，鉴真是“走出去”，方向别记反']},
+ {id:13,year:755,yearLabel:'755年',type:'event',title:'安史之乱',
+  story:'一场叛乱把盛唐拦腰打断，唐朝从此由盛转衰。',
+  points:['755年，安禄山和史思明发动叛乱，史称“安史之乱”，到763年才平定','叛军一度攻下洛阳、长安，唐玄宗逃往四川，路上有马嵬驿之变','这幅是形势图，箭头标着叛军和唐军的进退路线','打仗使北方残破，人口大量南迁，唐朝再没回到从前']},
+ {id:14,year:760,yearLabel:'8世纪',type:'person',title:'唐诗（李白、杜甫）',
+  story:'唐朝人把诗写到了顶峰，两个人的名字几乎成了唐诗的招牌。',
+  points:['李白被称“诗仙”，诗风豪放；杜甫被称“诗圣”，诗写战乱和百姓','两人主要生活在8世纪，安史之乱就夹在他们的年代里','读诗能读出时代：盛世的豪情和乱世的沉郁，味道不一样','这幅是清代《历代君臣图像》里的画像，后世所绘']},
+ {id:15,year:868,yearLabel:'868年',type:'event',title:'雕版印刷《金刚经》',
+  story:'唐朝人已经会把字刻在木板上印书，现存最早的印本还带着日期。',
+  points:['隋唐时期发明了雕版印刷','咸通九年（868年）印的《金刚经》，是现存最早有确切日期的雕版印刷品','卷首还有一幅释迦说法图，刻工已经很成熟','原件现藏大英图书馆，想想这项技术后来怎么改变了知识传播']},
+ {id:16,year:875,yearLabel:'875年',type:'event',title:'黄巢起义与唐朝灭亡',
+  story:'一场大起义给了唐朝最后一击，起义军还一度进了长安。',
+  points:['875年，黄巢领导农民起义，转战大半个中国，一度攻入长安','起义沉重打击了唐朝，907年唐朝灭亡，随后进入五代十国','这幅是现代历史画家王绪阳的作品，画起义军入长安，不是古画','从贞观到唐亡，一个王朝怎么由盛转衰，试着自己串一遍']}
+];
+let G7B_IMG_META={
+ 1:{img:'assets/g7b01.jpg',name:'隋文帝杨坚像',era:'后世绘制',source:'古代人物画像，非当时写真',kind:'人物像·古画（后世）'},
+ 2:{img:'assets/g7b02.jpg',name:'隋朝大运河示意图',era:'现代绘制',source:'教材风格历史地图，现代整理',kind:'历史地图·现代绘制'},
+ 3:{img:'assets/g7b03.jpg',name:'赵州桥（安济桥）',era:'隋代始建，现代拍摄',source:'河北赵县，实景',kind:'遗址·实景'},
+ 4:{img:'assets/g7b04.jpg',name:'隋炀帝杨广像',era:'后世绘制',source:'古代人物画像，非当时写真',kind:'人物像·古画（后世）'},
+ 5:{img:'assets/g7b05.jpg',name:'唐太宗李世民像',era:'后世摹绘',source:'据故宫南薰殿旧藏摹绘，非当时写真',kind:'人物像·古画（后世）'},
+ 6:{img:'assets/g7b06.jpg',name:'玄奘西行求法图（壁画）',era:'西夏',source:'甘肃瓜州榆林窟第3窟壁画，含猴行者',kind:'石窟壁画·文物'},
+ 7:{img:'assets/g7b07.jpg',name:'遣唐使渡海图',era:'14世纪（日本）',source:'日本古画，描绘遣唐使船闯风浪',kind:'古画（日本）'},
+ 8:{img:'assets/g7b08.jpg',name:'步辇图',era:'唐代原作，现存宋摹本',source:'传阎立本绘，故宫博物院藏',kind:'人物画·传世名画'},
+ 9:{img:'assets/g7b09.jpg',name:'布达拉宫',era:'始建于7世纪，历代重修',source:'西藏拉萨，现代实景',kind:'建筑·实景'},
+ 10:{img:'assets/g7b10.jpg',name:'武则天像',era:'清代（后世绘制）',source:'清帝王名贤像册，非当时写真',kind:'人物像·古画（后世）'},
+ 11:{img:'assets/g7b11.jpg',name:'唐三彩马',era:'唐代',source:'出土陶器，故宫博物院藏',kind:'出土文物·陶器'},
+ 12:{img:'assets/g7b12.jpg',name:'鉴真夹纻漆坐像',era:'8世纪（日本）',source:'奈良唐招提寺藏，日本国宝',kind:'夹纻漆像·文物'},
+ 13:{img:'assets/g7b13.jpg',name:'安史之乱形势图',era:'现代绘制',source:'历史地图，标叛军与唐军路线',kind:'历史地图·现代绘制'},
+ 14:{img:'assets/g7b14.jpg',name:'李白、杜甫像',era:'清代（后世绘制）',source:'清《历代君臣图像》，非当时写真',kind:'人物像·古画（后世）'},
+ 15:{img:'assets/g7b15.jpg',name:'雕版印刷《金刚经》',era:'唐咸通九年（868年）',source:'现存最早有确切日期的雕版印刷品，大英图书馆藏',kind:'雕版印刷·文物'},
+ 16:{img:'assets/g7b16.jpg',name:'黄巢起义军入长安',era:'现代（1959年）',source:'王绪阳绘，中国历史博物馆藏，历史画',kind:'历史画·现代创作'}
+};
+let G7B_PERIODS=[
+  {key:'suitang',name:'隋唐',range:'581—907',from:0,to:15}
+];
+/* 第一单元暂不挂专题、话题、3D、谜题，给空结构，渲染函数都有保护 */
+let G7B_NODE_META={};
+let G7B_TOPIC_MAP={},G7B_TOPIC_PANE={},G7B_TOPIC_NAME={};
+let G7B_THREADS=[],G7B_THREAD_MAP={};
+let G7B_NODE_3D_MAP={},G7B_S3D_META={},G7B_OBSERVE_MAP={};
+let G7B_MYSTERIES=[];
+
+/* ===== g7b 课次组织：先建第一单元 隋唐（1—7课）===== */
+let G7B_UNITS=[
+ {no:1,name:'隋唐时期：繁荣与开放的时代',range:'隋朝统一到唐朝灭亡（581—907）',lessons:[1,2,3,4,5,6,7]}
+];
+let G7B_LESSONS=[
+ {no:1,unit:1,title:'隋朝统一与灭亡',nodes:[0,1,3]},
+ {no:2,unit:1,title:'唐朝建立与“贞观之治”',nodes:[4]},
+ {no:3,unit:1,title:'“开元盛世”与唐朝经济的繁荣',nodes:[9,10]},
+ {no:4,unit:1,title:'安史之乱与唐朝衰亡',nodes:[12,15]},
+ {no:5,unit:1,title:'隋唐时期的民族交往与交融',nodes:[7,8]},
+ {no:6,unit:1,title:'隋唐时期的中外文化交流',nodes:[5,6,11]},
+ {no:7,unit:1,title:'隋唐时期的科技与文化',nodes:[2,13,14]}
+];
+let G7B_LESSON_OF_NODE={};
+G7B_LESSONS.forEach(l=>l.nodes.forEach(idx=>{G7B_LESSON_OF_NODE[idx]=l.no;}));
+BOOK_DATA.g7b={
+ nodes:G7B_NODES,imgMeta:G7B_IMG_META,lessons:G7B_LESSONS,units:G7B_UNITS,
+ lessonOfNode:G7B_LESSON_OF_NODE,
+ topicMap:G7B_TOPIC_MAP,topicPane:G7B_TOPIC_PANE,topicName:G7B_TOPIC_NAME,nodeMeta:G7B_NODE_META,
+ threads:G7B_THREADS,threadMap:G7B_THREAD_MAP,
+ node3dMap:G7B_NODE_3D_MAP,s3dMeta:G7B_S3D_META,observeMap:G7B_OBSERVE_MAP,
+ periods:G7B_PERIODS,mysteries:G7B_MYSTERIES
+};
+
 /* ===== 底部短卡 ===== */
 const sheet=document.getElementById('sheet'),backdrop=document.getElementById('backdrop');
 /* WebP 同步特性检测：支持则用更小的 .webp，否则回退 .jpg */
@@ -3684,7 +3789,7 @@ function openLesson(no){
   renderLessonJourney(no);
   var fh='';
   if(no>1)fh+='<button class="lf-btn" data-foot="'+(no-1)+'" type="button">上一课：'+lessonByNo(no-1).title+'</button>';
-  if(no<15)fh+='<button class="lf-btn primary" data-foot="'+(no+1)+'" type="button">下一课：'+lessonByNo(no+1).title+'</button>';
+  if(no<LESSONS.length)fh+='<button class="lf-btn primary" data-foot="'+(no+1)+'" type="button">下一课：'+lessonByNo(no+1).title+'</button>';
   lessonFoot.innerHTML=fh;
   lessonFoot.querySelectorAll('[data-foot]').forEach(function(b){
     b.addEventListener('click',function(){go('/lesson/'+b.getAttribute('data-foot'));});
@@ -3712,7 +3817,22 @@ function enterBook(bookId){
   P.setCurrentBook(bookId);
   /* 预热列表作废，新册重新预热 */
   warmList=null;warmPos=0;
+  applyBookChrome();
+  /* 常驻侧栏按新册目录重渲染，否则还停在上一册的课 */
+  renderSidebar();
   return true;
+}
+/* 按册调整首页：hero 描述、话题/谜题入口显隐（没有内容就不显示，杜绝僵尸按钮）*/
+function applyBookChrome(){
+  var b=bookById(currentBookId);
+  var desc=document.getElementById('homeHeroDesc');
+  if(desc&&b)desc.textContent='按统编教材'+b.grade+b.term+'排好，'+b.span+'，共 '+LESSONS.length+' 课。点课名直接进，不用先猜朝代。';
+  var et=document.getElementById('extraThreads');
+  if(et)et.hidden=!(THREADS&&THREADS.length);
+  var em=document.getElementById('extraMystery');
+  if(em)em.hidden=!(MYSTERIES&&MYSTERIES.length);
+  var st=document.getElementById('sidebarThreads');
+  if(st)st.hidden=!(THREADS&&THREADS.length);
 }
 /* 门户：渲染六册卡片，未做好的册锁定 */
 function renderPortal(){
