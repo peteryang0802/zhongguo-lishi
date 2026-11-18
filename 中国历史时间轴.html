@@ -885,7 +885,7 @@ button:focus:not(:focus-visible){outline:none}
   .sidebar{
     transform:none;width:var(--sb-w-desk);box-shadow:none;
   }
-  header,#homeView,#topicView,#threadView,#view3d{margin-left:var(--sb-w-desk)}
+  header,#portalView,#homeView,#topicView,#threadView,#view3d{margin-left:var(--sb-w-desk)}
   /* 桌面占满侧栏右侧，文字行宽交给内部 .app-home/#lessonView 的限宽 */
   main,#topicView,#view3d{max-width:none;margin-top:0;margin-right:0;margin-bottom:0}
   .sidebar-head{padding:18px 16px 14px}
@@ -898,6 +898,35 @@ button:focus:not(:focus-visible){outline:none}
     transition:transform .2s ease;
   }
   #sheet.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+}
+
+/* ===== 总门户：选册 ===== */
+.portal-view{padding-top:10px;max-width:1080px;margin:0 auto}
+.portal-head{margin-bottom:20px}
+.portal-head h2{font-size:27px;margin:0 0 8px}
+.portal-head p{font-size:15px;color:#544b3e;margin:0;max-width:60ch}
+.portal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.book-card{
+  position:relative;text-align:left;border-radius:20px;padding:20px 18px 18px;min-height:158px;
+  display:flex;flex-direction:column;gap:8px;color:#fff;overflow:hidden;
+  border:1px solid rgba(0,0,0,.12);box-shadow:var(--shadow);
+  transition:transform .15s;
+}
+.book-card:active{transform:scale(.98)}
+.book-card .bc-short{font-size:13px;font-weight:800;letter-spacing:1px;opacity:.92}
+.book-card .bc-title{font-size:21px;font-weight:850;line-height:1.25}
+.book-card .bc-span{font-size:13.5px;opacity:.92;margin-top:auto}
+.book-card .bc-go{font-size:14px;font-weight:800;display:flex;align-items:center;gap:6px}
+.book-card.g7a{background:linear-gradient(150deg,#b5651d,#8a4a14)}
+.book-card.g7b{background:linear-gradient(150deg,#4a7a52,#355c3c)}
+.book-card.g8a{background:linear-gradient(150deg,#2f6f8f,#23546b)}
+.book-card.g8b{background:linear-gradient(150deg,#b8860b,#8f6808)}
+.book-card.g9a{background:linear-gradient(150deg,#7a5a8f,#5c436e)}
+.book-card.g9b{background:linear-gradient(150deg,#3f6b6b,#2c4d4d)}
+.book-card.locked{filter:grayscale(.5)}
+.book-card .bc-lock{
+  position:absolute;top:14px;right:14px;font-size:12px;font-weight:800;
+  background:rgba(255,255,255,.22);border-radius:20px;padding:4px 11px;
 }
 
 /* ===== 学习首页 ===== */
@@ -985,6 +1014,10 @@ button:focus:not(:focus-visible){outline:none}
   </div>
   <nav class="sidebar-nav" id="sidebarNav"></nav>
   <div class="sidebar-foot">
+    <button class="sb-more" id="sidebarPortal" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      回选册（换一本）
+    </button>
     <button class="sb-more" id="sidebarThreads" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="12" cy="18" r="2.4"/><path d="M7.8 7.4l3 8.4M16.2 7.4l-3 8.4"/></svg>
       跨课话题（按线索看）
@@ -1001,6 +1034,15 @@ button:focus:not(:focus-visible){outline:none}
     <svg viewBox="0 0 24 24" fill="none" stroke="#2b2620" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="16" y1="9" x2="22" y2="15"></line><line x1="22" y1="9" x2="16" y2="15"></line></svg>
   </button>
 </header>
+
+<!-- ===== 总门户：选册 ===== -->
+<section class="view portal-view" id="portalView" hidden>
+  <div class="portal-head">
+    <h2>初中历史，选一册开始</h2>
+    <p>课后复习、课前预习，顺着时间往下走。先选册，再选课。</p>
+  </div>
+  <div class="portal-grid" id="portalGrid"></div>
+</section>
 
 <!-- ===== 主视图：学习首页 + 按课内容 ===== -->
 <main class="view active" id="homeView">
@@ -1419,6 +1461,17 @@ button:focus:not(:focus-visible){outline:none}
 </button>
 
 <script>
+/* ===== 册注册表：初中六册，初三两册先锁定 ===== */
+const BOOKS=[
+  {id:'g7a',grade:'七年级',term:'上册',short:'七上',span:'史前—东汉',locked:false},
+  {id:'g7b',grade:'七年级',term:'下册',short:'七下',span:'隋唐—明清',locked:false},
+  {id:'g8a',grade:'八年级',term:'上册',short:'八上',span:'鸦片战争—解放战争',locked:false},
+  {id:'g8b',grade:'八年级',term:'下册',short:'八下',span:'新中国—新时代',locked:false},
+  {id:'g9a',grade:'九年级',term:'上册',short:'九上',span:'世界古代—近代早期',locked:true},
+  {id:'g9b',grade:'九年级',term:'下册',short:'九下',span:'一战—当代世界',locked:true}
+];
+function bookById(id){return BOOKS.find(b=>b.id===id);}
+const BOOK_DATA={};
 /* ===== 数据：核心锚点，按年代排序 ===== */
 const TYPE_META={
   person:{label:'人物',color:'var(--person)'},
@@ -1432,7 +1485,7 @@ const ICONS={
   state:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4"/><path d="M5 4h12l-2.5 3L17 10H5"/></svg>',
   site:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18l5-8 4 5 3-4 6 7"/><path d="M3 21h18"/></svg>'
 };
-const NODES=[
+let NODES=[
  /* ===== 第一单元 史前 ===== */
  {id:1,year:-1700000,yearLabel:'约170万年前',approx:true,type:'site',title:'元谋人',
   story:'这是我国目前已知最早的古人类之一。遗址里发现过炭屑，有研究者认为他们可能已经知道用火，这一点还在继续考证。',
@@ -1603,7 +1656,7 @@ const NODES=[
 
 
 /* ===== 真实图与四要素（id 索引）===== */
-const IMG_META={
+let IMG_META={
  1:{img:'assets/pre01.jpg',name:'元谋人上门齿化石',era:'约170万年前',source:'云南元谋出土，中国国家博物馆藏',kind:'出土化石·古人类'},
  2:{img:'assets/pre02.jpg',name:'北京人复原头骨',era:'约70万—20万年前',source:'北京周口店出土，头骨复原模型',kind:'复原模型·古人类'},
  3:{img:'assets/pre03.jpg',name:'山顶洞人骨针',era:'约3万年前',source:'北京周口店山顶洞出土，中国国家博物馆藏',kind:'出土文物·骨器'},
@@ -1682,15 +1735,33 @@ let currentIndex=0;
 /* ===== 双端进度：按课阅读 + 按活动分开，刷新不自动弹专题 ===== */
 const P=(function(){
   const KEY='zg_v2';
-  function blank(){return {lessons:{},activities:{},last:null,migrated:false};}
-  function read(){try{var d=JSON.parse(localStorage.getItem(KEY)||'null');return d&&typeof d==='object'?d:blank();}catch(e){return blank();}}
+  function blankBook(){return {lessons:{},activities:{},last:null};}
+  function blank(){return {books:{},migrated:false,current:'g7a'};}
+  function read(){
+    try{
+      var d=JSON.parse(localStorage.getItem(KEY)||'null');
+      if(!d||typeof d!=='object')return blank();
+      /* 兼容已上线的旧单册结构：没有 books 字段，整体收进 g7a */
+      if(!d.books){
+        d={books:{g7a:{lessons:d.lessons||{},activities:d.activities||{},last:d.last||null}},
+           migrated:!!d.migrated,current:'g7a'};
+      }
+      if(!d.current)d.current='g7a';
+      return d;
+    }catch(e){return blank();}
+  }
   function write(d){localStorage.setItem(KEY,JSON.stringify(d));}
   var data=read();
+  var cur=data.current;
+  function book(){if(!data.books[cur])data.books[cur]=blankBook();return data.books[cur];}
   function lessonRec(no){
-    if(!data.lessons[no])data.lessons[no]={seen:[],done:false};
-    return data.lessons[no];
+    var b=book();
+    if(!b.lessons[no])b.lessons[no]={seen:[],done:false};
+    return b.lessons[no];
   }
   return {
+    setCurrentBook(id){cur=id;data.current=id;book();write(data);},
+    get currentBook(){return cur;},
     markNodeSeen(idx){
       var no=LESSON_OF_NODE[idx];
       if(no==null)return;
@@ -1701,20 +1772,21 @@ const P=(function(){
     isNodeSeen(idx){
       var no=LESSON_OF_NODE[idx];
       if(no==null)return false;
-      var rec=data.lessons[no];
+      var rec=book().lessons[no];
       return rec?rec.seen.indexOf(idx)>=0:false;
     },
     setLessonDone(no,done){lessonRec(no).done=!!done;write(data);},
-    isLessonDone(no){var rec=data.lessons[no];return rec?!!rec.done:false;},
-    lessonSeenCount(no){var rec=data.lessons[no];return rec?rec.seen.length:0;},
+    isLessonDone(no){var rec=book().lessons[no];return rec?!!rec.done:false;},
+    lessonSeenCount(no){var rec=book().lessons[no];return rec?rec.seen.length:0;},
     setActivityDone(key,done){
-      if(!data.activities[key])data.activities[key]={done:false};
-      data.activities[key].done=!!done;
+      var b=book();
+      if(!b.activities[key])b.activities[key]={done:false};
+      b.activities[key].done=!!done;
       write(data);
     },
-    isActivityDone(key){var a=data.activities[key];return a?!!a.done:false;},
-    setLast(v){data.last=v;write(data);},
-    getLast(){return data.last;},
+    isActivityDone(key){var a=book().activities[key];return a?!!a.done:false;},
+    setLast(v){book().last=v;write(data);},
+    getLast(){return book().last;},
     get migrated(){return !!data.migrated;},
     setMigrated(){data.migrated=true;write(data);}
   };
@@ -1734,7 +1806,7 @@ function migrateOldProgress(){
 }
 
 /* ===== 时期段（可扩展：以后加七下就在此追加）===== */
-const PERIODS=[
+let PERIODS=[
   {key:'shiqian',name:'史前',range:'约170万—约4000年前',from:0,to:8},
   {key:'xianshangzhou',name:'夏商周',range:'约前2070—前221',from:9,to:25},
   {key:'qin',name:'秦',range:'前221—前207',from:26,to:30},
@@ -1743,17 +1815,17 @@ const PERIODS=[
   {key:'donghan',name:'东汉',range:'25—220',from:46,to:53}
 ];
 /* 数组索引（0起）→ 专题：张骞=35、推恩令=36、蔡伦=45 */
-const TOPIC_MAP={35:'silk',36:'tuen',48:'paper'};
-const TOPIC_PANE={silk:'pane-silk',tuen:'pane-tuen',paper:'pane-paper'};
-const TOPIC_NAME={silk:'丝绸之路',tuen:'推恩令',paper:'造纸术'};
-const NODE_META={
+let TOPIC_MAP={35:'silk',36:'tuen',48:'paper'};
+let TOPIC_PANE={silk:'pane-silk',tuen:'pane-tuen',paper:'pane-paper'};
+let TOPIC_NAME={silk:'丝绸之路',tuen:'推恩令',paper:'造纸术'};
+let NODE_META={
  31:'西汉建立前的背景',
  50:'东汉末年，与华佗同一时期',
  51:'东汉末年，与张仲景同一时期'
 };
 
 /* ===== 话题线（跨年代串珠，可跨册追加）===== */
-const THREADS=[
+let THREADS=[
  {id:'money',name:'钱',color:'#b07d2b',icon:'coin',
   ask:'钱怎么一步步变统一？圆形方孔为什么能一直用到清朝？',
   beads:[
@@ -1803,21 +1875,21 @@ const THREADS=[
   ]}
 ];
 /* 节点 id → 所属话题线（渲染标签用）*/
-const THREAD_MAP={};
+let THREAD_MAP={};
 THREADS.forEach(t=>t.beads.forEach(b=>{
  if(!THREAD_MAP[b.node])THREAD_MAP[b.node]=[];
  THREAD_MAP[b.node].push(t.id);
 }));
 
 /* ===== 课次组织：2024 统编七上，本期开放第 1–15 课（史前到东汉）===== */
-const UNITS_G7A=[
+let UNITS_G7A=[
  {no:1,name:'史前时期',range:'原始社会与中华文明的起源',lessons:[1,2,3]},
  {no:2,name:'夏商周时期',range:'奴隶制王朝更替与向封建社会过渡',lessons:[4,5,6,7,8]},
  {no:3,name:'秦汉时期',range:'统一多民族封建国家的建立和巩固',lessons:[9,10,11,12,13,14,15]},
  {no:4,name:'三国两晋南北朝',range:'政权分立与民族交融',lessons:[16,17,18,19,20],locked:true}
 ];
 /* nodes 为 NODES 数组索引（0 起）；执行时已逐课核对 */
-const LESSONS=[
+let LESSONS=[
  {no:1,unit:1,title:'远古时期的人类活动',nodes:[0,1,2]},
  {no:2,unit:1,title:'原始农业与史前社会',nodes:[3,4,5]},
  {no:3,unit:1,title:'中华文明的起源',nodes:[6,7,8]},
@@ -1836,7 +1908,7 @@ const LESSONS=[
 ];
 function lessonByNo(no){return LESSONS.find(l=>l.no===no);}
 /* 节点索引 → 所属课次（用于详情卡标注、进度归属）*/
-const LESSON_OF_NODE={};
+let LESSON_OF_NODE={};
 LESSONS.forEach(l=>l.nodes.forEach(idx=>{LESSON_OF_NODE[idx]=l.no;}));
 /* 课次 → 对应专题（进入专题后返回该课）*/
 const LESSON_ACTIVITY={9:'silk',12:'tuen',15:'paper'};
@@ -1898,9 +1970,12 @@ function renderJourney(){
 }
 
 /* ===== 视图切换 ===== */
+const portalView=document.getElementById('portalView');
 const homeView=document.getElementById('homeView'),topicView=document.getElementById('topicView'),threadViewEl=document.getElementById('threadView'),view3dEl=document.getElementById('view3d');
 let currentTopic=null;
 function showView(v){
+  portalView.classList.toggle('active',v==='portal');
+  portalView.hidden=(v!=='portal');
   homeView.classList.toggle('active',v==='home');
   topicView.classList.toggle('active',v==='topic');
   threadViewEl.classList.toggle('active',v==='thread');
@@ -1968,8 +2043,8 @@ document.getElementById('backBtn').addEventListener('click',closeTopic);
 /* ===================== 3D 模块（three.js r160，按需动态 import） ===================== */
 const THREE_URL='./vendor/three.module.js';
 /* 节点索引 -> 3D 场景：都江堰 id24(索引23)；钱币 id28(索引27)、id39(索引38) */
-const NODE_3D_MAP={24:'dujiangyan',27:'coins',39:'coins'};
-const S3D_META={
+let NODE_3D_MAP={24:'dujiangyan',27:'coins',39:'coins'};
+let S3D_META={
   coins:{name:'翻看秦半两与汉五铢',crumb:'时间轴 → 3D 钱币'},
   dujiangyan:{name:'3D 看都江堰',crumb:'时间轴 → 3D 都江堰'}
 };
@@ -2466,7 +2541,7 @@ document.getElementById('fail3dBack').addEventListener('click',close3D);
 document.getElementById('fail3dRetry').addEventListener('click',()=>enter3D(current3dKey));
 
 /* ===== 详情卡内 2D 动手观察：先看实物证据，3D 作为补充 ===== */
-const OBSERVE_MAP={24:'dujiangyan',27:'coins',39:'coins'};
+let OBSERVE_MAP={24:'dujiangyan',27:'coins',39:'coins'};
 function buildCoinsObserve(){
   return '<div class="ob-head"><span class="ob-kind">动手观察 · 实物就在上面</span><h4>找一找：方孔和钱文</h4></div>'+
    '<p class="ob-ask">对照上面的实物图，点下面两个任务，看自己找对没有。</p>'+
@@ -2676,7 +2751,7 @@ window.addEventListener('scroll',onScroll,{passive:true});onScroll();
 toTop.addEventListener('click',()=>{window.scrollTo({top:0,behavior:'smooth'});beep(440);});
 
 /* 首页谜入口：挑一个还没做完的专题，做完一个换下一个，全做完就藏起来 */
-const MYSTERIES=[
+let MYSTERIES=[
   {key:'paper',q:'蔡伦以前，有人用过纸吗？'},
   {key:'tuen',q:'诸侯的地，怎么自己就变小了？'},
   {key:'silk',q:'一匹丝绸，怎么走到欧洲的？'}
@@ -2686,6 +2761,16 @@ function markTopicDone(key){
   /* 活动完成写入新进度，和主线阅读分开存 */
   P.setActivityDone(key,true);
 }
+
+/* ===== 注册七上：把当前已构建好的七上引用固化成一个册数据对象 ===== */
+BOOK_DATA.g7a={
+  nodes:NODES,imgMeta:IMG_META,lessons:LESSONS,units:UNITS_G7A,
+  lessonOfNode:LESSON_OF_NODE,
+  topicMap:TOPIC_MAP,topicPane:TOPIC_PANE,topicName:TOPIC_NAME,nodeMeta:NODE_META,
+  threads:THREADS,threadMap:THREAD_MAP,
+  node3dMap:NODE_3D_MAP,s3dMeta:S3D_META,observeMap:OBSERVE_MAP,
+  periods:PERIODS,mysteries:MYSTERIES
+};
 
 /* ===== 底部短卡 ===== */
 const sheet=document.getElementById('sheet'),backdrop=document.getElementById('backdrop');
@@ -3531,15 +3616,74 @@ function openLesson(no){
 }
 
 /* Hash 路由 */
+let currentBookId='g7a';
+/* 切册：把当前册的引用整体指向目标册数据，函数体不动；进度同步切到该册 */
+function enterBook(bookId){
+  var d=BOOK_DATA[bookId];
+  if(!d)return false;
+  currentBookId=bookId;
+  NODES=d.nodes;IMG_META=d.imgMeta;LESSONS=d.lessons;UNITS_G7A=d.units;
+  LESSON_OF_NODE=d.lessonOfNode;
+  TOPIC_MAP=d.topicMap;TOPIC_PANE=d.topicPane;TOPIC_NAME=d.topicName;NODE_META=d.nodeMeta;
+  THREADS=d.threads;THREAD_MAP=d.threadMap;
+  NODE_3D_MAP=d.node3dMap;S3D_META=d.s3dMeta;OBSERVE_MAP=d.observeMap;
+  PERIODS=d.periods;MYSTERIES=d.mysteries;
+  P.setCurrentBook(bookId);
+  /* 预热列表作废，新册重新预热 */
+  warmList=null;warmPos=0;
+  return true;
+}
+/* 门户：渲染六册卡片，未做好的册锁定 */
+function renderPortal(){
+  var grid=document.getElementById('portalGrid');
+  grid.innerHTML='';
+  BOOKS.forEach(function(b){
+    var card=document.createElement('button');
+    card.type='button';
+    card.className='book-card '+b.id+(b.locked?' locked':'');
+    var inner='<span class="bc-short">'+b.grade+b.term+'</span>'+
+      '<span class="bc-title">'+b.grade+b.term+'历史</span>'+
+      '<span class="bc-span">'+b.span+'</span>';
+    if(b.locked){
+      inner+='<span class="bc-lock">即将上线</span><span class="bc-go">敬请期待</span>';
+    }else{
+      inner+='<span class="bc-go">进入这一册 ›</span>';
+    }
+    card.innerHTML=inner;
+    if(!b.locked){
+      card.addEventListener('click',function(){go('/book/'+b.id);});
+    }
+    grid.appendChild(card);
+  });
+}
+function showPortal(){
+  currentLessonNo=null;
+  showView('portal');
+  renderPortal();
+  window.scrollTo(0,0);
+}
 function go(path){
-  if(location.hash==='#'+path)return;
-  location.hash=path;
+  var target;
+  if(path==='/portal'){target='';}
+  else if(path==='/'){target='/book/'+currentBookId;}
+  else if(path.indexOf('/book/')===0){target=path;}
+  else{target='/book/'+currentBookId+path;}
+  if(location.hash==='#'+target)return;
+  location.hash=target;
 }
 function parseRoute(){
   var raw=location.hash.replace(/^#/,'');
-  if(!raw||raw==='/')return {name:'home'};
+  if(!raw||raw==='/'||raw==='/portal')return {name:'portal'};
   var parts=raw.split('/').filter(Boolean);
-  return {name:parts[0],id:parts[1]};
+  /* 新格式：book/g7a/lesson/9 */
+  if(parts[0]==='book'){
+    var book=parts[1];
+    if(parts.length===2)return {name:'book',book:book};
+    return {name:parts[2],book:book,id:parts[3]};
+  }
+  /* 旧格式（无册前缀）：默认归当前册，旧链接继续可用 */
+  if(parts[0]==='home')return {name:'portal'};
+  return {name:parts[0],book:currentBookId,id:parts[1]};
 }
 function updateContinueButton(){
   var btn=document.getElementById('continueBtn');
@@ -3562,12 +3706,16 @@ function showHome(){
 }
 function renderRoute(){
   var r=parseRoute();
-  if(r.name==='home'){showHome();return;}
+  if(r.name==='portal'){showPortal();return;}
+  /* 数据没做好的册，回门户，不白屏 */
+  if(r.book&&!BOOK_DATA[r.book]){showPortal();return;}
+  if(r.book&&currentBookId!==r.book){enterBook(r.book);}
+  if(r.name==='book'){showHome();return;}
   if(r.name==='lesson'){openLesson(+r.id);return;}
   if(r.name==='activity'){enterActivity(r.id);return;}
   if(r.name==='thread'){enterThread(r.id);return;}
   if(r.name==='3d'){enter3D(r.id);return;}
-  showHome();
+  showPortal();
 }
 window.addEventListener('hashchange',renderRoute);
 
@@ -3595,6 +3743,7 @@ document.getElementById('continueBtn').addEventListener('click',function(){
 });
 document.getElementById('extraThreads').addEventListener('click',function(){go('/thread/'+THREADS[0].id);});
 document.getElementById('sidebarThreads').addEventListener('click',function(){go('/thread/'+THREADS[0].id);closeSidebar();});
+document.getElementById('sidebarPortal').addEventListener('click',function(){go('/portal');closeSidebar();});
 document.getElementById('extraMystery').addEventListener('click',function(){
   var order=['paper','tuen','silk'];
   var next=order.find(function(k){return !P.isActivityDone(k);});
