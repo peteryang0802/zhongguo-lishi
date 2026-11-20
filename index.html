@@ -1020,7 +1020,7 @@ button:focus:not(:focus-visible){outline:none}
   .hc-grid{grid-template-columns:1fr}
 }
 </style>
-<link rel="stylesheet" href="./history-lesson-flow.css?v=3">
+<link rel="stylesheet" href="./history-lesson-flow.css?v=4">
 <link rel="stylesheet" href="./parent-settings.css?v=1">
 </head>
 <body>
@@ -1513,7 +1513,7 @@ button:focus:not(:focus-visible){outline:none}
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg>
 </button>
 
-<script src="./history-lesson-flow.js?v=3"></script>
+<script src="./history-lesson-flow.js?v=4"></script>
 <script src="./history-companion-flow.js?v=1"></script>
 <script id="historyPracticeData" async src="./history-lesson-practice.js" onerror="this.dataset.failed='true'"></script>
 <script>
@@ -4932,20 +4932,59 @@ function readPracticeAnswer(no,item){
         first:valid(record.first)?record.first:null,
         selected:valid(record.selected)?record.selected:null,
         checkedBeforeAnswer:record.checkedBeforeAnswer===true,
+        firstMode:['independent','with-help','repeat'].includes(record.firstMode)?record.firstMode:null,
+        presented:record.presented===true,
+        evidenceMarked:record.evidenceMarked===true,
       };
     }
   }catch(e){}
-  return {first:null,selected:null,checkedBeforeAnswer:false};
+  return {first:null,selected:null,checkedBeforeAnswer:false,firstMode:null,presented:false,evidenceMarked:false};
 }
 function writePracticeAnswer(no,item,record){
   const key=practiceKey(no)+item.id;
   if(safeSet(key,JSON.stringify(record)))unsavedPracticeAnswers.delete(key);
   else unsavedPracticeAnswers.set(key,record);
 }
-function practiceSummary(no){
-  const practice=lessonPractice(no);
-  const answered=practice.filter(item=>readPracticeAnswer(no,item).first!==null).length;
-  return answered?'小练习已答 '+answered+'/'+practice.length+' 题':'小练习未做';
+function noteHistoryAnswer(record,index){
+  if(record.first===null){
+    record.first=index;
+    record.firstMode??=record.checkedBeforeAnswer?'with-help':'independent';
+  }
+  record.selected=index;
+}
+function historyCheckState(no,item){
+  const record=readPracticeAnswer(no,item);
+  const current=item.choices[record.selected];
+  if(!current)return 'unanswered';
+  if(!current.correct)return 'retry';
+  if(!item.choices[record.first]?.correct||record.checkedBeforeAnswer||record.firstMode==='with-help')return 'supported';
+  if(record.firstMode==='repeat')return 'repeat';
+  return record.firstMode==='independent'?'independent':'previous';
+}
+const historyCheckLabels={
+  unanswered:'待核对',retry:'待重试',supported:'有帮助后做对',independent:'首答独立做对',
+  previous:'旧版答对，独立待验证',repeat:'练过同题，独立待验证',
+};
+function historyLessonCheckSummary(no,practices=lessonPractice(no)){
+  const transfer=historyTransferItem(no);
+  const state=transfer?historyCheckState(no,transfer):'unanswered';
+  const core=practices.map(item=>historyCheckState(no,item));
+  const retry=core.some(value=>value==='retry')||state==='retry';
+  const coreVerified=core.length===2&&core.every(value=>value!=='unanswered'&&value!=='retry');
+  return {core,state,retry,coreVerified};
+}
+function historyEvidenceTask(evidence){
+  return evidence+'<button type="button" class="history-evidence-mark" data-mark-history-evidence aria-pressed="false">标记这条线索</button>';
+}
+function bindHistoryEvidence(root,record,mark){
+  const button=root.querySelector('[data-mark-history-evidence]');
+  button.setAttribute('aria-pressed',String(record.evidenceMarked));
+  button.textContent=record.evidenceMarked?'已标记线索':'标记这条线索';
+  button.onclick=()=>{
+    const updated=mark();
+    button.setAttribute('aria-pressed',String(updated.evidenceMarked));
+    button.textContent=updated.evidenceMarked?'已标记线索':'标记这条线索';
+  };
 }
 function renderHistoryPractice(no,item,index){
   historyPractice.hidden=false;
@@ -4958,14 +4997,16 @@ function renderHistoryPractice(no,item,index){
     item.choices.map((choice,i)=>'<button type="button" data-practice-choice="'+i+'" aria-pressed="false">'+practiceText(choice.text)+'</button>').join('')+
     '</div></fieldset><p class="history-practice-feedback" role="status" aria-atomic="true"></p></div>'+
     '<button type="button" class="history-secondary" data-practice-evidence aria-expanded="false" aria-controls="historyQuestionMaterial">看这题的史料</button>'+
-    '<section class="history-question-material" id="historyQuestionMaterial" aria-label="这题的史料" hidden><h4>'+practiceText(item.card)+'</h4>'+item.evidence+'</section>'+
-    '<p class="history-instruction" data-practice-retry hidden>核对这条史料，再选一个答案。</p>';
+    '<section class="history-question-material" id="historyQuestionMaterial" aria-label="这题的史料" hidden><h4>'+practiceText(item.card)+'</h4>'+historyEvidenceTask(item.evidence)+'</section>'+
+    '<p class="history-instruction" data-practice-retry hidden>先标记想核对的线索，再回到原题重选。</p>'+
+    '<details class="history-explanation" data-practice-explanation hidden><summary>看完整解释</summary><p></p></details>';
   const practiceData=historyPractice.querySelector('.history-practice-data');
   const feedback=historyPractice.querySelector('.history-practice-feedback');
   const options=[...historyPractice.querySelectorAll('[data-practice-choice]')];
   const opener=historyPractice.querySelector('[data-practice-evidence]');
   const material=historyPractice.querySelector('#historyQuestionMaterial');
   const retry=historyPractice.querySelector('[data-practice-retry]');
+  const explanation=historyPractice.querySelector('[data-practice-explanation]');
   function showMaterial(show){
     material.hidden=!show;
     opener.setAttribute('aria-expanded',String(show));
@@ -4975,22 +5016,30 @@ function renderHistoryPractice(no,item,index){
   function paint(record){
     const choice=item.choices[record.selected];
     options.forEach((button,i)=>button.setAttribute('aria-pressed',String(i===record.selected)));
+    bindHistoryEvidence(material,record,()=>{
+      const latest=readPracticeAnswer(no,item);
+      latest.evidenceMarked=true;
+      writePracticeAnswer(no,item,latest);
+      retry.textContent='线索已标记。回到原题，比较它和你的选项。';
+      return latest;
+    });
     if(!choice)return;
     const result=choice.correct?'correct':'retry';
     practiceData.dataset.result=result;
     feedback.dataset.result=result;
-    const message=choice.correct
-      ? (item.choices[record.first]?.correct
-        ? (index===0?'这次核对对了。':record.checkedBeforeAnswer?'查证后答对。':'首答独立答对。'):'看过解释后改对。')
-      : '再核对一次。';
-    feedback.textContent=message+choice.reply;
+    const state=historyCheckState(no,item);
+    feedback.textContent=choice.correct?historyCheckLabels[state]+'。'+choice.reply
+      :'再核对一次。先在展开的材料中标记线索，想想你的选项能不能解释它。';
+    explanation.hidden=choice.correct;
+    explanation.open=false;
+    explanation.querySelector('p').textContent=choice.correct?'':choice.reply;
+    if(record.evidenceMarked)retry.textContent='线索已标记。回到原题，比较它和你的选项。';
     showMaterial(!choice.correct||!material.hidden);
   }
   paint(readPracticeAnswer(no,item));
   options.forEach((button,i)=>button.addEventListener('click',()=>{
     const record=readPracticeAnswer(no,item);
-    record.first??=i;
-    record.selected=i;
+    noteHistoryAnswer(record,i);
     writePracticeAnswer(no,item,record);
     paint(record);
     const next=lessonFoot.querySelector('[data-study-next]');
@@ -5041,14 +5090,26 @@ function refreshHistoryPractice(){
 var sidebar=document.getElementById('sidebar');
 var sidebarBackdrop=document.getElementById('sidebarBackdrop');
 
-function lessonStatus(no){
-  if(P.isLessonDone(no))return 'done';
+function lessonStatus(no,summary=historyLessonCheckSummary(no)){
+  if(summary.coreVerified&&summary.state==='independent')return 'done';
+  if(summary.retry)return 'retry';
   if(P.lessonSeenCount(no)>0)return 'partial';
   return 'todo';
 }
-function statusText(no){
-  var s=lessonStatus(no);
-  return s==='done'?'已学完':(s==='partial'?'学了一部分':'还没学');
+function historyCatalogStatus(no,summary){
+  const lesson=lessonByNo(no);
+  const count=P.lessonSeenCount(no);
+  const core=summary.core;
+  if(!count&&core.every(state=>state==='unanswered')&&summary.state==='unanswered')return '还没开始';
+  let reading;
+  if(count===lesson.nodes.length)reading='材料已看 '+count+'/'+lesson.nodes.length+' 张';
+  else if(count)reading='已看 '+count+'/'+lesson.nodes.length+' 张';
+  else reading='材料未看';
+  const checked=core.filter(state=>state!=='unanswered'&&state!=='retry').length;
+  const needsRetry=core.includes('retry');
+  const coreStatus=needsRetry?'有题待重试':checked===2?'两题已核对':checked===1?'还差一题':'未核对';
+  const transferStatus=summary.state==='unanswered'?'待验证':historyCheckLabels[summary.state];
+  return reading+' · 课内 '+coreStatus+' · 新材料 '+transferStatus;
 }
 function maybeLessonDone(no){
   if(no==null)return;
@@ -5096,11 +5157,11 @@ function renderHomeCatalog(){
         var l=lessonByNo(no);
         var act=lessonActivity(no);
         var actTxt=act?(' · 动手'+(P.isActivityDone(act)?'已做':'未做')):'';
-        if(lessonPractice(no).length)actTxt+=' · '+practiceSummary(no);
-        h+='<button class="hc-card '+lessonStatus(no)+'" data-lesson="'+no+'" type="button">'+
+        const summary=historyLessonCheckSummary(no);
+        h+='<button class="hc-card '+lessonStatus(no,summary)+'" data-lesson="'+no+'" type="button">'+
           '<span class="hc-no">第 '+no+' 课</span>'+
           '<span class="hc-title">'+l.title+'</span>'+
-          '<span class="hc-meta">已看 '+P.lessonSeenCount(no)+'/'+l.nodes.length+' 张'+actTxt+'</span></button>';
+          '<span class="hc-meta">'+historyCatalogStatus(no,summary)+actTxt+'</span></button>';
       });
       h+='</div>';
     }

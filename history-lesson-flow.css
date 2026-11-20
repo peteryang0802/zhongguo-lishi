@@ -522,3 +522,30 @@ body:is(.lesson-focused, .history-companion-focused, .history-directory-focused)
 @media (max-width: 600px) {
   .history-companion-focused .topic-topbar:has(.s3d-related:not([hidden])) { float: none; margin-bottom: 6px; }
 }
+
+.history-evidence-mark {
+  min-height: 44px;
+  margin-block: 8px 0;
+  padding: 6px 11px;
+  border: 1px solid var(--study-blue-line);
+  border-radius: 7px;
+  background: var(--study-card);
+  color: var(--study-blue-ink);
+  font-weight: 700;
+}
+.history-evidence-mark[aria-pressed="true"] {
+  background: var(--study-blue);
+  box-shadow: inset 0 0 0 1px var(--study-blue-line);
+}
+.history-transfer .history-question-material { margin-block-start: 8px; }
+.history-transfer { margin-block-start: 12px; }
+.history-explanation { color: var(--study-muted); font-size: .92rem; }
+.history-explanation summary {
+  width: fit-content;
+  min-height: 44px;
+  padding-block: 10px;
+  cursor: pointer;
+}
+.history-explanation p { margin: 0 0 6px; }
+.history-explanation ol { margin: 0 0 10px; padding-inline-start: 1.45rem; }
+.history-directory-focused .hc-card.retry { border-inline-start: 3px solid var(--study-amber-line); }
