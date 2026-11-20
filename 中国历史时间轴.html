@@ -1790,21 +1790,30 @@ let IMG_META={
 };
 
 /* ===== 进度与设置 ===== */
+let historyResetInProgress=false;
+window.addEventListener('parent-learning-reset', ({detail})=>{
+  if(detail?.subject==='history')historyResetInProgress=detail.phase==='start';
+});
+function writeHistoryStorage(key,value){
+  if(historyResetInProgress)return;
+  if(value===undefined)localStorage.removeItem(key);
+  else localStorage.setItem(key,value);
+}
 const store={
   get seen(){try{return JSON.parse(localStorage.getItem('zg_progress')||'[]')}catch(e){return[]}},
-  set seen(v){localStorage.setItem('zg_progress',JSON.stringify(v))},
+  set seen(v){writeHistoryStorage('zg_progress',JSON.stringify(v))},
   get muted(){return localStorage.getItem('zg_muted')==='1'},
-  set muted(v){localStorage.setItem('zg_muted',v?'1':'0')},
+  set muted(v){writeHistoryStorage('zg_muted',v?'1':'0')},
   get last(){var v=localStorage.getItem('zg_last');return v===null?null:parseInt(v)},
-  set last(v){localStorage.setItem('zg_last',String(v))},
+  set last(v){writeHistoryStorage('zg_last',String(v))},
   get topic(){try{return JSON.parse(localStorage.getItem('zg_topic')||'null')}catch(e){return null}},
-  set topic(v){if(v===null)localStorage.removeItem('zg_topic');else localStorage.setItem('zg_topic',JSON.stringify(v))},
+  set topic(v){if(v===null)writeHistoryStorage('zg_topic');else writeHistoryStorage('zg_topic',JSON.stringify(v))},
   get topicStep(){try{return JSON.parse(localStorage.getItem('zg_topic_step')||'null')}catch(e){return null}},
-  set topicStep(v){if(v===null)localStorage.removeItem('zg_topic_step');else localStorage.setItem('zg_topic_step',JSON.stringify(v))},
+  set topicStep(v){if(v===null)writeHistoryStorage('zg_topic_step');else writeHistoryStorage('zg_topic_step',JSON.stringify(v))},
   get topicDone(){try{return JSON.parse(localStorage.getItem('zg_topic_done')||'[]')}catch(e){return[]}},
-  set topicDone(v){localStorage.setItem('zg_topic_done',JSON.stringify(v))},
+  set topicDone(v){writeHistoryStorage('zg_topic_done',JSON.stringify(v))},
   get warStep(){try{return JSON.parse(localStorage.getItem('zg_war_step')||'null')}catch(e){return null}},
-  set warStep(v){if(v===null)localStorage.removeItem('zg_war_step');else localStorage.setItem('zg_war_step',JSON.stringify(v))}
+  set warStep(v){if(v===null)writeHistoryStorage('zg_war_step');else writeHistoryStorage('zg_war_step',JSON.stringify(v))}
 };
 let currentIndex=0;
 
@@ -1826,7 +1835,7 @@ const P=(function(){
       return d;
     }catch(e){return blank();}
   }
-  function write(d){localStorage.setItem(KEY,JSON.stringify(d));}
+  function write(d){writeHistoryStorage(KEY,JSON.stringify(d));}
   var data=read();
   var cur=data.current;
   function book(){if(!data.books[cur])data.books[cur]=blankBook();return data.books[cur];}
@@ -4736,5 +4745,6 @@ renderRoute();
 setTimeout(startWarmup,1500);
 
 </script>
+<script type="module" src="./history-parent-settings.js?v=1"></script>
 </body>
 </html>

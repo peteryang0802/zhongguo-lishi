@@ -981,6 +981,7 @@ button:focus:not(:focus-visible){outline:none}
 .home-hero h2{font-size:26px;margin-bottom:9px}
 .home-hero p{font-size:15px;color:#544b3e;margin:0 0 16px;max-width:60ch}
 .home-actions{display:flex;flex-wrap:wrap;gap:11px;margin-bottom:22px}
+#continueBtn[hidden]{display:none}
 .btn.big{min-height:52px;padding:0 26px;border-radius:15px;font-size:16px;font-weight:750}
 .btn.primary{background:var(--person);color:#fff;border:1px solid var(--person)}
 .btn.ghost{background:var(--card);color:var(--person);border:1px solid var(--person)}
@@ -1027,6 +1028,7 @@ button:focus:not(:focus-visible){outline:none}
 }
 </style>
 <link rel="stylesheet" href="./history-lesson-flow.css?v=1">
+<link rel="stylesheet" href="./parent-settings.css?v=1">
 </head>
 <body>
 
@@ -1072,6 +1074,7 @@ button:focus:not(:focus-visible){outline:none}
     <p>课后复习、课前预习，顺着时间往下走。先选册，再选课。</p>
   </div>
   <div class="portal-grid" id="portalGrid"></div>
+  <div id="historyParentSettings"></div>
 </section>
 
 <!-- 无效深链：给明确解释和可返回的入口，不抛代码错误、不白屏 -->
@@ -1870,10 +1873,16 @@ const storageOK=(function(){
 function safeGet(k){
   try{return localStorage.getItem(k);}catch(e){return null;}
 }
+let historyResetInProgress=false;
+window.addEventListener('parent-learning-reset', ({detail})=>{
+  if(detail?.subject==='history')historyResetInProgress=detail.phase==='start';
+});
 function safeSet(k,v){
+  if(historyResetInProgress)return false;
   try{localStorage.setItem(k,v);return true;}catch(e){return false;}
 }
 function safeRemove(k){
+  if(historyResetInProgress)return;
   try{localStorage.removeItem(k);}catch(e){}
 }
 const store={
@@ -5360,5 +5369,6 @@ renderRoute();
 setTimeout(startWarmup,1500);
 
 </script>
+<script type="module" src="./history-parent-settings.js?v=1"></script>
 </body>
 </html>

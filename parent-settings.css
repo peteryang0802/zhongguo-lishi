@@ -1,0 +1,81 @@
+.parent-settings-entry {
+  padding: 8px 0;
+  color: inherit;
+  font: inherit;
+  font-size: .875rem;
+}
+.parent-settings-entry[hidden], .parent-settings-dialog [hidden] { display: none !important; }
+.parent-settings-entry [data-parent-open] {
+  min-height: 40px;
+  padding: 4px 2px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+  cursor: pointer;
+}
+.parent-settings-notice { margin: 0 0 6px; }
+.parent-settings-dialog {
+  --parent-paper: #fffdf7;
+  --parent-ink: #24352e;
+  --parent-rule: #76887c;
+  --parent-danger: #783d25;
+  --parent-button: #245d4c;
+  box-sizing: border-box;
+  width: min(30rem, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 20px 22px;
+  border: 1px solid var(--parent-rule);
+  border-radius: 12px;
+  background: var(--parent-paper);
+  color: var(--parent-ink);
+  font: 1rem / 1.5 system-ui, sans-serif;
+  overflow: auto;
+}
+.parent-settings-dialog::backdrop { background: #172620a8; }
+.parent-settings-dialog h2 { color: inherit; margin: 0 0 8px; font: 700 1.25rem / 1.4 system-ui, sans-serif; }
+.parent-settings-dialog p { color: inherit; margin: 0 0 12px; }
+.parent-settings-dialog label { display: block; margin: 10px 0 4px; }
+.parent-settings-dialog input[type=password] {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 42px;
+  padding: 6px 10px;
+  border: 1px solid var(--parent-rule);
+  border-radius: 6px;
+  background: var(--parent-paper);
+  color: inherit;
+  font: inherit;
+}
+.parent-settings-dialog .parent-reset-confirmation {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 14px;
+}
+.parent-settings-dialog .parent-reset-confirmation input { width: 1rem; height: 1rem; margin: 4px 0 0; accent-color: var(--parent-button); }
+.parent-settings-dialog .parent-settings-message { color: var(--parent-danger); margin: 8px 0; }
+.parent-settings-dialog .parent-settings-message:empty { display: none; }
+.parent-settings-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.parent-settings-actions button {
+  min-height: 44px;
+  padding: 6px 14px;
+  border: 1px solid var(--parent-rule);
+  border-radius: 7px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.parent-settings-actions [data-parent-submit] { border-color: var(--parent-button); background: var(--parent-button); color: #fffdf7; }
+.parent-settings-actions [data-parent-submit].parent-clear-button { border-color: var(--parent-danger); background: var(--parent-danger); }
+.parent-settings-actions button:disabled { opacity: .65; cursor: wait; }
+.parent-settings-dialog :focus-visible { outline: 3px solid #4f7ba8; outline-offset: 2px; }
+@media (prefers-color-scheme: dark) {
+  .parent-settings-dialog { --parent-paper: #20302a; --parent-ink: #f3f5ef; --parent-rule: #9aada1; }
+  .parent-settings-dialog .parent-settings-message { color: #ffddad; }
+}
