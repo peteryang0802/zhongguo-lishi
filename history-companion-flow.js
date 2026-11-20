@@ -107,13 +107,14 @@ const HISTORY_TOPIC_STEPS = {
   },
   tuen: {
     title: '一个王国，分完以后，谁说了算？',
-    labels: ['分一次地，观察归属','对照两种管法','记下判断管辖权的办法'],
+    labels: ['分一次地，观察归属','沿管辖线找依据','说清变了哪项权力','读新文书，选归属和依据'],
     parts: [
       ['.question','#btnRow','.stage','#hintAfter','#belong'],
       ['#ruleCompare'],
       ['#reveal','#longview','.companion-method'],
+      ['#tuenTransfer'],
     ],
-    limit: () => tuenJudge === true ? 2 : seenKing && seenHou ? 1 : 0,
+    limit: () => tuenJudge === true ? 3 : seenKing && seenHou ? 1 : 0,
     method: '判断权力从哪里移到哪里，要看谁有权批、谁直接管。图上地块的大小仅作示意，新的侯国归汉郡管才是变化。',
   },
   silk: {
@@ -215,18 +216,28 @@ function updateHistoryCompanionTopic() {
   }
   if (key === 'tuen') {
     const reset = pane.querySelector('#resetBtn');
-    reset.hidden = step !== 2;
+    reset.hidden = step !== spec.labels.length - 1 || !['independent','supported'].includes(tuenTransferState(tuenTransfer));
   }
   historyCompanionLayout(document.getElementById('topicView'), pane.parentElement, spec.title, spec.labels, step);
   const finalStep = step === spec.labels.length - 1;
   const replay = key === 'silk' && finalStep && silkTrials.length < 2;
+  const tuenPass = key === 'tuen' && finalStep && ['independent','supported'].includes(tuenTransferState(tuenTransfer));
   const next = finalStep ? replay ? () => {
     resetForAnother();
     changeHistoryCompanionTopic(0);
-  } : closeTopic : step < spec.limit() ? () => changeHistoryCompanionTopic(step + 1) : null;
-  historyCompanionActions(pane.querySelector('.companion-actions'),
-    step > 0 ? () => changeHistoryCompanionTopic(step - 1) : null,
+  } : key==='tuen' ? tuenPass ? () => { markTopicDone('tuen'); closeTopic(); } : null : closeTopic
+    : step < spec.limit() ? () => changeHistoryCompanionTopic(step + 1) : null;
+  const actions = pane.querySelector('.companion-actions');
+  historyCompanionActions(actions, step > 0 ? () => changeHistoryCompanionTopic(step - 1) : null,
     finalStep ? replay ? '试另一条路线' : '完成专题' : spec.labels[step + 1], next);
+  if (key === 'tuen' && finalStep && !tuenPass) {
+    const skip = document.createElement('button');
+    skip.type = 'button';
+    skip.className = 'history-secondary';
+    skip.textContent = '暂时跳过';
+    skip.addEventListener('click', closeTopic);
+    actions.prepend(skip);
+  }
 }
 
 function bindHistoryCompanionTopics() {
@@ -237,7 +248,7 @@ function bindHistoryCompanionTopics() {
       changeHistoryCompanionTopic(0);
     } else if (button.id === 'silkEnd') {
       changeHistoryCompanionTopic(1);
-    } else if (button.matches('.ev-answer,.t-answer,.plot,.rc-answer')) {
+    } else if (button.matches('.ev-answer,.t-answer,.plot,.rc-answer,[data-tuen-line],[data-tuen-conclusion],[data-tuen-proof]')) {
       updateHistoryCompanionTopic();
     }
   });

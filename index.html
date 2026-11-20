@@ -1020,7 +1020,7 @@ button:focus:not(:focus-visible){outline:none}
   .hc-grid{grid-template-columns:1fr}
 }
 </style>
-<link rel="stylesheet" href="./history-lesson-flow.css?v=4">
+<link rel="stylesheet" href="./history-lesson-flow.css?v=5">
 <link rel="stylesheet" href="./parent-settings.css?v=1">
 </head>
 <body>
@@ -1203,42 +1203,28 @@ button:focus:not(:focus-visible){outline:none}
         </div>
       </div>
 
-      <!-- 管辖线对照：同样四块地，两种归属 -->
       <div class="rule-compare" id="ruleCompare">
-        <div class="rc-switch">
-          <button class="rc-mode active" data-rc="assume" type="button">画面一 · 假设：只分地，还归王管</button>
-          <button class="rc-mode" data-rc="history" type="button">画面二 · 历史：封侯国，归汉郡</button>
+        <p class="tuen-map-instruction">两种分法里的地块形状和大小都相同。点两条管辖线，看次子侯国的政务分别送到哪里。</p>
+        <div class="tuen-comparison-grid">
+          <section class="tuen-diagram">
+            <h4>办法甲</h4>
+            <div class="tuen-parcels" aria-label="长子王国、次子侯国、三子侯国、幼子侯国"><span>长子王国</span><span>次子侯国</span><span>三子侯国</span><span>幼子侯国</span></div>
+            <div class="tuen-map-line"><span>次子侯国</span><button class="tuen-arrow" type="button" data-tuen-line="1" aria-label="查看办法甲的管辖线" aria-pressed="false">管辖线 →</button><strong data-tuen-endpoint="1">待查看</strong></div>
+          </section>
+          <section class="tuen-diagram">
+            <h4>办法乙</h4>
+            <div class="tuen-parcels" aria-label="长子王国、次子侯国、三子侯国、幼子侯国"><span>长子王国</span><span>次子侯国</span><span>三子侯国</span><span>幼子侯国</span></div>
+            <div class="tuen-map-line"><span>次子侯国</span><button class="tuen-arrow" type="button" data-tuen-line="2" aria-label="查看办法乙的管辖线" aria-pressed="false">管辖线 →</button><strong data-tuen-endpoint="2">待查看</strong></div>
+          </section>
         </div>
-
-        <div class="rc-pane active" id="rcAssume">
-          <div class="rc-land">
-            <div class="rc-cell king">国王（长子）</div>
-            <div class="rc-cell hou">次子侯国</div>
-            <div class="rc-cell hou">三子侯国</div>
-            <div class="rc-cell hou">幼子侯国</div>
-            <div class="rc-cover all"><span class="rc-tag">王国 · 全归王管</span></div>
+        <fieldset id="tuenCompareChoice" hidden>
+          <legend>同样切成四块，哪种办法让长子直接管的地真的少了？</legend>
+          <div class="rc-answers">
+            <button class="rc-answer" data-ok="0" type="button" aria-pressed="false">办法甲</button>
+            <button class="rc-answer" data-ok="1" type="button" aria-pressed="false">办法乙</button>
           </div>
-          <div class="rc-note">地分成了四块，可管辖线都指向同一个王。王还是能直接管全部的地，他没真的变弱。</div>
-        </div>
-
-        <div class="rc-pane" id="rcHistory">
-          <div class="rc-land">
-            <div class="rc-cell king">国王（长子）</div>
-            <div class="rc-cell hou">次子侯国</div>
-            <div class="rc-cell hou">三子侯国</div>
-            <div class="rc-cell hou">幼子侯国</div>
-            <div class="rc-cover left"><span class="rc-tag">王国</span></div>
-            <div class="rc-cover right jun"><span class="rc-tag">汉郡</span></div>
-          </div>
-          <div class="rc-note">地块形状一模一样，可三个侯国的管辖线改指汉郡和朝廷。王能直接管的，只剩左边那一块。</div>
-        </div>
-
-        <div class="rc-ask">哪一种情况下，王直接管的地方真的少了？</div>
-        <div class="rc-answers">
-          <button class="rc-answer" data-ok="0" type="button">画面一：还归王管</button>
-          <button class="rc-answer" data-ok="1" type="button">画面二：归汉郡管</button>
-        </div>
-        <div class="rc-feedback" id="rcFeedback"></div>
+        </fieldset>
+        <div class="rc-feedback" id="rcFeedback" role="status" aria-atomic="true"></div>
       </div>
 
       <!-- 长期效应：不是自动均分，而是每封一个侯国就归汉郡，王管的地一代代变少 -->
@@ -1247,6 +1233,26 @@ button:focus:not(:focus-visible){outline:none}
         <p class="lv-lead">不是地自己对半切。每一代，诸侯王都得<b>上奏、等皇帝批准</b>，才能把地分给儿子；新封的侯国一出现，就<b>归汉郡管</b>，王管不着。这样一代代下来，王能直接管的地一点点变少，并不按固定的几分之几来。</p>
         <p class="lv-note">地块大小在这里只是示意，真正要紧的是管辖线指向谁。</p>
       </div>
+      <section id="tuenTransfer" class="history-practice-data" hidden>
+        <p class="history-instruction">模拟文书。人名地名和文书由教程编写，用来练习辨认谁有权管理。</p>
+        <fieldset>
+          <legend>新封的松里侯国，谁有权批准补任当地官吏？</legend>
+          <div class="history-practice-choices" id="tuenTransferChoices">
+            <button type="button" data-tuen-conclusion="0" aria-pressed="false">原诸侯王</button>
+            <button type="button" data-tuen-conclusion="1" aria-pressed="false">接管的汉郡</button>
+            <button type="button" data-tuen-conclusion="2" aria-pressed="false">新封的松里侯</button>
+          </div>
+        </fieldset>
+        <fieldset class="tuen-transfer-records">
+          <legend id="tuenTransferSourceTitle">读三条记录，想想哪条能作证。</legend>
+          <div class="history-practice-choices">
+            <button type="button" data-tuen-proof="0" aria-pressed="false">分地清单 · 旧王国划出松里的山林和两块田地。</button>
+            <button type="button" data-tuen-proof="1" aria-pressed="false">朝廷回文 · 核准王的次子受封为松里侯。</button>
+            <button type="button" data-tuen-proof="2" aria-pressed="false">补任回文 · 松里的候补名册由所在汉郡审核，郡守批定人选。</button>
+          </div>
+        </fieldset>
+        <p class="history-practice-feedback" id="tuenTransferFeedback" role="status" aria-atomic="true"></p>
+      </section>
     </div>
   </div>
 
@@ -1514,7 +1520,7 @@ button:focus:not(:focus-visible){outline:none}
 </button>
 
 <script src="./history-lesson-flow.js?v=4"></script>
-<script src="./history-companion-flow.js?v=1"></script>
+<script src="./history-companion-flow.js?v=2"></script>
 <script id="historyPracticeData" async src="./history-lesson-practice.js" onerror="this.dataset.failed='true'"></script>
 <script>
 /* ===== 册注册表：初中六册，初三两册先锁定 ===== */
@@ -2169,7 +2175,7 @@ function saveTopicStep(){
       inTransit:!silkReturn.classList.contains('show')
     });
   }else if(currentTopic==='tuen'){
-    store.setTopicStepOf('tuen',{split:splitBtn.disabled,seenKing:seenKing,seenHou:seenHou,tuenJudge:tuenJudge});
+    store.setTopicStepOf('tuen',{split:splitBtn.disabled,seenKing,seenHou,tuenJudge,tuenLinesSeen,tuenNeedsLine,tuenTransfer});
   }else if(currentTopic==='paper'){
     store.setTopicStepOf('paper',{
       cailunDeep:cailunDeep.classList.contains('show'),
@@ -4306,7 +4312,13 @@ const HOU=[
  {cls:'hou h3',name:'幼子 · 侯国'}
 ];
 let seenKing=false, seenHou=false;
-let tuenJudge=null; /* 末尾判断题：null未答、true答对、false答错 */
+let tuenJudge=null;
+let tuenLinesSeen=0;
+let tuenNeedsLine=false;
+function emptyTuenTransfer(retaken=false){
+  return {answer:null,proof:null,firstAnswer:null,firstProof:null,needsProof:false,retaken};
+}
+let tuenTransfer=emptyTuenTransfer();
 const hintAfterEl=document.getElementById('hintAfter');
 const btnRowEl=document.querySelector('.btn-row');
 function bindPlots(){
@@ -4336,7 +4348,7 @@ function bindPlots(){
       belongEl.classList.add('show');
       hintAfterEl.classList.remove('show');
       beep(440);
-      if(seenKing&&seenHou){revealEl.classList.add('show');revealEl.classList.remove('open');markTopicDone('tuen');}
+      if(seenKing&&seenHou){revealEl.classList.add('show');revealEl.classList.remove('open');}
       saveTopicStep();
       setTimeout(()=>belongEl.scrollIntoView({behavior:'auto',block:'nearest'}),60);
     });
@@ -4355,6 +4367,7 @@ function renderSplit(){
 /* 续读：不经过点击，直接把分封后的画面和选中态恢复出来，不发声、不滚动 */
 function applyTuenRestore(s){
   seenKing=!!s.seenKing;seenHou=!!s.seenHou;
+  tuenTransfer={...emptyTuenTransfer(),...s.tuenTransfer};
   if(!s.split&&!seenKing&&!seenHou)return;
   renderSplit();
   stageLabel.textContent='分封后 · 点一块看看';
@@ -4386,16 +4399,11 @@ function applyTuenRestore(s){
   belongEl.classList.add('show');
   hintAfterEl.classList.remove('show');
   if(seenKing&&seenHou){revealEl.classList.add('show');revealEl.classList.remove('open');}
-  /* 恢复末尾判断题的答案和反馈 */
   tuenJudge=(s.tuenJudge===true||s.tuenJudge===false)?s.tuenJudge:null;
-  if(tuenJudge!==null){
-    const ans=document.querySelectorAll('.rc-answer')[tuenJudge?1:0];
-    if(ans)ans.classList.add(tuenJudge?'right':'wrong');
-    rcFeedback.className='rc-feedback show '+(tuenJudge?'ok':'no');
-    rcFeedback.textContent=tuenJudge
-      ?'对了。关键不在地切没切开，而在新分的侯国归谁管。改归汉郡，王直接管的地才真少了，这就是推恩令的作用。'
-      :'再想想：这一画面里四块地还都归王管，他能直接管的地一块没少。切画面二看看管辖线指到了哪里。';
-  }
+  tuenLinesSeen=Number.isInteger(s.tuenLinesSeen)?s.tuenLinesSeen&3:tuenJudge===null?0:3;
+  tuenNeedsLine=s.tuenNeedsLine===true||(s.tuenNeedsLine==null&&tuenJudge===false);
+  paintTuenRules();
+  paintTuenTransfer();
 }
 splitBtn.addEventListener('click',()=>{
   renderSplit();
@@ -4420,12 +4428,14 @@ resetBtn.addEventListener('click',()=>{
   splitBtn.disabled=false;
   belongEl.classList.remove('show');
   seenKing=false;seenHou=false;tuenJudge=null;
+  tuenLinesSeen=0;tuenNeedsLine=false;
+  tuenTransfer=emptyTuenTransfer(tuenTransfer.retaken||tuenTransfer.firstAnswer!==null||tuenTransfer.firstProof!==null);
   ruleCompare.classList.remove('show');
-  rcFeedback.classList.remove('show');
-  document.querySelectorAll('.rc-answer').forEach(x=>x.classList.remove('right','wrong'));
+  paintTuenRules();
+  paintTuenTransfer();
   beep(360);
   /* 只清当前专题：步骤键和完成状态都复位，不影响别的专题 */
-  store.setTopicStepOf('tuen',null);
+  saveTopicStep();
   P.setActivityDone('tuen',false);
 });
 document.getElementById('revealToggle').addEventListener('click',()=>{
@@ -4437,33 +4447,96 @@ renderWhole();
 /* 管辖线对照交互 */
 const ruleCompare=document.getElementById('ruleCompare');
 const rcFeedback=document.getElementById('rcFeedback');
-document.querySelectorAll('.rc-mode').forEach(m=>{
-  m.addEventListener('click',()=>{
-    document.querySelectorAll('.rc-mode').forEach(x=>x.classList.remove('active'));
-    document.querySelectorAll('.rc-pane').forEach(x=>x.classList.remove('active'));
-    m.classList.add('active');
-    document.getElementById(m.getAttribute('data-rc')==='assume'?'rcAssume':'rcHistory').classList.add('active');
-    beep(440);
-  });
+function paintTuenRules(){
+  for(const button of ruleCompare.querySelectorAll('[data-tuen-line]')){
+    const value=Number(button.dataset.tuenLine);
+    const seen=Boolean(tuenLinesSeen&value);
+    button.setAttribute('aria-pressed',String(seen));
+    button.classList.toggle('needs-inspection',tuenNeedsLine&&value===2);
+    ruleCompare.querySelector('[data-tuen-endpoint="'+value+'"]').textContent=seen?(value===1?'原诸侯王府':'附近汉郡'):'待查看';
+  }
+  document.getElementById('tuenCompareChoice').hidden=tuenLinesSeen!==3;
+  for(const button of ruleCompare.querySelectorAll('.rc-answer')){
+    const correct=button.dataset.ok==='1';
+    const selected=tuenJudge===correct;
+    button.setAttribute('aria-pressed',String(selected));
+    button.classList.toggle('right',selected&&correct);
+    button.classList.toggle('wrong',selected&&!correct);
+    button.disabled=tuenNeedsLine;
+  }
+  rcFeedback.className='rc-feedback'+(tuenJudge===null?'':tuenJudge?' show ok':' show no');
+  rcFeedback.textContent=tuenJudge===true
+    ?'两幅图分的地一样。看管辖线的终点，办法乙把新侯国交给汉郡，王能直接管的范围才缩小。'
+    :tuenJudge===false
+      ?tuenNeedsLine?'先点被标出的那条线，看次子侯国的政务送到了哪里。'
+        :'已经核对了这条线。现在根据两条线的终点重选。'
+      :'';
+}
+ruleCompare.addEventListener('click',event=>{
+  const line=event.target.closest('[data-tuen-line]');
+  const answer=event.target.closest('.rc-answer');
+  if(line){
+    const value=Number(line.dataset.tuenLine);
+    tuenLinesSeen|=value;
+    if(value===2)tuenNeedsLine=false;
+  }else if(answer){
+    tuenJudge=answer.dataset.ok==='1';
+    tuenNeedsLine=!tuenJudge;
+    if(tuenNeedsLine)ruleCompare.querySelector('[data-tuen-line="2"]').focus({preventScroll:true});
+  }else return;
+  paintTuenRules();
+  saveTopicStep();
 });
-document.querySelectorAll('.rc-answer').forEach(a=>{
-  a.addEventListener('click',()=>{
-    document.querySelectorAll('.rc-answer').forEach(x=>x.classList.remove('right','wrong'));
-    const ok=a.getAttribute('data-ok')==='1';
-    a.classList.add(ok?'right':'wrong');
-    rcFeedback.className='rc-feedback show '+(ok?'ok':'no');
-    tuenJudge=ok;
-    if(ok){
-      rcFeedback.textContent='对了。关键不在地切没切开，而在新分的侯国归谁管。改归汉郡，王直接管的地才真少了，这就是推恩令的作用。';
-      beep(560);
-    }else{
-      rcFeedback.textContent='再想想：这一画面里四块地还都归王管，他能直接管的地一块没少。切画面二看看管辖线指到了哪里。';
-      beep(280);
-    }
-    saveTopicStep();
-  });
+function tuenTransferState(record){
+  if(!record||record.answer===null||record.answer===undefined)return 'unanswered';
+  if(record.answer!==1||(record.proof!==null&&record.proof!==2))return 'retry';
+  if(record.proof!==2)return 'unanswered';
+  return record.firstAnswer===1&&record.firstProof===2&&!record.retaken?'independent':'supported';
+}
+const tuenTransferTask=document.getElementById('tuenTransfer');
+function paintTuenTransfer(){
+  const state=tuenTransferState(tuenTransfer);
+  const selecting=tuenTransfer.answer!==null&&(tuenTransfer.answer===1||tuenTransfer.needsProof);
+  for(const button of tuenTransferTask.querySelectorAll('[data-tuen-conclusion]')){
+    button.setAttribute('aria-pressed',String(Number(button.dataset.tuenConclusion)===tuenTransfer.answer));
+    button.disabled=tuenTransfer.needsProof;
+  }
+  for(const button of tuenTransferTask.querySelectorAll('[data-tuen-proof]')){
+    button.setAttribute('aria-pressed',String(Number(button.dataset.tuenProof)===tuenTransfer.proof));
+    button.disabled=!selecting;
+  }
+  document.getElementById('tuenTransferSourceTitle').textContent=selecting?'点最能证明谁有权补任官吏的那条记录。':'先读三条记录，再判断谁能批准补任。';
+  const feedback=document.getElementById('tuenTransferFeedback');
+  if(state==='independent'||state==='supported'){
+    feedback.textContent=historyCheckLabels[state]+'。补任回文写的是谁批定人选。分地清单和侯号说明土地、封号，还不足以判定谁管理当地官吏。';
+    tuenTransferTask.dataset.result='correct';
+  }else if(tuenTransfer.needsProof||tuenTransfer.proof!==null){
+    const proof=tuenTransfer.proof;
+    feedback.textContent=tuenTransfer.needsProof&&proof===null?'先在三条记录中找有关「补任官吏」的那条。'
+      :proof===0?'这条记录只交代哪块地划出来。换找一条写人选交给谁审的记录。'
+      :proof===1?'这条回文核的是封号。接着找与官吏人选有关的那份回文。'
+      :tuenTransfer.answer!==1?'证据选到了。顺着「名册审核」想一想，再重选谁能批准补任。':'';
+    tuenTransferTask.dataset.result='retry';
+  }else{
+    feedback.textContent=tuenTransfer.answer===1?'再从三条记录中点出能支持你判断的依据。':'';
+    delete tuenTransferTask.dataset.result;
+  }
+}
+tuenTransferTask.addEventListener('click',event=>{
+  const answer=event.target.closest('[data-tuen-conclusion]');
+  const proof=event.target.closest('[data-tuen-proof]');
+  if(answer){
+    tuenTransfer.answer=Number(answer.dataset.tuenConclusion);
+    tuenTransfer.firstAnswer??=tuenTransfer.answer;
+    if(tuenTransfer.answer!==1)tuenTransfer.needsProof=tuenTransfer.proof!==2;
+  }else if(proof){
+    tuenTransfer.proof=Number(proof.dataset.tuenProof);
+    tuenTransfer.firstProof??=tuenTransfer.proof;
+    if(tuenTransfer.proof===2)tuenTransfer.needsProof=false;
+  }else return;
+  paintTuenTransfer();
+  saveTopicStep();
 });
-
 
 /* ===== 丝绸之路实验 ===== */
 /* type: main 主干按先后、全部经过；fork 分岔只经过选中的一个 */
@@ -5156,7 +5229,9 @@ function renderHomeCatalog(){
       u.lessons.forEach(function(no){
         var l=lessonByNo(no);
         var act=lessonActivity(no);
-        var actTxt=act?(' · 动手'+(P.isActivityDone(act)?'已做':'未做')):'';
+        const activityState=act==='tuen'?tuenTransferState(store.topicStepOf('tuen')?.tuenTransfer):null;
+        const activityCheck=activityState&&activityState!=='unanswered'?historyCheckLabels[activityState]:P.isActivityDone(act)?(act==='tuen'?'旧版已做，待验证':'已做'):'待验证';
+        var actTxt=act?' · 动手 '+activityCheck:'';
         const summary=historyLessonCheckSummary(no);
         h+='<button class="hc-card '+lessonStatus(no,summary)+'" data-lesson="'+no+'" type="button">'+
           '<span class="hc-no">第 '+no+' 课</span>'+

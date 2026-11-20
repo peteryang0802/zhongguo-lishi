@@ -549,3 +549,67 @@ body:is(.lesson-focused, .history-companion-focused, .history-directory-focused)
 .history-explanation p { margin: 0 0 6px; }
 .history-explanation ol { margin: 0 0 10px; padding-inline-start: 1.45rem; }
 .history-directory-focused .hc-card.retry { border-inline-start: 3px solid var(--study-amber-line); }
+
+.tuen-comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 8px 0 12px;
+}
+.tuen-diagram {
+  padding: 11px;
+  border: 1px solid var(--study-blue-line);
+  border-radius: 8px;
+  background: var(--study-blue);
+  color: var(--study-blue-ink);
+}
+.tuen-diagram h4 { margin: 0 0 7px; }
+.tuen-parcels, .tuen-map-line {
+  display: grid;
+  align-items: center;
+  gap: 5px;
+}
+.tuen-parcels { grid-template-columns: repeat(4, 1fr); }
+.tuen-map-line {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  margin-block-start: 10px;
+  text-align: center;
+}
+.tuen-parcels span {
+  padding-block: 4px;
+  border: 1px solid var(--study-blue-line);
+  text-align: center;
+  font-size: .85rem;
+}
+.tuen-arrow {
+  min-height: 44px;
+  padding: 5px 8px;
+  border: 1px solid var(--study-control);
+  border-radius: 7px;
+  background: var(--study-card);
+  color: var(--study-ink);
+  font-weight: 700;
+}
+.tuen-arrow[aria-pressed="true"] { border-color: var(--study-blue-line); }
+.tuen-arrow.needs-inspection {
+  border-color: var(--study-amber-line);
+  background: var(--study-amber);
+  color: var(--study-amber-ink);
+}
+#tuenCompareChoice .rc-answers { margin-block-start: 0; }
+#tuenCompareChoice button:disabled { opacity: .64; cursor: default; }
+#tuenTransfer .tuen-transfer-records { margin-block-start: 12px; }
+#tuenTransferChoices { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#tuenTransfer .history-practice-choices button:disabled {
+  opacity: 1;
+  cursor: default;
+  color: var(--study-muted);
+}
+#tuenTransfer .history-practice-choices button[aria-pressed="true"] {
+  background: var(--result-fill, var(--study-blue));
+  color: var(--result-text, var(--study-blue-ink));
+  border-color: var(--result-line, var(--study-blue-line));
+}
+@media (max-width: 650px) {
+  .tuen-comparison-grid { grid-template-columns: 1fr; }
+}
