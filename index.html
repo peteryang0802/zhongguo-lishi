@@ -1022,6 +1022,7 @@ button:focus:not(:focus-visible){outline:none}
 </style>
 <link rel="stylesheet" href="./history-lesson-flow.css?v=6">
 <link rel="stylesheet" href="./parent-settings.css?v=1">
+<link rel="stylesheet" href="./history-challenge.css?v=1">
 </head>
 <body>
 
@@ -1075,6 +1076,8 @@ button:focus:not(:focus-visible){outline:none}
   <div class="portal-grid" id="portalGrid"></div>
   <div id="historyParentSettings"></div>
 </section>
+
+<main class="view" id="historyChallengeView" hidden></main>
 
 <!-- 无效深链：给明确解释和可返回的入口，不抛代码错误、不白屏 -->
 <section class="view" id="invalidView" hidden>
@@ -2124,12 +2127,14 @@ let currentLessonNo=null;
 const portalView=document.getElementById('portalView');
 const homeView=document.getElementById('homeView'),topicView=document.getElementById('topicView'),threadViewEl=document.getElementById('threadView'),view3dEl=document.getElementById('view3d');
 const invalidView=document.getElementById('invalidView');
+const historyChallengeView=document.getElementById('historyChallengeView');
+let closeHistoryChallenge=null;
 /* 无效深链：藏起所有正常视图，给解释和返回入口，焦点落到卡片 */
 function showInvalidRoute(text){
-  document.body.classList.remove('lesson-focused','history-companion-focused','history-book-directory');
+  document.body.classList.remove('lesson-focused','history-companion-focused','history-book-directory','history-challenge-open');
   document.body.classList.add('history-directory-focused');
   historySupplement=null;
-  [portalView,homeView,topicView,threadViewEl,view3dEl].forEach(function(el){
+  [portalView,homeView,topicView,threadViewEl,view3dEl,historyChallengeView].forEach(function(el){
     el.classList.remove('active');el.hidden=true;
   });
   document.getElementById('invalidText').textContent=text;
@@ -2141,6 +2146,9 @@ function showInvalidRoute(text){
 let currentTopic=null;
 function showView(v){
   const bookDirectory=v==='home'&&lessonView.hidden;
+  document.body.classList.toggle('history-challenge-open',v==='challenge');
+  historyChallengeView.hidden=v!=='challenge';
+  historyChallengeView.classList.toggle('active',v==='challenge');
   document.body.classList.toggle('lesson-focused',v==='home'&&!bookDirectory);
   document.body.classList.toggle('history-companion-focused',['topic','thread','3d'].includes(v));
   document.body.classList.toggle('history-directory-focused',v==='portal'||bookDirectory);
@@ -5238,8 +5246,13 @@ function lessonActivity(no){
 function renderHomeCatalog(){
   var h='';
   UNITS_G7A.forEach(function(u){
-    h+='<div class="hc-unit'+(u.locked?' locked':'')+'">'+
-      '<h3 class="hc-unit-name">第 '+u.no+' 单元 · '+u.name+'</h3>';
+    const heading='<h3 class="hc-unit-name">第 '+u.no+' 单元 · '+u.name+'</h3>';
+    h+='<div class="hc-unit'+(u.locked?' locked':'')+'">';
+    if(currentBookId==='g7a'&&u.no===3){
+      h+='<div class="hc-unit-heading">'+heading+'<a id="historyChallengeEntry" class="hc-challenge-link" href="#/book/g7a/unit/3/challenge">秦汉闯关 <span aria-hidden="true">→</span></a></div>';
+    }else{
+      h+=heading;
+    }
     if(u.locked){
       h+='<div class="hc-locked">这部分是三国两晋南北朝，本册还没讲到，先锁着。</div>';
     }else{
@@ -5372,6 +5385,9 @@ function parseRoute(){
   if(parts[0]==='book'){
     var book=parts[1];
     if(parts.length===2)return {name:'book',book:book};
+    if(parts.length===5&&parts[2]==='unit'&&parts[4]==='challenge'){
+      return {name:'challenge',book:book,id:parts[3]};
+    }
     return {name:parts[2],book:book,id:parts[3]};
   }
   /* 旧格式（无册前缀）：默认归当前册，旧链接继续可用 */
@@ -5403,7 +5419,28 @@ function showHome(){
   startWarmup();
   window.scrollTo(0,0);
 }
+function openHistoryChallenge(){
+  showView('challenge');
+  window.scrollTo({top:0,behavior:'instant'});
+  historyChallengeView.innerHTML='<a class="challenge-back" href="#/book/g7a">← 本册目录</a><p role="status">正在准备秦汉闯关…</p>';
+  const route=location.hash;
+  import('./history-challenge.js?v=1').then(({mountHistoryChallenge})=>{
+    if(location.hash===route&&!historyChallengeView.hidden&&!closeHistoryChallenge){
+      closeHistoryChallenge=mountHistoryChallenge(historyChallengeView);
+    }
+  }).catch(error=>{
+    console.error(error);
+    if(location.hash!==route||historyChallengeView.hidden)return;
+    historyChallengeView.innerHTML='<a class="challenge-back" href="#/book/g7a">← 本册目录</a><p role="alert">闯关暂时没有加载成功。可以刷新后再试。</p><button class="challenge-primary" type="button">刷新页面</button>';
+    historyChallengeView.querySelector('button').onclick=()=>location.reload();
+  });
+}
 function renderRoute(){
+  const returnFromChallenge=!historyChallengeView.hidden;
+  if(closeHistoryChallenge){
+    closeHistoryChallenge();
+    closeHistoryChallenge=null;
+  }
   /* 兜底：任何路由变化都先收掉旧卡，不让弹窗盖在新页面上 */
   if(sheet.classList.contains('show')){
     if(sheetPushed){history.replaceState(null,'');sheetPushed=false;}
@@ -5422,7 +5459,12 @@ function renderRoute(){
     const context=history.state?.historySupplement;
     historySupplement=context?.book===currentBookId&&lessonByNo(context.no)?context:null;
   }
-  if(r.name==='book'){showHome();return;}
+  if(r.name==='book'){
+    showHome();
+    if(returnFromChallenge)document.getElementById('historyChallengeEntry')?.focus();
+    return;
+  }
+  if(r.name==='challenge'&&r.book==='g7a'&&r.id==='3'){openHistoryChallenge();return;}
   if(r.name==='lesson'){
     var no=parseInt(r.id,10);
     /* 课号必须是完整合法数字，2abc 这类不能被 parseInt 截成第 2 课 */
@@ -5523,6 +5565,6 @@ document.getElementById('historyBoot').hidden=true;
 setTimeout(startWarmup,1500);
 
 </script>
-<script type="module" src="./history-parent-settings.js?v=1"></script>
+<script type="module" src="./history-parent-settings.js?v=2"></script>
 </body>
 </html>
