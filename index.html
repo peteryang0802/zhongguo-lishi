@@ -1018,77 +1018,15 @@ button:focus:not(:focus-visible){outline:none}
 }
 .lesson-topbar .back-btn svg{width:18px;height:18px}
 .lesson-crumb{font-size:13.5px;color:var(--sub);font-weight:700}
-.lesson-ruler{margin-bottom:16px;padding:2px 0 4px}
-.lr-pos{font-size:13px;font-weight:800;color:var(--person);margin-bottom:6px}
-.lr-track-outer{overflow-x:auto;padding:4px 2px 8px;position:relative}
-.lr-track{display:flex;gap:7px;min-width:max-content}
-.lr-scroll-note{display:none;font-size:12px;font-weight:700;color:#8a6d3b;margin:2px 0 0}
-.lr-scroll-note.show{display:block}
-.lr-fade{position:absolute;top:0;bottom:10px;width:26px;pointer-events:none;z-index:2}
-.lr-fade.right{right:0;background:linear-gradient(to right,rgba(247,243,234,0),rgba(247,243,234,.95))}
-.lr-fade.left{left:0;background:linear-gradient(to left,rgba(247,243,234,0),rgba(247,243,234,.95))}
-.lr-dot{
-  width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--card);
-  display:flex;align-items:center;justify-content:center;flex:none;
-}
-.lr-num{font-size:13px;font-weight:800;color:#6b6052}
-.lr-dot.active{background:var(--person);border-color:var(--person)}
-.lr-dot.active .lr-num{color:#fff}
 .lesson-intro{margin-bottom:14px}
 .li-title{font-size:22px;margin-bottom:7px}
-.li-sub{font-size:14.5px;color:#544b3e;margin:0}
-.li-note{font-size:14px;color:#7a5a2b;background:#f6ecd9;border-left:4px solid #c0964c;border-radius:0 10px 10px 0;padding:9px 13px;margin:10px 0 0}
-.lesson-foot{display:flex;flex-wrap:wrap;gap:11px;margin-top:22px}
-.lf-btn{
-  min-height:48px;padding:0 18px;border-radius:13px;border:1px solid var(--line);
-  background:var(--card);font-size:14px;font-weight:700;color:#4a4030;
-}
-.lf-btn.primary{background:var(--person);color:#fff;border-color:var(--person)}
-.history-practice{
-  max-width:640px;margin:18px 0 0;padding:16px;border:1px solid var(--line);
-  border-top:3px solid var(--event);border-radius:16px;background:var(--card);
-}
-.history-practice h3{font-size:19px;scroll-margin-top:86px}
-.history-practice-step{margin:4px 0 10px;font-size:14px;color:var(--sub)}
-.history-practice fieldset{min-width:0;border:0;padding:0;margin:0}
-.history-practice legend{padding:0;margin-bottom:9px;font-size:16px;font-weight:700}
-.history-practice-choices{display:grid;gap:7px}
-.history-practice-choices.is-judgment{grid-template-columns:1fr 1fr}
-.history-practice button,.practice-evidence-return{
-  min-height:44px;padding:8px 12px;border:1px solid #b9aa95;border-radius:10px;
-  background:var(--card);font-size:15px;color:var(--ink);
-}
-.history-practice-choices button{text-align:left}
-.history-practice-choices.is-judgment button{text-align:center}
-.history-practice-choices button[aria-pressed="true"]{
-  border-color:var(--event);background:#e5eef3;color:#1d4c66;font-weight:750;
-}
-.history-practice-feedback[data-result]{
-  margin:10px 0 0;padding:9px 12px;border-radius:10px;background:#fbecdb;color:#593719;font-size:15px;
-}
-.history-practice-feedback[data-result="correct"]{background:#e8f0e5;color:#264d34}
-.history-practice-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}
-.history-practice .history-practice-next,.practice-evidence-return{
-  background:#275f79;border-color:#275f79;color:#fff;font-weight:750;
-}
-.history-practice-jump{display:inline-flex;align-items:center;min-height:44px;margin-top:5px;color:#245a76;font-weight:750}
-.history-practice-loading{margin:4px 0;color:var(--sub);font-size:14px}
-.practice-evidence{margin:0 0 9px;padding:11px 12px;border-left:3px solid var(--event);background:#e5eef3;border-radius:0 10px 10px 0}
-.practice-evidence h4{margin:0;font-size:16px}
-.practice-evidence p{margin:5px 0 0;font-size:15px}
-.practice-evidence-return{margin-bottom:14px}
-
-/* 桌面课视图：节点卡可两列，利用大屏 */
-@media(min-width:1024px){
-  .app-home,#lessonView{max-width:1080px}
-  .lesson-seg .j-nodes{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;align-items:start}
-  .li-title{font-size:25px}
-}
+@media(min-width:1024px){.app-home{max-width:1080px}}
 @media(max-width:480px){
   .home-hero h2{font-size:23px}
   .hc-grid{grid-template-columns:1fr}
 }
 </style>
+<link rel="stylesheet" href="./history-lesson-flow.css?v=1">
 </head>
 <body>
 
@@ -1178,20 +1116,13 @@ button:focus:not(:focus-visible){outline:none}
     <div class="lesson-topbar">
       <button class="back-btn" id="lessonBack" type="button">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-        本册进度
+        本册目录
       </button>
-      <span class="lesson-crumb" id="lessonCrumb"></span>
+      <span class="lesson-crumb" id="historyStepLabel"></span>
     </div>
-    <div class="lesson-ruler" id="lessonRuler" role="navigation" aria-label="课次年代尺">
-      <div class="lr-pos" id="lrPos"></div>
-      <div class="lr-track-outer" id="lrTrackOuter">
-        <span class="lr-fade left" id="lrFadeLeft" hidden></span>
-        <span class="lr-fade right" id="lrFadeRight" hidden></span>
-      </div>
-      <p class="lr-scroll-note" id="lrScrollNote">左右滑动，能看全部课</p>
-    </div>
+    <hr>
     <div class="lesson-intro" id="lessonIntro"></div>
-    <div class="journey" id="journey"></div>
+    <div id="historyStudy"></div>
     <section id="historyPractice" class="history-practice" aria-labelledby="historyPracticeTitle" hidden></section>
     <div class="lesson-foot" id="lessonFoot"></div>
   </section>
@@ -1542,7 +1473,7 @@ button:focus:not(:focus-visible){outline:none}
     <img id="izImg" alt="" draggable="false">
   </div>
 </div>
-<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sTitle" tabindex="-1" inert>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sTitle" tabindex="-1" inert aria-hidden="true">
   <div class="sheet-grip"></div>
   <button class="close" id="sheetClose" aria-label="关闭">
     <svg viewBox="0 0 24 24" fill="none" stroke="#2b2620" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
@@ -1550,11 +1481,6 @@ button:focus:not(:focus-visible){outline:none}
   <span class="s-tag" id="sTag"></span>
   <h3 id="sTitle"></h3>
   <div class="s-year" id="sYear"></div>
-  <section id="practiceEvidence" class="practice-evidence" aria-labelledby="practiceEvidenceTitle" hidden>
-    <h4 id="practiceEvidenceTitle" tabindex="-1">核对这道题的材料</h4>
-    <div id="practiceEvidenceBody"></div>
-  </section>
-  <button id="practiceEvidenceReturn" class="practice-evidence-return" type="button" hidden>回到刚才那题</button>
   <div class="story" id="sStory"></div>
   <figure class="s-figure" id="sFigure">
     <span class="ev-badge" id="evBadge"></span>
@@ -1593,6 +1519,7 @@ button:focus:not(:focus-visible){outline:none}
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg>
 </button>
 
+<script src="./history-lesson-flow.js?v=1"></script>
 <script id="historyPracticeData" async src="./history-lesson-practice.js" onerror="this.dataset.failed='true'"></script>
 <script>
 /* ===== 册注册表：初中六册，初三两册先锁定 ===== */
@@ -2180,71 +2107,7 @@ const LESSON_ACTIVITY={9:'silk',12:'tuen',15:'paper'};
 const ACTIVITY_LESSON={silk:14,tuen:12,paper:15};
 
 
-/* ===== 渲染纵向时间线 ===== */
-const journey=document.getElementById('journey');
 let currentLessonNo=null;
-/* 单张节点卡：抽出来复用于按课渲染 */
-function buildNodeCard(i){
-  const n=NODES[i],topic=TOPIC_MAP[i];
-  const node=document.createElement('button');
-  node.type='button';
-  node.className='j-node'+(n.approx?' approx':'')+(P.isNodeSeen(i)?' seen':'')+(topic?' is-topic':'');
-  node.setAttribute('data-type',n.type);
-  node.setAttribute('data-node-index',i);
-  let html='<span class="j-dot"></span>'+
-    '<div class="j-top"><span class="j-year">'+n.yearLabel+'</span>'+
-    '<span class="j-type-tag">'+TYPE_META[n.type].label+'</span></div>'+
-    '<span class="j-title">'+n.title+'</span>';
-  if(NODE_META[i]){html+='<div class="j-meta">'+NODE_META[i]+'</div>';}
-  if(topic){html+='<span class="topic-badge">动手专题 · '+TOPIC_NAME[topic]+'</span>';}
-  if(NODE_3D_MAP[i]){html+='<button type="button" class="s3d-badge" data-3d="'+NODE_3D_MAP[i]+'">3D 立体看</button>';}
-  const thIds=THREAD_MAP[n.id];
-  if(thIds&&thIds.length){
-    html+='<span class="thread-tags">';
-    thIds.forEach(tid=>{
-      const th=THREADS.find(x=>x.id===tid);
-      html+='<span class="thread-chip" role="link" tabindex="0" data-thread="'+tid+'">'+THREAD_ICONS[th.icon]+'话题·'+th.name+'</span>';
-    });
-    html+='</span>';
-  }
-  node.innerHTML=html;
-  const idx=i;
-  node.addEventListener('click',()=>openSheet(idx));
-  const badge3d=node.querySelector('.s3d-badge');
-  if(badge3d){
-    badge3d.addEventListener('click',e=>{
-      e.stopPropagation();
-      open3D(badge3d.getAttribute('data-3d'),idx);
-    });
-  }
-  node.querySelectorAll('.thread-chip').forEach(chip=>{
-    const goThread=e=>{
-      e.stopPropagation();
-      go('/thread/'+chip.getAttribute('data-thread'));
-    };
-    chip.addEventListener('click',goThread);
-    chip.addEventListener('keydown',e=>{
-      if(e.key==='Enter'||e.key===' '){e.preventDefault();goThread(e);}
-    });
-  });
-  return node;
-}
-/* 按课渲染：只出当前课的节点，顺序仍按年代 */
-function renderLessonJourney(no){
-  journey.innerHTML='';
-  const lesson=lessonByNo(no);
-  const sec=document.createElement('section');
-  sec.className='j-seg lesson-seg';
-  sec.setAttribute('data-seg','lesson'+no);
-  const wrap=document.createElement('div');wrap.className='j-nodes';
-  lesson.nodes.forEach(i=>wrap.appendChild(buildNodeCard(i)));
-  sec.appendChild(wrap);
-  journey.appendChild(sec);
-}
-/* 兼容旧调用名：刷新当前课 */
-function renderJourney(){
-  if(currentLessonNo!=null)renderLessonJourney(currentLessonNo);
-}
 
 /* ===== 视图切换 ===== */
 const portalView=document.getElementById('portalView');
@@ -2252,6 +2115,8 @@ const homeView=document.getElementById('homeView'),topicView=document.getElement
 const invalidView=document.getElementById('invalidView');
 /* 无效深链：藏起所有正常视图，给解释和返回入口，焦点落到卡片 */
 function showInvalidRoute(text){
+  document.body.classList.remove('lesson-focused');
+  historySupplement=null;
   [portalView,homeView,topicView,threadViewEl,view3dEl].forEach(function(el){
     el.classList.remove('active');el.hidden=true;
   });
@@ -2263,11 +2128,16 @@ function showInvalidRoute(text){
 }
 let currentTopic=null;
 function showView(v){
+  document.body.classList.toggle('lesson-focused',v==='home'&&!lessonView.hidden);
   /* 切到任何正常视图，都收掉无效深链卡片，避免两个视图叠在一起 */
   invalidView.classList.remove('active');
   invalidView.hidden=true;
   portalView.classList.toggle('active',v==='portal');
   portalView.hidden=(v!=='portal');
+  homeView.hidden=(v!=='home');
+  topicView.hidden=(v!=='topic');
+  threadViewEl.hidden=(v!=='thread');
+  view3dEl.hidden=(v!=='3d');
   homeView.classList.toggle('active',v==='home');
   topicView.classList.toggle('active',v==='topic');
   threadViewEl.classList.toggle('active',v==='thread');
@@ -2385,6 +2255,7 @@ function enterActivity(key){
 function closeTopic(){
   const key=currentTopic;
   saveTopicStep();
+  if(returnHistorySupplement())return;
   /* 返回这节专题所在的课，落在原课而不是整条时间轴中段 */
   const lessonNo=ACTIVITY_LESSON[key];
   if(lessonNo!=null)go('/lesson/'+lessonNo);
@@ -2909,13 +2780,17 @@ async function enter3D(key){
     stage.classList.add('is-fail');
   }
 }
-function close3D(){
+function stop3D(){
   s3dToken++;
   s3dClearTimer();
   if(current3d){current3d.destroy();current3d=null;}
-  const idx=fromNode3d;fromNode3d=null;
+  fromNode3d=null;
   resumeWarmup();
+}
+function close3D(){
+  const idx=fromNode3d;
   /* 返回来源节点所在的课；没有来源就回首页 */
+  if(returnHistorySupplement())return;
   const lessonNo=(idx!=null)?LESSON_OF_NODE[idx]:null;
   if(lessonNo!=null)go('/lesson/'+lessonNo);
   else go('/');
@@ -3064,8 +2939,7 @@ function renderBeads(t){
  threadBody.innerHTML=html;
 }
 function closeThread(){
-  /* 话题从首页/课目录进入，统一回首页，不依赖进入时的节点 */
-  go('/');
+  if(!returnHistorySupplement())go('/');
 }
 document.getElementById('threadBack').addEventListener('click',closeThread);
 
@@ -4222,8 +4096,7 @@ function setEvBadge(ev){
   badge.textContent=ev.label;
   badge.className='ev-badge '+ev.cls;
 }
-let practiceEvidenceOpener=null;
-function openSheet(i,evidenceRequest){
+function openSheet(i){
   const wasOpen=sheet.classList.contains('show');
   if(!wasOpen){
     pauseWarmup();
@@ -4232,7 +4105,7 @@ function openSheet(i,evidenceRequest){
     sheetPushed=true;
     /* 打开：移出 inert，卡片内控件可聚焦 */
     sheet.inert=false;
-    practiceEvidenceOpener=evidenceRequest?.opener??null;
+    sheet.setAttribute('aria-hidden','false');
   }
   currentIndex=i;
   /* 最近视图只用于"继续"，记录当前课和具体卡，不自动弹专题 */
@@ -4245,10 +4118,6 @@ function openSheet(i,evidenceRequest){
   document.getElementById('sTag').style.background=meta.color;
   document.getElementById('sTitle').textContent=n.title;
   document.getElementById('sYear').textContent=n.yearLabel+(n.approx?'（约）':'');
-  const evidence=document.getElementById('practiceEvidence');
-  evidence.hidden=!evidenceRequest;
-  document.getElementById('practiceEvidenceBody').innerHTML=evidenceRequest?.item.evidence??'';
-  document.getElementById('practiceEvidenceReturn').hidden=!practiceEvidenceOpener;
   const im=IMG_META[n.id];
   const sImg=document.getElementById('sImg');
   const sFigure=document.getElementById('sFigure');
@@ -4311,17 +4180,16 @@ function openSheet(i,evidenceRequest){
   }
   sheet.classList.add('show');backdrop.classList.add('show');
   /* 用新进度模型记录已看节点，并更新该课卡片状态 */
-  if(!P.isNodeSeen(i)){P.markNodeSeen(i);renderJourney();maybeLessonDone(curLesson);}
+  if(!P.isNodeSeen(i)){P.markNodeSeen(i);maybeLessonDone(curLesson);}
   /* 翻页只在当前课内走，不跨课串到别的朝代 */
   var lessonNodes=curLesson!=null?lessonByNo(curLesson).nodes:null;
   var posInLesson=lessonNodes?lessonNodes.indexOf(i):0;
   document.getElementById('prevNode').disabled=!lessonNodes||posInLesson<=0;
   document.getElementById('nextNode').disabled=!lessonNodes||posInLesson>=lessonNodes.length-1;
   /* 焦点移入详情卡，键盘不再落到背后卡片 */
-  const focusId=evidenceRequest?'practiceEvidenceTitle':'sheetClose';
   setTimeout(()=>{
     if(sheet.classList.contains('show')&&currentIndex===i){
-      document.getElementById(focusId).focus({preventScroll:true});
+      document.getElementById('sheetClose').focus({preventScroll:true});
     }
   },60);
 }
@@ -4331,15 +4199,10 @@ function closeSheetDom(){
  clearImgTimer();sheet.classList.remove('show');backdrop.classList.remove('show');
  /* 关闭：inert 让卡片内控件移出焦点和读屏树 */
  sheet.inert=true;
+ sheet.setAttribute('aria-hidden','true');
  /* 用全局节点索引稳定定位触发卡，覆盖第一课以外和翻页场景 */
  const ri=returnNodeIndex;
- if(practiceEvidenceOpener?.isConnected){
-  practiceEvidenceOpener.focus({preventScroll:true});
- }else if(ri!==null){
-  const target=document.querySelector('.j-node[data-node-index="'+ri+'"]');
-  if(target){target.focus({preventScroll:true});}
- }
- practiceEvidenceOpener=null;
+ if(ri!==null)document.querySelector('#historyStudy [data-study-heading]')?.focus({preventScroll:true});
  returnNodeIndex=null;
  resumeWarmup();
 }
@@ -4358,7 +4221,6 @@ function closeSheetForNav(){
 let returnNodeIndex=null;
 document.getElementById('sheetClose').addEventListener('click',closeSheet);
 document.getElementById('sheetCloseBottom').addEventListener('click',closeSheet);
-document.getElementById('practiceEvidenceReturn').addEventListener('click',closeSheet);
 backdrop.addEventListener('click',closeSheet);
 document.getElementById('prevNode').addEventListener('click',()=>{
   var ln=lessonByNo(LESSON_OF_NODE[currentIndex]).nodes,p=ln.indexOf(currentIndex);
@@ -4923,7 +4785,7 @@ sheet.addEventListener('transitionend',function(){
   if(sImg.complete&&sImg.naturalWidth>0){sImg.style.transform='translateZ(0)';}
 });
 /* ===== 图片放大：拖动 + 双指/滚轮缩放 ===== */
-(function(){
+const openHistoryImageZoom=(function(){
   const zoom=document.getElementById('imgZoom');
   const stage=document.getElementById('izStage');
   const izImg=document.getElementById('izImg');
@@ -4934,9 +4796,10 @@ sheet.addEventListener('transitionend',function(){
   function apply(){izImg.style.transform='translate(-50%,-50%) translate('+tx+'px,'+ty+'px) scale('+scale+')';}
   function reset(){scale=1;tx=0;ty=0;apply();}
   function clampScale(v){return Math.min(5,Math.max(1,v));}
-  function openZoom(){
-    const sImg=document.getElementById('sImg');
+  let returnTo=null;
+  function openZoom(sImg,opener){
     if(!sImg||!sImg.src||sImg.naturalWidth===0)return;
+    returnTo=opener;
     izImg.src=sImg.src;izImg.alt=sImg.alt||'';
     reset();zoom.hidden=false;
     document.body.style.overflow='hidden';
@@ -4945,10 +4808,10 @@ sheet.addEventListener('transitionend',function(){
   function closeZoom(){
     zoom.hidden=true;pointers.clear();
     document.body.style.overflow='';
-    const sheetClose=document.getElementById('sheetClose');
-    if(sheetClose)sheetClose.focus({preventScroll:true});
+    returnTo?.focus({preventScroll:true});
+    returnTo=null;
   }
-  document.getElementById('sImgZoom').addEventListener('click',openZoom);
+  document.getElementById('sImgZoom').addEventListener('click',()=>openZoom(document.getElementById('sImg'),document.getElementById('sheetClose')));
   closeBtn.addEventListener('click',closeZoom);
   stage.addEventListener('pointerdown',function(e){
     stage.setPointerCapture(e.pointerId);
@@ -4994,14 +4857,15 @@ sheet.addEventListener('transitionend',function(){
   document.addEventListener('keydown',function(e){
     if(zoom.hidden)return;
     if(e.key==='Escape'){e.preventDefault();closeZoom();}
+    if(e.key==='Tab'){e.preventDefault();closeBtn.focus({preventScroll:true});}
   });
+  return openZoom;
 })();
 /* ===== 课完成判断、目录渲染、课视图、Hash 路由 ===== */
 var sidebarNav=document.getElementById('sidebarNav');
 var homeCatalog=document.getElementById('homeCatalog');
 var appHome=document.getElementById('appHome');
 var lessonView=document.getElementById('lessonView');
-var lessonRuler=document.getElementById('lessonRuler');
 var lessonIntro=document.getElementById('lessonIntro');
 var lessonFoot=document.getElementById('lessonFoot');
 const historyPractice=document.getElementById('historyPractice');
@@ -5035,7 +4899,6 @@ const firstLessonPractice=[
   },
 ];
 const unsavedPracticeAnswers=new Map();
-const unsavedPracticeSteps=new Map();
 const generatedHistoryPractice=new Map();
 function practiceKey(no){return 'zg_practice_'+currentBookId+'_'+no+':';}
 function practiceText(text){
@@ -5094,117 +4957,88 @@ function practiceSummary(no){
   const answered=practice.filter(item=>readPracticeAnswer(no,item).first!==null).length;
   return answered?'小练习已答 '+answered+'/'+practice.length+' 题':'小练习未做';
 }
-function focusHistoryPractice(){
-  const title=document.getElementById('historyPracticeTitle');
-  if(!title)return;
-  title.focus({preventScroll:true});
-  title.scrollIntoView({block:'start'});
-}
-function renderHistoryPractice(no){
-  const practice=lessonPractice(no);
-  historyPractice.hidden=!practice.length;
-  if(historyPractice.hidden){historyPractice.replaceChildren();return;}
-  const stepKey=practiceKey(no)+'step';
-  const savedStep=Number(unsavedPracticeSteps.get(stepKey)??safeGet(stepKey));
-  const step=Number.isInteger(savedStep)&&practice[savedStep]?savedStep:0;
-  const item=practice[step];
-  const isFirst=step===0;
-  const nextText=practice[1]?.node!==practice[0].node?'换份材料试一题 →':'再判断一个说法 →';
-  historyPractice.innerHTML='<h3 id="historyPracticeTitle" tabindex="-1">史料能告诉我们什么？</h3>'+
-    '<p class="history-practice-step">第 '+(step+1)+' / '+practice.length+' 题 · '+item.kind+'</p>'+
-    '<fieldset><legend>'+practiceText(item.title)+'</legend><div class="history-practice-choices'+(item.kind==='判断题'?' is-judgment':'')+'">'+
-    item.choices.map((choice,index)=>'<button type="button" data-practice-choice="'+index+'" aria-pressed="false">'+practiceText(choice.text)+'</button>').join('')+
-    '</div></fieldset><p class="history-practice-feedback" role="status" aria-atomic="true"></p>'+
-    '<div class="history-practice-actions"><button type="button" data-practice-evidence>核对'+practiceText(item.card)+'材料</button>'+
-    (practice.length>1?'<button class="history-practice-next" type="button" data-practice-switch>'+
-    (isFirst?nextText:'← 回到第一题')+'</button>':'')+'</div>';
+function renderHistoryPractice(no,item,index){
+  historyPractice.hidden=false;
+  historyPractice.innerHTML='<h3 id="historyPracticeTitle" data-study-heading tabindex="-1">用史料判断</h3>'+
+    '<p class="history-practice-step">第 '+(index+1)+' / 2 题 · '+item.kind+'</p>'+
+    '<div class="history-practice-data"><fieldset><legend>'+practiceText(item.title)+'</legend><div class="history-practice-choices'+(item.kind==='判断题'?' is-judgment':'')+'">'+
+    item.choices.map((choice,i)=>'<button type="button" data-practice-choice="'+i+'" aria-pressed="false">'+practiceText(choice.text)+'</button>').join('')+
+    '</div></fieldset><p class="history-practice-feedback" role="status" aria-atomic="true"></p></div>'+
+    '<button type="button" class="history-secondary" data-practice-evidence aria-expanded="false" aria-controls="historyQuestionMaterial">看这题的史料</button>'+
+    '<section class="history-question-material" id="historyQuestionMaterial" aria-label="这题的史料" hidden><h4>'+practiceText(item.card)+'</h4>'+item.evidence+'</section>';
+  const practiceData=historyPractice.querySelector('.history-practice-data');
   const feedback=historyPractice.querySelector('.history-practice-feedback');
   const options=[...historyPractice.querySelectorAll('[data-practice-choice]')];
   const opener=historyPractice.querySelector('[data-practice-evidence]');
+  const material=historyPractice.querySelector('#historyQuestionMaterial');
   function paint(record){
     const choice=item.choices[record.selected];
-    options.forEach((button,index)=>button.setAttribute('aria-pressed',String(index===record.selected)));
+    options.forEach((button,i)=>button.setAttribute('aria-pressed',String(i===record.selected)));
     if(!choice)return;
-    feedback.dataset.result=choice.correct?'correct':'retry';
-    const result=choice.correct
+    const result=choice.correct?'correct':'retry';
+    practiceData.dataset.result=result;
+    feedback.dataset.result=result;
+    const message=choice.correct
       ? (item.choices[record.first]?.correct
         ? (record.checkedBeforeAnswer?'查证后答对。':'首答独立答对。'):'看过解释后改对。')
       : '再核对一次。';
-    feedback.textContent=result+choice.reply;
+    feedback.textContent=message+choice.reply;
   }
   paint(readPracticeAnswer(no,item));
-  options.forEach((button,index)=>button.addEventListener('click',()=>{
+  options.forEach((button,i)=>button.addEventListener('click',()=>{
     const record=readPracticeAnswer(no,item);
-    record.first??=index;
-    record.selected=index;
+    record.first??=i;
+    record.selected=i;
     writePracticeAnswer(no,item,record);
     paint(record);
-    feedback.scrollIntoView({block:'nearest'});
+    const next=lessonFoot.querySelector('[data-study-next]');
+    next.classList.toggle('history-skip',!item.choices[i].correct);
+    next.textContent=item.choices[i].correct?next.dataset.nextLabel:'暂时跳过';
+    feedback.scrollIntoView({block:'nearest',behavior:'instant'});
   }));
   opener.addEventListener('click',()=>{
+    const show=material.hidden;
     const record=readPracticeAnswer(no,item);
-    if(record.first===null&&!record.checkedBeforeAnswer){
+    if(show&&record.first===null&&!record.checkedBeforeAnswer){
       record.checkedBeforeAnswer=true;
       writePracticeAnswer(no,item,record);
     }
-    openSheet(item.node,{item,opener});
-  });
-  historyPractice.querySelector('[data-practice-switch]')?.addEventListener('click',()=>{
-    const nextStep=isFirst?1:0;
-    if(safeSet(stepKey,String(nextStep)))unsavedPracticeSteps.delete(stepKey);
-    else unsavedPracticeSteps.set(stepKey,nextStep);
-    renderHistoryPractice(no);
-    focusHistoryPractice();
+    material.hidden=!show;
+    opener.setAttribute('aria-expanded',String(show));
+    opener.textContent=show?'收起这题的史料':'看这题的史料';
   });
 }
-function renderPracticeEntry(no){
-  lessonIntro.querySelector('.history-practice-jump, .history-practice-loading')?.remove();
-  if(lessonPractice(no).length){
-    const jump=document.createElement('button');
-    jump.type='button';
-    jump.className='history-practice-jump';
-    jump.textContent='试两道史料小题 ↓';
-    jump.addEventListener('click',focusHistoryPractice);
-    lessonIntro.appendChild(jump);
-  }else if(typeof HISTORY_LESSON_PRACTICE==='undefined'){
-    const status=document.createElement('div');
-    status.className='history-practice-loading';
-    const message=document.createElement('p');
-    message.setAttribute('role','status');
-    const failed=historyPracticeData.dataset.failed==='true';
-    message.textContent=failed?'小题暂时打不开。可以继续看下面的史料。':'正在加载史料小题…';
-    status.appendChild(message);
-    if(failed){
-      const retryButton=document.createElement('button');
-      retryButton.type='button';
-      retryButton.className='history-practice-jump';
-      retryButton.textContent='重新加载小题';
-      retryButton.addEventListener('click',()=>{
-        const retry=document.createElement('script');
-        retry.async=true;
-        retry.src='./history-lesson-practice.js?retry='+Date.now();
-        retry.addEventListener('load',refreshHistoryPractice);
-        retry.addEventListener('error',refreshHistoryPractice);
-        historyPracticeData.dataset.failed='false';
-        renderPracticeEntry(no);
-        document.head.appendChild(retry);
-      },{once:true});
-      status.appendChild(retryButton);
-    }
-    lessonIntro.appendChild(status);
-  }
-  renderHistoryPractice(no);
+function renderUnavailableHistoryPractice(no){
+  const stage=document.getElementById('historyStudy');
+  const failed=historyPracticeData.dataset.failed==='true';
+  stage.innerHTML='<h3 data-study-heading tabindex="-1">用史料判断</h3><p role="status">'+
+    (failed?'小题暂时打不开，可以稍后再试。':'正在加载史料小题…')+'</p>';
+  if(!failed)return;
+  const retryButton=document.createElement('button');
+  retryButton.type='button';
+  retryButton.className='history-action';
+  retryButton.textContent='重新加载小题';
+  retryButton.addEventListener('click',()=>{
+    const retry=document.createElement('script');
+    retry.async=true;
+    retry.src='./history-lesson-practice.js?retry='+Date.now();
+    retry.addEventListener('load',refreshHistoryPractice);
+    retry.addEventListener('error',refreshHistoryPractice);
+    historyPracticeData.dataset.failed='false';
+    renderHistoryStage(no);
+    document.head.appendChild(retry);
+  },{once:true});
+  stage.appendChild(retryButton);
 }
 function refreshHistoryPractice(){
   historyPracticeData.dataset.failed=String(typeof HISTORY_LESSON_PRACTICE==='undefined');
   if(homeView.hidden)return;
   if(!lessonView.hidden&&currentLessonNo!=null){
-    if(currentBookId!=='g7a'||currentLessonNo!==1)renderPracticeEntry(currentLessonNo);
+    if(historyStep>lessonByNo(currentLessonNo).nodes.length&&historyPractice.hidden)renderHistoryStage(currentLessonNo);
   }else if(!appHome.hidden&&typeof HISTORY_LESSON_PRACTICE!=='undefined'){
     renderHomeCatalog();
   }
 }
-var lessonCrumb=document.getElementById('lessonCrumb');
 var sidebar=document.getElementById('sidebar');
 var sidebarBackdrop=document.getElementById('sidebarBackdrop');
 
@@ -5280,72 +5114,22 @@ function renderHomeCatalog(){
 }
 function refreshNavStates(){renderSidebar();renderHomeCatalog();}
 
-/* 课视图顶部年代尺：15 课横向，当前课高亮，可点跳课，保留历史顺序感 */
-function renderLessonRuler(no){
-  document.getElementById('lrPos').textContent='第 '+no+' 课 / 共 '+LESSONS.length+' 课';
-  var h='<div class="lr-track">';
-  LESSONS.forEach(function(l){
-    h+='<button class="lr-dot'+(l.no===no?' active':'')+'" data-lr="'+l.no+'" type="button" aria-label="第'+l.no+'课 '+l.title+'"><span class="lr-num">'+l.no+'</span></button>';
-  });
-  h+='</div>';
-  var outer=document.getElementById('lrTrackOuter');
-  var fadeL=document.getElementById('lrFadeLeft');
-  var fadeR=document.getElementById('lrFadeRight');
-  outer.innerHTML=h;
-  outer.appendChild(fadeL);outer.appendChild(fadeR);
-  outer.querySelectorAll('[data-lr]').forEach(function(b){
-    b.addEventListener('click',function(){go('/lesson/'+b.getAttribute('data-lr'));});
-  });
-  var note=document.getElementById('lrScrollNote');
-  function updateFade(){
-    var overflow=outer.scrollWidth>outer.clientWidth+2;
-    note.classList.toggle('show',overflow);
-    if(!overflow){fadeL.hidden=true;fadeR.hidden=true;return;}
-    var maxLeft=outer.scrollWidth-outer.clientWidth;
-    fadeL.hidden=outer.scrollLeft<=1;
-    fadeR.hidden=outer.scrollLeft>=maxLeft-1;
-  }
-  outer.onscroll=updateFade;
-  /* 当前课主动滚入可视区，晚段课不用手动横滑找 */
-  var activeDot=outer.querySelector('.lr-dot.active');
-  if(activeDot){
-    setTimeout(function(){activeDot.scrollIntoView({behavior:'auto',inline:'center',block:'nearest'});updateFade();},0);
-  }
-  setTimeout(updateFade,0);
-}
 function openLesson(no){
-  var lesson=lessonByNo(no);
+  const lesson=lessonByNo(no);
   if(!lesson)return;
+  const fromSupplement=historySupplement?.book===currentBookId&&historySupplement.no===no;
+  historySupplement=null;
   currentLessonNo=no;
   warmScope='lesson';
   warmList=null;warmPos=0;
-  lessonCrumb.textContent='第 '+no+' 课';
-  renderLessonRuler(no);
-  var noteHtml='';
-  if(currentBookId==='g7a'&&no===16)noteHtml='<p class="li-note">小提示：这两场战役在时间上比东汉灭亡稍早，是三国鼎立的背景，所以这里的年份看起来往回走了一点。</p>';
-  if(lesson.themeOrder)noteHtml+='<p class="li-note">小提示：这一课按主题组织，把同类内容放在一起，不是严格按年份先后排，所以年份会来回跳。</p>';
-  var orderText=lesson.themeOrder?'按主题分好了':'按年代排好了';
-  lessonIntro.innerHTML='<h2 class="li-title">第 '+no+' 课 · '+lesson.title+'</h2>'+
-    '<p class="li-sub">这一课有 '+lesson.nodes.length+' 个知识点，'+orderText+'。点卡片看细节，先自己想，再看证据。</p>'+noteHtml;
-  renderPracticeEntry(no);
-  renderLessonJourney(no);
-  var fh='';
-  if(no>1)fh+='<button class="lf-btn" data-foot="'+(no-1)+'" type="button">上一课：'+lessonByNo(no-1).title+'</button>';
-  if(no<LESSONS.length)fh+='<button class="lf-btn primary" data-foot="'+(no+1)+'" type="button">下一课：'+lessonByNo(no+1).title+'</button>';
-  lessonFoot.innerHTML=fh;
-  lessonFoot.querySelectorAll('[data-foot]').forEach(function(b){
-    b.addEventListener('click',function(){go('/lesson/'+b.getAttribute('data-foot'));});
-  });
+  lessonIntro.innerHTML='<h2 class="li-title">第 '+no+' 课 · '+lesson.title+'</h2>';
   appHome.hidden=true;
   lessonView.hidden=false;
   showView('home');
-  /* 不在这写 last：只进课看标题、没点开任何卡，就保留原来的学习位置，不把续读顶掉 */
+  enterHistoryStage(lesson);
   startWarmup();
-  window.scrollTo(0,0);
-  if(pendingResumeNode!=null){
-    var nodeToOpen=pendingResumeNode;pendingResumeNode=null;
-    setTimeout(function(){openSheet(nodeToOpen);},0);
-  }
+  window.scrollTo({top:0,behavior:'instant'});
+  if(fromSupplement)focusHistoryStage();
 }
 
 /* Hash 路由 */
@@ -5407,6 +5191,7 @@ function renderPortal(){
   });
 }
 function showPortal(){
+  historySupplement=null;
   currentLessonNo=null;
   warmScope='portal';
   warmList=null;warmPos=0;
@@ -5441,13 +5226,14 @@ function updateContinueButton(){
   var btn=document.getElementById('continueBtn');
   var last=P.getLast();
   if(last&&last.type==='lesson'&&lessonByNo(last.no)){
-    var label='继续看第 '+last.no+' 课'+(last.nodeTitle?' · '+last.nodeTitle:'：'+lessonByNo(last.no).title);
+    var label='继续第 '+last.no+' 课 · '+lessonByNo(last.no).title;
     btn.hidden=false;btn.textContent=label;
   }else{
     btn.hidden=true;
   }
 }
 function showHome(){
+  historySupplement=null;
   currentLessonNo=null;
   warmScope='home';
   warmList=null;warmPos=0;
@@ -5466,6 +5252,7 @@ function renderRoute(){
     closeSheetDom();
   }
   var r=parseRoute();
+  if(r.name!=='3d'&&view3dEl.classList.contains('active'))stop3D();
   if(r.name==='portal'){showPortal();return;}
   /* 册校验：先看有没有这册，再看是否锁定、有没有数据，都给明确解释 */
   var b=r.book?bookById(r.book):null;
