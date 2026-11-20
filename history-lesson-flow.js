@@ -40,12 +40,13 @@ const HISTORY_METHOD_BY_LESSON = {
 };
 
 const historyPreview = {id:'opening-preview', choices:[{text:'对'},{text:'错'},{text:'还拿不准'}]};
+const empowermentPreview = ['原王还能管', '原王不能直接管', '还拿不准'];
 const unsavedHistorySteps = new Map();
 let historyStep = 0;
 let historySupplement = null;
 
 function historyStepKey(no) {
-  return practiceKey(no) + 'lesson-stage-v2';
+  return practiceKey(no) + 'lesson-stage-v3';
 }
 
 function saveHistoryStep(no, step) {
@@ -82,14 +83,21 @@ function enterHistoryStage(lesson) {
   const stored = unsavedHistorySteps.get(key) ?? safeGet(key);
   let step = stored == null ? 0 : Number(stored);
   if (practice.length && stored == null) {
-    const legacy = safeGet(practiceKey(lesson.no) + 'lesson-stage');
-    const oldStep = legacy == null ? 0 : Number(legacy);
-    const oldNode = legacy == null ? pendingResumeNode : oldStep > 0 ? lesson.nodes[oldStep - 1] : null;
     const stages = historyStages(lesson, practice);
-    if (oldNode != null) step = stages.findIndex(entry => entry.kind === 'source' && entry.node === oldNode);
-    else if (oldStep === lesson.nodes.length + 1) step = 2;
-    else if (oldStep === lesson.nodes.length + 2) step = stages.length - 2;
-    else if (oldStep === lesson.nodes.length + 3) step = stages.length - 1;
+    const previousVersion = safeGet(practiceKey(lesson.no) + 'lesson-stage-v2');
+    const previousNodes = lesson.nodes.filter(node => !NODES[node].newMaterial);
+    if (previousVersion != null) {
+      const old = historyStages({...lesson, nodes: previousNodes}, practice)[Number(previousVersion)];
+      if (old) step = stages.findIndex(entry => entry.kind === old.kind && entry.node === old.node && entry.index === old.index);
+    } else {
+      const legacy = safeGet(practiceKey(lesson.no) + 'lesson-stage');
+      const oldStep = legacy == null ? 0 : Number(legacy);
+      const oldNode = legacy == null ? pendingResumeNode : oldStep > 0 ? previousNodes[oldStep - 1] : null;
+      if (oldNode != null) step = stages.findIndex(entry => entry.kind === 'source' && entry.node === oldNode);
+      else if (oldStep === previousNodes.length + 1) step = 2;
+      else if (oldStep === previousNodes.length + 2) step = stages.length - 2;
+      else if (oldStep === previousNodes.length + 3) step = stages.length - 1;
+    }
   }
   pendingResumeNode = null;
   historyStep = Number.isInteger(step) && step >= 0 && step <= lesson.nodes.length + 3 ? step : 0;
@@ -135,30 +143,36 @@ function bindHistoryOpening(stage, no, draw) {
 }
 
 function renderHistoryOpening(stage, no, first, following) {
+  const empowerment = currentBookId === 'g7a' && no === 12;
   stage.innerHTML = '<article class="history-opening-task">' +
-    '<section class="history-core"><h3 data-study-heading tabindex="-1">' + practiceText(first.title) + '</h3></section>' +
+    '<section class="history-core"><h3 data-study-heading tabindex="-1">' +
+    practiceText(empowerment ? '封地分给几个儿子，原来的王还能管所有新侯国吗？' : first.title) + '</h3></section>' +
     '<p class="history-instruction">先猜一猜。下一步看一份材料，找一个能支持判断的地方。</p>' +
     '<div class="history-practice-choices is-judgment is-preview" role="group" aria-label="开场判断">' +
     historyTryButtons(historyPreview) + '</div></article>';
-  const forward = paintHistoryActions(no, '看' + following.label + '的材料', 1);
+  if (empowerment) {
+    stage.querySelectorAll('[data-history-try]').forEach((button,index) => { button.textContent = empowermentPreview[index]; });
+  }
+  const forward = paintHistoryActions(no, empowerment ? '找出谁管新侯国' : '看' + following.label + '的材料', 1);
   bindHistoryOpening(stage, no, choice => { forward.hidden = !choice; });
 }
 
 function historyTransferItem(no) {
   const row = typeof HISTORY_TRANSFER_PRACTICE === 'undefined' ? null : HISTORY_TRANSFER_PRACTICE[currentBookId]?.[no - 1];
   if (!row) return null;
-  const [question, right, wrong, proof, firstDecoy, secondDecoy] = row;
+  const [question, right, wrong, proof, firstDecoy, secondDecoy, evidenceWhy] = row;
   const offset = no + Object.keys(HISTORY_METHOD_BY_LESSON).indexOf(currentBookId);
   const choices = [{text:right,correct:true},{text:wrong,correct:false}];
   const proofs = [{text:proof,correct:true},{text:firstDecoy,correct:false},{text:secondDecoy,correct:false}];
   if (offset % 2) choices.reverse();
   for (let i = 0; i < offset % 3; i++) proofs.push(proofs.shift());
-  return {id:'new-archive-pair', question, choices, proofs,
+  return {id:'new-archive-pair-v2', question, choices, proofs, evidenceWhy,
     ...HISTORY_METHODS[HISTORY_METHOD_BY_LESSON[currentBookId]?.[no - 1]]};
 }
 
 function historyReviewOldTransfer(no) {
-  return readPracticeAnswer(no, {id:'method-transfer',choices:historyPreview.choices.slice(0, 2)}).first !== null;
+  const choices = historyPreview.choices.slice(0, 2);
+  return ['method-transfer','new-archive-pair'].some(id => readPracticeAnswer(no, {id, choices}).first !== null);
 }
 
 function renderHistoryReview(stage, no, practices) {
@@ -207,7 +221,7 @@ function renderHistoryReview(stage, no, practices) {
     const checked = summary.core.filter(value => value !== 'unanswered' && value !== 'retry').length;
     const done = ['independent','supported'].includes(summary.state);
     status.textContent = '课内已核对 ' + checked + ' / ' + practices.length + ' · 新材料 ' +
-      (summary.state === 'unanswered' ? '待验证' : historyCheckLabels[summary.state]);
+      (summary.state === 'unanswered' ? (historyReviewOldTransfer(no) ? '旧题已答，本题待验证' : '待验证') : historyCheckLabels[summary.state]);
     claimButtons.forEach((button,index) => {
       button.setAttribute('aria-pressed', String(index === record.selected));
       button.disabled = record.awaitingProof;
@@ -222,7 +236,7 @@ function renderHistoryReview(stage, no, practices) {
     } else if (summary.state === 'retry') {
       task.dataset.result = 'retry';
       feedback.textContent = proof && !proof.correct
-        ? '这条记录还不能支持判断。对照题目所问，找一条直接涉及这件事的记录。'
+        ? '这条记录还不足以支持判断。' + transfer.evidenceWhy
         : record.awaitingProof
           ? '先别换答案。回到三条记录，点出你用来判断的那一条。'
           : '你已找到相关记录。用它核对后，重选判断。';
@@ -294,7 +308,8 @@ function renderHistoryStage(no) {
       stage.prepend(note);
     }
     const label = following.kind === 'source' ? '看' + following.label + '的材料' : following.label;
-    paintHistoryActions(no, label, historyStep + 1);
+    const forward = paintHistoryActions(no, label, historyStep + 1);
+    bindHistoryMaterialCheck(stage, no, NODES[current.node], forward);
   } else if (current.kind === 'check') {
     renderHistoryPractice(no, practice[current.index], current.index);
     const label = following.kind === 'source' ? '看' + following.label + '的材料' : following.label;
@@ -343,7 +358,8 @@ function renderHistoryMaterial(container, node, no) {
     (NODE_META[node] ? '<p class="history-date">' + practiceText(NODE_META[node]) + '</p>' : '') +
     '<div class="history-material-body' + (meta ? ' has-image' : '') + '">' +
     '<div class="history-reading"><p>' + practiceText(card.story) + '</p><ul>' +
-    card.points.map(point => '<li>' + practiceText(point) + '</li>').join('') + '</ul></div>' +
+    card.points.map(point => '<li>' + practiceText(point) + '</li>').join('') + '</ul>' +
+    (card.reference ? '<p class="history-attribution">' + practiceText(card.reference) + '</p>' : '') + '</div>' +
     (meta ? '<figure class="history-picture"><img src="' + practiceText(toWebp(meta.img)) + '" alt="' + practiceText(meta.name) + '">' +
       '<figcaption><strong>' + practiceText(meta.name) + '</strong> · ' + practiceText(badge.label) + '<br>' +
       practiceText(meta.era) + ' · ' + practiceText(meta.source) + ' · ' + practiceText(meta.kind) +
@@ -371,6 +387,39 @@ function renderHistoryMaterial(container, node, no) {
     P.markNodeSeen(node);
     maybeLessonDone(no);
   }
+}
+
+function bindHistoryMaterialCheck(stage, no, card, forward) {
+  if (!card.check) return;
+  const [question, answer, choices] = card.check;
+  const item = {id:'material-check-' + card.id,
+    choices:choices.map(([text, reply], index) => ({text, reply, correct:index === answer}))};
+  const task = document.createElement('section');
+  task.className = 'history-material-check';
+  task.innerHTML = '<fieldset><legend>' + practiceText(question) + '</legend>' +
+    '<div class="history-practice-choices">' + historyTryButtons(item) + '</div></fieldset>' +
+    '<p class="history-practice-feedback" role="status"></p>';
+  stage.append(task);
+  const buttons = [...task.querySelectorAll('[data-history-try]')];
+  const feedback = task.querySelector('[role="status"]');
+  function paint(record) {
+    const selected = item.choices[record.selected];
+    const correct = selected?.correct === true;
+    buttons.forEach((button, index) => {
+      button.setAttribute('aria-pressed', String(index === record.selected));
+      button.disabled = correct;
+    });
+    feedback.textContent = selected ? selected.reply : '';
+    if (selected) feedback.dataset.result = correct ? 'correct' : 'retry';
+    updateHistoryForward(forward, correct);
+  }
+  buttons.forEach((button, index) => button.addEventListener('click', () => {
+    const record = readPracticeAnswer(no, item);
+    noteHistoryAnswer(record, index);
+    writePracticeAnswer(no, item, record);
+    paint(record);
+  }));
+  paint(readPracticeAnswer(no, item));
 }
 
 function addHistorySupplement(article, node) {

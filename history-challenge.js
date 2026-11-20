@@ -1,7 +1,7 @@
-import {createChallengeStore, challengePoints, earnedRewards, CHALLENGE_STORAGE_KEY} from './history-challenge-store.js?v=2';
+import {createChallengeStore, challengePoints, earnedRewards, CHALLENGE_STORAGE_KEY} from './history-challenge-store.js?v=3';
 
 const loadBank = {
-  1: () => import('./history-challenge-prehistory.js?v=1'),
+  1: () => import('./history-challenge-prehistory.js?v=2'),
   2: () => import('./history-challenge-xia-shang-zhou.js?v=1'),
   3: () => import('./history-challenge-qin-han.js?v=1'),
   4: () => import('./history-challenge-three-kingdoms.js?v=1'),
@@ -25,6 +25,8 @@ const paceLabels = {standard: '标准限时', extended: '延长限时', practice
 
 function mountHistoryChallenge(root, unit, {rounds, collection, hook}, storageKey) {
   const store = createChallengeStore(undefined, storageKey);
+  const questionBank = new Map(rounds.flatMap((candidate, index) => candidate.items.map((item, position) =>
+    [item.id, {item, index, position}])));
   let state = store.read();
   let screen = 'hub';
   let roundIndex = 0;
@@ -74,6 +76,10 @@ function mountHistoryChallenge(root, unit, {rounds, collection, hook}, storageKe
   function renderHub() {
     screen = 'hub';
     const points = challengePoints(state);
+    const reviewRound = rounds.findIndex((candidate, index) => {
+      const run = state.runs[runKey(candidate, 'standard')];
+      return complete(index) && run?.index >= candidate.items.length && rowsFor(candidate, run).some(needsReview);
+    });
     const roundsMarkup = rounds.map((candidate, index) => `<li data-round-status="${index}">
       <span class="challenge-number">${index + 1}</span><span>${escape(candidate.title)}</span>
       <small></small></li>`).join('');
@@ -87,9 +93,10 @@ function mountHistoryChallenge(root, unit, {rounds, collection, hook}, storageKe
       <h1 data-focus tabindex="-1">${escape(unit.challenge)}</h1>
       <p class="challenge-lede">${escape(hook)}</p>
       <p>每关 10 题，每题最多得 1 分。本单元每积满 10 分，领一张收藏卡。答错时可以在原题旁看线索，再选一次。</p>
-      <p class="challenge-points"><strong>${points}</strong> 分 · 已完成 ${rounds.filter((_, index) => complete(index)).length} / ${rounds.length} 关</p>
+      <p class="challenge-points"><strong>${points}</strong> 分 · 已做完 ${rounds.filter((_, index) => complete(index)).length} / ${rounds.length} 关</p>
+      ${reviewRound >= 0 ? tag('open-review', `复习第 ${reviewRound + 1} 关的错题`, false, `data-round="${reviewRound}"`) : ''}
       <fieldset class="challenge-modes"><legend>做题节奏</legend>${modeFields}<p>标准限时每题 30 秒，材料题 60 秒。延长限时多一半时间。不限时练习可解锁下一关。已开始的题会保留剩余时间。</p></fieldset>
-      ${tag('start', '开始第 1 关')}
+      ${tag('start', '开始第 1 关', reviewRound >= 0)}
       <p class="challenge-all-done" hidden>这个模式的 ${rounds.length} 关已经做完了。</p>
       ${visited.length ? `<details class="challenge-fold"><summary>回看已做完的关卡</summary>
         <label class="challenge-review-select">选择关卡 <select aria-label="选择关卡">${visited.join('')}</select></label>
@@ -107,7 +114,7 @@ function mountHistoryChallenge(root, unit, {rounds, collection, hook}, storageKe
     root.querySelectorAll('[data-round-status]').forEach(row => {
       const index = Number(row.dataset.roundStatus);
       const run = state.runs[runKey(rounds[index], selectedPace)];
-      row.querySelector('small').textContent = run?.index >= rounds[index].items.length ? '已做完'
+      row.querySelector('small').textContent = run?.index >= rounds[index].items.length ? (rowsFor(rounds[index], run).some(needsReview) ? '做完 · 待复习' : '已做完')
         : run ? '进行中' : unlocked(index) ? '可开始' : '待解锁';
       if (index === target) row.setAttribute('aria-current', 'step');
       else row.removeAttribute('aria-current');
@@ -143,7 +150,7 @@ function mountHistoryChallenge(root, unit, {rounds, collection, hook}, storageKe
     const running = phase === 'run' && run.mode === 'timed' && !run.answers[items()[index]?.id];
     return `<aside class="challenge-progress" aria-label="当前关卡进度">
       <p class="challenge-eyebrow">第 ${roundOrder()} 关</p><h2>${escape(round().title)}</h2>
-      <p>${phase === 'run' ? `第 <strong>${index + 1}</strong> / ${items().length} 题` : phase === 'variant' ? `第 ${index + 1} 题 · 换题验证` : phase === 'review' ? `第 ${index + 1} 题 · 回看` : '关卡完成'}</p>
+      <p>${phase === 'run' ? `第 <strong>${index + 1}</strong> / ${items().length} 题` : phase === 'variant' ? `第 ${index + 1} 题 · 换题验证` : phase === 'repractice' ? `第 ${index + 1} 题 · 复练` : phase === 'review' ? `第 ${index + 1} 题 · 回看` : '本关已做完'}</p>
       <ol class="challenge-markers" aria-label="题目进度">${items().map((item, position) => {
         const answer = run.answers[item.id];
         let status = '还没做到';
@@ -156,6 +163,60 @@ function mountHistoryChallenge(root, unit, {rounds, collection, hook}, storageKe
       <p class="challenge-pace">${paceLabels[pace]}</p>
       <p class="challenge-timer" ${running ? '' : 'hidden'} aria-label="剩余时间" aria-live="off"></p>
     </aside>`;
+  }
+
+  function repracticeQuestion(item, record) {
+    return record.questionId === item.id ? item.variant : questionBank.get(record.questionId)?.item;
+  }
+
+  function selectRepractice(item, draft) {
+    const alreadyUsed = new Set(Object.values(draft.repractices).map(practice => practice.questionId));
+    const topic = [...item.topic];
+    const topicPairs = topic.slice(0, -1).map((character, index) => character + topic[index + 1]);
+    const relevant = [];
+    for (const {item: candidate, index, position} of questionBank.values()) {
+      if (candidate.id === item.id || candidate.lesson !== item.lesson || alreadyUsed.has(candidate.id)) continue;
+      const owner = rounds[index];
+      const alreadySeen = ['standard', 'practice'].some(mode => {
+        const progress = draft.runs[runKey(owner, mode)];
+        return progress && (position <= progress.index || progress.answers[candidate.id]);
+      });
+      if (!alreadySeen) relevant.push([candidate, topicPairs.filter(pair => candidate.topic.includes(pair)).length]);
+    }
+    relevant.sort((first, second) => second[1] - first[1]);
+    return relevant[0]?.[0].id ?? item.id;
+  }
+
+  function openRepractice(index) {
+    const item = items()[index];
+    if (!item || state.variants[item.id]?.passed !== false) return;
+    save(draft => {
+      draft.repractices[item.id] ??= {questionId: selectRepractice(item, draft), first: null, choice: null, passed: false};
+    });
+    renderRepractice(index);
+  }
+
+  function renderRepractice(index) {
+    const item = items()[index];
+    const record = state.repractices[item.id];
+    const question = record && repracticeQuestion(item, record);
+    if (!question) return renderSummary();
+    screen = 'repractice';
+    reviewIndex = index;
+    const fresh = record.questionId !== item.id;
+    const choices = question.options.map((option, value) => `<label class="challenge-choice"><input type="radio" name="challenge-answer" value="${value}"${value === record.choice ? ' checked' : ''}${record.passed ? ' disabled' : ''}><span>${escape(option)}</span></label>`).join('');
+    const feedback = record.choice == null ? '' : `<div id="challenge-feedback" class="challenge-feedback ${record.passed ? 'is-right' : 'is-hint'}">
+      <strong>${record.passed ? '复练答对了。' : '再试一次。'}</strong><p>${escape(record.passed ? question.explanation : question.feedback[record.choice])}</p>
+      ${record.passed ? '' : `<p><b>线索</b> ${escape(question.hint)}</p>`}</div>`;
+    display(`<div class="challenge-layout">${progress(index, 'repractice')}<section class="challenge-task" aria-label="错题复练">
+      <p class="challenge-eyebrow">${fresh ? `同课新题 · 第 ${item.lesson} 课` : '回看已做过的换题'} · 不限时 · ${fresh ? '复练不计分' : '回看不计分'}</p>
+      <h1 id="challenge-question" data-focus tabindex="-1"${feedback ? ' aria-describedby="challenge-feedback"' : ''}>${escape(question.prompt)}</h1>
+      ${question.material ? `<aside class="challenge-material" aria-label="材料"><strong>材料</strong><p>${escape(question.material)}</p></aside>` : ''}
+      ${feedback}
+      <fieldset class="challenge-choices" aria-labelledby="challenge-question"><legend class="challenge-sr">选择一项答案</legend>${choices}</fieldset>
+      <p class="challenge-input-message" role="status" hidden></p><div class="challenge-actions">
+      ${record.passed ? tag('advance', '回到关卡结果') : tag('submit', record.choice == null ? '提交答案' : '核对订正')}
+      </div></section></div>`, '← 回关卡');
   }
 
   function renderQuestion(phase, index) {
@@ -195,35 +256,51 @@ function mountHistoryChallenge(root, unit, {rounds, collection, hook}, storageKe
     if (phase === 'run' && run.mode === 'timed' && !first) startTimer(index);
   }
 
-  function summaryRows() {
-    const run = activeRun();
-    return items().map((item, index) => {
+  function rowsFor(candidate, run) {
+    return candidate.items.map((item, index) => {
       const answer = run.answers[item.id];
       const variant = state.variants[item.id];
+      const repractice = state.repractices[item.id];
       const pending = answer && answer.first !== 'correct' && answer.revision !== 'correct';
       const needsVariant = run.mode === 'timed' && answer && (answer.first !== 'correct' || answer.needsVariant);
       const canVerify = needsVariant && !pending && !variant;
-      const status = pending ? '待订正' : canVerify ? '可换题验证' : needsVariant ? (variant?.passed ? '换题答对' : '换题待复习') : answer ? '首答正确' : '待复习';
-      return {index, item, answer, pending, canVerify, status};
+      const canRepractice = needsVariant && variant?.passed === false && !repractice?.passed;
+      const independent = !pending && (needsVariant ? variant?.passed === true : answer?.first === 'correct');
+      let status = pending ? '原题待订正' : canVerify ?
+        (answer?.revision === 'correct' ? '已订正 · 可换题验证' : '可换题验证') : answer ? '首答正确' : '待复习';
+      if (canRepractice) status = repractice?.choice != null ? '换题待复习 · 复练待订正' : '换题待复习';
+      if (needsVariant && variant?.passed) status = '换题独立答对';
+      if (needsVariant && repractice?.passed) {
+        const practiceQuestion = repracticeQuestion(item, repractice);
+        status = repractice.questionId === item.id ? '已回看订正' :
+          practiceQuestion?.answer === repractice.first ? '同课新题首答正确' : '同课新题已订正';
+      }
+      if (answer?.revision === 'correct' && !needsVariant) status = '原题已订正';
+      return {index, item, answer, pending, canVerify, canRepractice, independent, status};
     });
   }
+
+  const needsReview = row => row.pending || row.canVerify || row.canRepractice;
 
   function renderSummary() {
     screen = 'summary';
     const run = activeRun();
-    const rows = summaryRows();
+    const rows = rowsFor(round(), run);
     const firstRight = rows.filter(row => row.answer?.first === 'correct').length;
     const pending = rows.filter(row => row.pending).length;
     const needsCheck = rows.filter(row => row.canVerify).length;
-    const next = rows.find(row => row.pending) || rows.find(row => row.canVerify);
+    const needsRepractice = rows.filter(row => row.canRepractice).length;
+    const independent = rows.filter(row => row.independent).length;
+    const next = rows.find(row => row.pending) || rows.find(row => row.canVerify) || rows.find(row => row.canRepractice);
     const results = rows.map(({index, item, answer, status}) => `<li><span>${index + 1}. ${escape(item.topic)}</span><span>${answer?.first === 'timeout' ? '超时 · ' : ''}${status}</span></li>`).join('');
     const continueButton = roundIndex < rounds.length - 1
       ? tag('next-round', `进入第 ${roundIndex + 2} 关`, Boolean(next))
       : tag('hub', '回闯关首页', Boolean(next));
-    const reviewButton = next ? tag(next.pending ? 'review' : 'variant', next.pending ? `订正第 ${next.index + 1} 题` : `试做第 ${next.index + 1} 题的换题`, false, `data-index="${next.index}"`) : '';
+    const reviewButton = next ? tag(next.pending ? 'review' : next.canVerify ? 'variant' : 'repractice',
+      next.pending ? `订正第 ${next.index + 1} 题` : next.canVerify ? `试做第 ${next.index + 1} 题的换题` : `复练第 ${next.index + 1} 题`, false, `data-index="${next.index}"`) : '';
     display(`<div class="challenge-layout">${progress(-1, 'summary')}<section class="challenge-task">
       <h1 data-focus tabindex="-1">第 ${roundIndex + 1} 关做完了</h1>
-      <p class="challenge-lede">${firstRight} / ${items().length} 题首答正确${pending ? ` · ${pending} 题待订正` : ''}${needsCheck ? ` · ${needsCheck} 题可换题验证` : ''}</p>
+      <p class="challenge-lede">${firstRight} / ${items().length} 题首答正确 · 独立答对 ${independent} 题${pending ? ` · ${pending} 题待订正` : ''}${needsCheck ? ` · ${needsCheck} 题可换题验证` : ''}${needsRepractice ? ` · ${needsRepractice} 题待复练` : ''}</p>
       <p>${run.mode === 'timed' ? `单元累计 ${challengePoints(state)} 分，已收藏 ${earnedRewards(state)} 张历史卡。` : '这是不限时练习，做题记录已和限时闯关分开保存。'}</p>
       <div class="challenge-actions">${reviewButton}${continueButton}</div>
       <details class="challenge-fold"><summary>查看本关 ${items().length} 题记录</summary><ol class="challenge-review-list">${results}</ol></details>
@@ -288,7 +365,8 @@ function mountHistoryChallenge(root, unit, {rounds, collection, hook}, storageKe
       const answer = expired || choice === null ? null : choice;
       const first = answer === null ? 'timeout' : answer === item.answer ? 'correct' : 'wrong';
       const practised = draft.runs[runKey(round(), 'practice')]?.answers[item.id];
-      run.answers[item.id] = {first, choice: answer, revision: null, needsVariant: run.mode === 'timed' && Boolean(practised)};
+      const previewed = Object.values(draft.repractices).some(practice => practice.questionId === item.id);
+      run.answers[item.id] = {first, choice: answer, revision: null, needsVariant: run.mode === 'timed' && Boolean(practised || previewed)};
       run.remainingMs = null;
     });
     if (!activeRun()) renderHub();
@@ -312,6 +390,19 @@ function mountHistoryChallenge(root, unit, {rounds, collection, hook}, storageKe
     const index = reviewIndex;
     const item = items()[index];
     const chosen = Number(input.value);
+    if (screen === 'repractice') {
+      save(draft => {
+        const record = draft.repractices[item.id];
+        const question = record && repracticeQuestion(item, record);
+        if (!question || record.passed) return;
+        record.first ??= chosen;
+        record.choice = chosen;
+        record.passed = chosen === question.answer;
+      });
+      if (activeRun()) renderRepractice(index);
+      else renderHub();
+      return;
+    }
     if (screen === 'variant') {
       save(draft => {
         const original = draft.runs[key()]?.answers[item.id];
@@ -370,6 +461,9 @@ function mountHistoryChallenge(root, unit, {rounds, collection, hook}, storageKe
       start(Number(button.dataset.round), root.querySelector('[name="challenge-pace"]:checked').value);
     } else if (action === 'next-round') {
       start(roundIndex + 1, pace);
+    } else if (action === 'open-review') {
+      refresh();
+      start(Number(button.dataset.round), 'standard');
     } else if (action === 'open-summary') {
       const selected = root.querySelector('.challenge-review-select select').value.split(':');
       start(Number(selected[0]), selected[1]);
@@ -379,6 +473,9 @@ function mountHistoryChallenge(root, unit, {rounds, collection, hook}, storageKe
       advance();
     } else if (action === 'review' || action === 'variant') {
       renderQuestion(action, Number(button.dataset.index));
+    } else if (action === 'repractice') {
+      refresh();
+      openRepractice(Number(button.dataset.index));
     }
   }
 
@@ -407,7 +504,9 @@ function mountHistoryChallenge(root, unit, {rounds, collection, hook}, storageKe
         const run = runKey(candidate, mode);
         return previousState.runs[run]?.index !== state.runs[run]?.index;
       }));
-      if (progressChanged || challengePoints(previousState) !== challengePoints(state)) {
+      const reviewsChanged = JSON.stringify(previousState.repractices) !== JSON.stringify(state.repractices)
+        || JSON.stringify(previousState.variants) !== JSON.stringify(state.variants);
+      if (progressChanged || reviewsChanged || challengePoints(previousState) !== challengePoints(state)) {
         pace = root.querySelector('[name="challenge-pace"]:checked')?.value ?? pace;
         renderHub();
       }
@@ -417,6 +516,15 @@ function mountHistoryChallenge(root, unit, {rounds, collection, hook}, storageKe
     if (!run) {
       pauseTimer(false);
       renderHub();
+      return;
+    }
+    if (screen === 'repractice') {
+      const slot = items()[reviewIndex].id;
+      const former = previousState.repractices[slot];
+      const latest = state.repractices[slot];
+      if (former?.choice !== latest?.choice || former?.passed !== latest?.passed || former?.questionId !== latest?.questionId) {
+        renderRepractice(reviewIndex);
+      }
       return;
     }
     if (screen !== 'run') return;

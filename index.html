@@ -1020,7 +1020,7 @@ button:focus:not(:focus-visible){outline:none}
   .hc-grid{grid-template-columns:1fr}
 }
 </style>
-<link rel="stylesheet" href="./history-lesson-flow.css?v=6">
+<link rel="stylesheet" href="./history-lesson-flow.css?v=7">
 <link rel="stylesheet" href="./parent-settings.css?v=1">
 <link rel="stylesheet" href="./history-challenge.css?v=3">
 </head>
@@ -1525,8 +1525,8 @@ button:focus:not(:focus-visible){outline:none}
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg>
 </button>
 
-<script src="./history-transfer-practice.js?v=1"></script>
-<script src="./history-lesson-flow.js?v=5"></script>
+<script src="./history-transfer-practice.js?v=2"></script>
+<script src="./history-lesson-flow.js?v=6"></script>
 <script src="./history-companion-flow.js?v=3"></script>
 <script id="historyPracticeData" src="./history-lesson-practice.js?v=2" onerror="this.dataset.failed='true'"></script>
 <script>
@@ -3205,7 +3205,7 @@ let G7B_NODES=[
   points:['朱元璋废除丞相，把权力分给六部，六部直接对皇帝负责，皇权大大加强','他设立锦衣卫，由皇帝直接指挥，监视官民，可随意侦查、逮捕','科举考试题目出自“四书五经”，答卷用八股文格式，束缚读书人的思想','这枚是锦衣卫的木印，中国国家博物馆藏，是当时的实物']},
  {id:43,year:1405,yearLabel:'1405年',type:'event',title:'郑和下西洋',
   story:'这支船队七次远航，最多时一次有两百多艘船，到过三十多个国家。',
-  points:['1405到1433年，郑和奉明成祖之命七次下“西洋”（今东南亚到印度洋一带）','船队规模大，最多时有船200多艘，最少一次也有60余艘，最远到达红海沿岸和非洲东海岸','带去丝绸、瓷器，换回香料、珍宝，也让沿途各国见识到明朝的强盛','这是后世绘制的郑和船队木版画，非当时写真']},
+  points:['1405—1433年，郑和率明朝船队七下西洋。明成祖派出首次远航，末次远航由明宣宗下令','船队规模大，最多时有船200多艘，最少一次也有60余艘，最远到达红海沿岸和非洲东海岸','带去丝绸、瓷器，换回香料、珍宝，也让沿途各国见识到明朝的强盛','这是后世绘制的郑和船队木版画，非当时写真'],reference:'统编历史七下第92–93页；末次远航另参照中国航海博物馆资料'},
  {id:44,year:1420,yearLabel:'1420年',type:'site',title:'北京城与明长城',
   story:'明朝一边修起宏伟的都城，一边把长城加高加固，留下今天看到的样子。',
   points:['1420年前后北京城主要营建告成，宫城（紫禁城）布局严整，是古代城市建筑的杰作','为防御北方蒙古势力，明朝跨多年、多次修筑长城，今天看到的长城主要是明长城','明长城东起鸭绿江边、西至嘉峪关，绵延万里，工程浩大','这是八达岭明长城的实景，长城是遗址，不是想象出来的']},
@@ -3271,7 +3271,23 @@ let G7B_NODES=[
   points:['清代曹雪芹创作《红楼梦》，以贾、史、王、薛四大家族兴衰为主线，是古典小说的巅峰','它与《三国演义》《水浒传》《西游记》并称四大名著','乾隆时四大徽班进京，融合汉调等形成京剧，成为最有代表性的戏曲剧种','这是清代孙温绘《红楼梦》图册，是当时的画作']},
  {id:65,year:1800,yearLabel:'历代传承',type:'event',title:'我国的传统节日',
   story:'春节、清明、端午、中秋这些节日，一代代传下来，里头藏着中国人的讲究。',
-  points:['传统节日起源于历代的祭祀、农事和纪念，时间久了形成固定习俗','春节贴春联、吃团圆饭，端午赛龙舟、吃粽子，中秋赏月、吃月饼，各有来历','节日里有家的团圆、对先人的纪念，也寄托着人们对生活的愿望，至今仍在传承','这是清代杨柳青年画《新年多吉庆 合家乐安然》，描绘过大年的场景']}
+  points:['传统节日起源于历代的祭祀、农事和纪念，时间久了形成固定习俗','春节贴春联、吃团圆饭，端午赛龙舟、吃粽子，中秋赏月、吃月饼，各有来历','节日里有家的团圆、对先人的纪念，也寄托着人们对生活的愿望，至今仍在传承','这是清代杨柳青年画《新年多吉庆 合家乐安然》，描绘过大年的场景']},
+ {id:66,year:1069,yearLabel:'1069年',type:'event',title:'王安石变法',
+  story:'北宋的财力、军力遇到难题。宋神宗任用王安石，希望用新办法富国强兵。',
+  points:['青苗法由官府在青黄不接时向农民供给谷物或贷款，收获后偿还，意在限制高利贷盘剥并增加政府收入','募役法征役钱雇人服役，原先有免役特权的人也需缴纳。方田均税法重新核实田地，按土地多少和好坏征收赋税','保甲法组织农村居民，部分农户出保丁，农忙种田、农闲练兵，目标之一是增强军力','新法增加了政府收入，也推动水利建设。执行中出现负担和争议，宋神宗死后新法大多被废除'],
+  reference:'统编历史七下第46–48页 · 教材内容整理',newMaterial:true,
+  check:['官府在缺粮时借谷、收获后收回。它先要解决哪项困难？',0,[
+    ['农户周转困难，只能向高利贷者借粮','青黄不接时提供谷物或贷款，能减少农户对高利贷的依赖。'],
+    ['官府没有核清各户的耕地面积','清查田地以核定赋税是方田均税法的重点。'],
+    ['农村没有编组承担训练的保丁','保丁和乡里编组是保甲法处理的问题。']]]},
+ {id:67,year:1592,yearLabel:'明万历年间',type:'event',title:'明朝出兵援朝',
+  story:'日本军队入侵朝鲜后，朝鲜向明朝求援。明朝为何参战？胜利又有哪些代价？',
+  points:['万历年间，丰臣秀吉发动侵略朝鲜的战争。明朝应朝鲜请求先后两次出兵援助','明朝军民与朝鲜军民共同抗击日军，两次援朝战争均取得胜利','这场战争打击了日本的政治、军事势力，明朝也为出兵付出兵力和财力代价'],
+  reference:'统编历史七下第95页 · 教材内容整理',newMaterial:true,
+  check:['这场战争与戚继光在东南沿海抗倭主要有什么不同？',1,[
+    ['两件事都以保卫朝鲜为直接任务','戚继光的主要任务在中国东南沿海。'],
+    ['明朝在朝鲜请求下赴朝参战','出兵缘由和作战空间都不同。但两件事均涉及抗击日本方面发动的侵扰。'],
+    ['两件事的直接目标都是开放海上贸易','这两件事首先应区分发生的地点和直接军事目标。']]]}
 ];
 let G7B_IMG_META={
  1:{img:'assets/g7b01.jpg',name:'隋文帝杨坚像',era:'后世绘制',source:'古代人物画像，非当时写真',kind:'人物像·古画（后世）'},
@@ -3366,7 +3382,7 @@ let G7B_LESSONS=[
  {no:5,unit:1,title:'隋唐时期的民族交往与交融',nodes:[7,8]},
  {no:6,unit:1,title:'隋唐时期的中外文化交流',nodes:[5,6,11]},
  {no:7,unit:1,title:'隋唐时期的科技与文化',nodes:[2,13,14]},
- {no:8,unit:2,title:'北宋的政治',nodes:[17,18]},
+ {no:8,unit:2,title:'北宋的政治',nodes:[17,18,65]},
  {no:9,unit:2,title:'辽、西夏与北宋并立',nodes:[16,19,21]},
  {no:10,unit:2,title:'金与南宋对峙',nodes:[27,29,30]},
  {no:11,unit:2,title:'元朝的建立与统一',nodes:[32,33,35,36]},
@@ -3374,7 +3390,7 @@ let G7B_LESSONS=[
  {no:13,unit:2,title:'辽宋夏金元时期的对外交流',nodes:[34,37]},
  {no:14,unit:2,title:'辽宋夏金元时期的科技与文化',themeOrder:true,nodes:[22,26,39,24,28,25,38]},
  {no:15,unit:3,title:'明朝的统治',nodes:[40,41,44]},
- {no:16,unit:3,title:'明朝的对外关系',nodes:[42,46,47]},
+ {no:16,unit:3,title:'明朝的对外关系',nodes:[42,46,47,66]},
  {no:17,unit:3,title:'明朝的灭亡和清朝的建立',nodes:[50,51,53,54]},
  {no:18,unit:3,title:'清朝的边疆治理',nodes:[55,56,58,61,62]},
  {no:19,unit:3,title:'清朝君主专制的强化',nodes:[57,59,60]},
@@ -3547,7 +3563,15 @@ let G8A_NODES=[
   points:['1949年4月，国民党拒绝在和平协定上签字，人民解放军发起渡江战役，百万雄师分三路强渡长江','4月23日南京解放，解放军占领总统府，国民党22年的反动统治宣告覆灭','这是油画《占领总统府》，战士在屋顶升起红旗','想一想，为什么南京解放标志着一个政权的终结']},
  {id:51,year:1950,yearLabel:'近现代传承',type:'event',title:'探寻红色文化的历史基因',
   story:'从嘉兴那条小船到全国解放，一路留下的旧址、精神和信仰，今天还在传。',
-  points:['这是一节活动课，要去寻访身边的红色文化：革命旧址、纪念馆、烈士故事都算','延安、井冈山、遵义、西柏坡这些地方，保存着中国共产党一路走来的历史记忆','红色文化里有艰苦奋斗、不怕牺牲、为人民谋利益的精神，这就是它的“基因”','这是延安革命旧址，也可以先从家乡的一处红色纪念地开始了解']}
+  points:['这是一节活动课，要去寻访身边的红色文化：革命旧址、纪念馆、烈士故事都算','延安、井冈山、遵义、西柏坡这些地方，保存着中国共产党一路走来的历史记忆','红色文化里有艰苦奋斗、不怕牺牲、为人民谋利益的精神，这就是它的“基因”','这是延安革命旧址，也可以先从家乡的一处红色纪念地开始了解']},
+ {id:52,year:1912,yearLabel:'1912年3月',type:'event',title:'《中华民国临时约法》',
+  story:'清帝退位后，共和国还要确定权力从哪里来、政府怎样行使权力、人民拥有哪些权利。',
+  points:['1912年3月，临时参议院制定的《中华民国临时约法》由孙中山以临时大总统名义颁布','约法规定国家主权属于全体国民，国民一律平等，并规定言论、出版、选举等自由和权利','参议院行使立法权，临时大总统与国务员依规定行使行政权，法院独立行使司法权','约法肯定民主共和和权力分工的原则，是辛亥革命的重要成果；在当时的历史条件下，实际约束力有限'],
+  reference:'统编历史八上第54–55页 · 教材内容整理',newMaterial:true,
+  check:['哪项材料最能说明约法对国家权力来源的规定？',2,[
+    ['颁布日期是1912年3月','日期能定位文献何时颁布，需要另找规定主权来源的条文。'],
+    ['法院独立行使司法权','这是权力具体怎样分工，要再找主权由谁享有。'],
+    ['国家主权属于全体国民','这一条直接规定国家权力的来源。']]]}
 ];
 let G8A_IMG_META={
  1:{img:'assets/g8a01.jpg',name:'虎门销烟图',era:'清代',source:'清代古画，描绘销烟场面，Wikimedia',kind:'历史画·古画'},
@@ -3635,7 +3659,7 @@ let G8A_LESSONS=[
  {no:6,unit:2,title:'戊戌变法',nodes:[16]},
  {no:7,unit:2,title:'义和团运动和八国联军侵华',nodes:[17,18]},
  {no:8,unit:3,title:'中国同盟会',nodes:[13,19]},
- {no:9,unit:3,title:'辛亥革命',nodes:[20,21,22]},
+ {no:9,unit:3,title:'辛亥革命',nodes:[20,21,22,51]},
  {no:10,unit:3,title:'帝制复辟与军阀割据',nodes:[23,25]},
  {no:11,unit:4,title:'五四运动',nodes:[24,26]},
  {no:12,unit:4,title:'中国共产党诞生',nodes:[27,28]},
@@ -3833,7 +3857,15 @@ let G8B_NODES=[
   points:['高铁、移动支付、网购、共享单车，在中国用得最多、最方便，被叫作“新四大发明”','不过这几样最早的技术和想法不是中国发明的，中国是应用规模领先；“新四大发明”是 2017 年外国青年评选出来的流行说法，不是真的四大发明','建成世界上规模最大的社会保障和医疗卫生体系，民生获得感越来越强','交通四通八达，城乡面貌焕然一新','这是活动课，照片是手机移动支付过闸机，看看身边还有哪些新变化']},
  {id:57,year:1992,yearLabel:'1992年',type:'event',title:'“九二共识”',
   story:'两岸两个民间机构坐下来谈，用各自口头表达的办法，把一个中国这个底线说清楚了。',
-  points:['1992年，海峡两岸关系协会与台湾海峡交流基金会开始事务性商谈','双方达成各自以口头方式表述“海峡两岸均坚持一个中国原则”的共识，人称“九二共识”','核心要义是海峡两岸同属一个中国，共同努力谋求国家统一','后来的两岸交流和领导人会面，都建立在这个共识之上']}
+  points:['1992年，海峡两岸关系协会与台湾海峡交流基金会开始事务性商谈','双方达成各自以口头方式表述“海峡两岸均坚持一个中国原则”的共识，人称“九二共识”','核心要义是海峡两岸同属一个中国，共同努力谋求国家统一','后来的两岸交流和领导人会面，都建立在这个共识之上']},
+ {id:58,year:1949,yearLabel:'新中国成立初期至20世纪70年代',type:'event',title:'陆海空军与导弹部队的建设',
+  story:'新中国成立之初，人民解放军以陆军为主。要保卫陆地、海疆与领空，还需要发展哪些力量？',
+  points:['陆军逐步发展步兵、炮兵、装甲兵、工程兵和通信兵等多兵种，装备更新','1949年4月华东军区海军成立，随后组建东海、南海和北海舰队，并逐步发展自行研制的舰艇','人民空军在陆军基础上建立，抗美援朝时期边打边建，逐步形成多机种的作战力量','1966年第二炮兵部队正式组建，承担战略威慑等任务。部队建立和相关装备研制有不同的时间节点'],
+  reference:'统编历史八下第45–47页 · 教材内容整理',newMaterial:true,
+  check:['要说明新中国建立了专门保卫海疆的力量，哪条记录最直接？',1,[
+    ['陆军组建工程兵和通信兵等兵种','这条说明陆军由多兵种构成，未直接说明海上力量。'],
+    ['华东军区海军成立，后来又组建多支舰队','海军和舰队的建制，与逐步加强海疆防卫直接相关。'],
+    ['人民空军有歼击、侦察和运输等机种','这条说明空中力量如何发展，和海军建制是不同方面。']]]}
 ];
 let G8B_IMG_META={
  1:{img:'assets/g8b01.jpg',name:'第一届政协会议会场',era:'1949年',source:'当时历史照片，代表举手表决',kind:'历史照片·当时'},
@@ -3925,7 +3957,7 @@ let G8B_LESSONS=[
  {no:4,unit:1,title:'独立自主的和平外交',nodes:[6,8]},
  {no:5,unit:2,title:'艰辛探索与曲折发展',nodes:[9,11,14]},
  {no:6,unit:2,title:'社会主义建设的巨大成就和先锋模范',nodes:[12,13,18]},
- {no:7,unit:2,title:'国防现代化起步和外交工作新突破',nodes:[15,16,17]},
+ {no:7,unit:2,title:'国防现代化起步和外交工作新突破',nodes:[15,16,17,57]},
  {no:8,unit:3,title:'伟大的历史转折',nodes:[19,21]},
  {no:9,unit:3,title:'改革开放的起步',nodes:[20,22]},
  {no:10,unit:3,title:'改革开放和社会主义现代化建设的全面展开',nodes:[23,24]},
@@ -4950,8 +4982,8 @@ const firstLessonPractice=[
     kind:'判断题',
     title:'遗址发现炭屑，足以断定元谋人会用火。这句话对吗？',
     card:'元谋人',
-    evidence:'<p><b>出土记录</b> 遗址发现过炭屑和几块可能烧过的骨头。</p>'+
-      '<p><b>一种解释</b> 雷电等引发的自然野火也可能留下这些痕迹。</p>',
+    evidenceOptions:['雷电引发的自然野火也可能留下炭屑。','遗址发现了元谋人的牙齿化石。','考古记录还列出遗址里的石器。'],
+    evidenceAnswer:0,
     choices:[
       {text:'对',reply:'炭屑可以是用火的线索。雷电引发的野火也会留下炭屑，只凭这一条还不足以确定火是人用的。'},
       {text:'错',correct:true,reply:'炭屑是出土记录。它来自人使用的火还是自然野火，需要更多证据。'},
@@ -4963,7 +4995,8 @@ const firstLessonPractice=[
     kind:'选择题',
     title:'换看山顶洞人的材料，哪句话说得有根据？',
     card:'山顶洞人',
-    evidence:'<p><b>课内材料</b> 山顶洞人掌握磨光和钻孔技术，<mark>可能</mark>已经知道人工取火，会用骨针缝衣服。</p>',
+    evidenceOptions:['山顶洞人会用骨针缝制衣服。','山顶洞人可能已经知道人工取火。','山顶洞人掌握磨光和钻孔技术。'],
+    evidenceAnswer:1,
     choices:[
       {text:'可能已经知道人工取火',correct:true,reply:'材料保留了“可能”这个词。它指出一种有线索支持的解释，仍需进一步考证。'},
       {text:'已经证实会人工取火',reply:'你把“可能”说成了“已经证实”。请再看材料写取火的那一句，找出它保留的余地。'},
@@ -4984,7 +5017,7 @@ function lessonPractice(no){
   const lesson=lessonByNo(no);
   const rows=typeof HISTORY_LESSON_PRACTICE==='undefined'?null:HISTORY_LESSON_PRACTICE[currentBookId]?.[no];
   if(!lesson||!rows)return [];
-  const practice=rows.map(([cardIndex,pointIndex,title,answer,feedback])=>{
+  const practice=rows.map(([cardIndex,pointIndex,title,answer,feedback],index)=>{
     const node=lesson.nodes[cardIndex];
     const card=NODES[node];
     const passage=pointIndex===-1?card?.story:card?.points[pointIndex];
@@ -4994,10 +5027,21 @@ function lessonPractice(no){
       ['对',feedback],['错',feedback],
     ]:feedback;
     const answerIndex=judgment?(answer?0:1):answer;
+    const draftOptions=[passage,...card.points.filter((text,i)=>i!==pointIndex)]
+      .filter((text,i,list)=>list.indexOf(text)===i);
+    const alternatives=currentBookId==='g7a'&&no===12&&index===0 ? [
+      '主父偃建议让诸侯王把部分封地分给其他儿子。',
+      '另受封的王子各有封号，宗室名簿也分别登记他们。',
+    ] : draftOptions.slice(1).filter(text=>!/^这是|^照片|^先猜|^想一想/.test(text));
+    const evidenceOptions=[passage,...(alternatives.length?alternatives:draftOptions.slice(1)).slice(0,2)];
+    const evidenceAnswer=(no+index)%evidenceOptions.length;
+    evidenceOptions.splice(evidenceAnswer,0,evidenceOptions.shift());
     return {
       id:judgment?'judgment':'choice',
       node,card:card.title,kind:judgment?'判断题':'选择题',title,
-      evidence:'<p><b>卡片材料</b> '+practiceText(passage)+'</p>',
+      evidenceOptions,evidenceAnswer,
+      evidenceHint:currentBookId==='g7a'&&no===12&&index===0
+        ? '分地这件事和谁管侯国是两件事。找出政务归谁管的句子。' : '',
       choices:options.map(([text,reply],choice)=>({text,reply,correct:choice===answerIndex})),
     };
   }).filter(Boolean);
@@ -5020,11 +5064,12 @@ function readPracticeAnswer(no,item){
         proof:validProof(record.proof)?record.proof:null,
         firstProof:validProof(record.firstProof)?record.firstProof:null,
         awaitingProof:record.awaitingProof===true,
-        evidenceMarked:record.evidenceMarked===true,
+        evidenceChoice:Number.isInteger(record.evidenceChoice)&&item.evidenceOptions?.[record.evidenceChoice]
+          ? record.evidenceChoice : null,
       };
     }
   }catch(e){}
-  return {first:null,selected:null,checkedBeforeAnswer:false,firstMode:null,proof:null,firstProof:null,awaitingProof:false,evidenceMarked:false};
+  return {first:null,selected:null,checkedBeforeAnswer:false,firstMode:null,proof:null,firstProof:null,awaitingProof:false,evidenceChoice:null};
 }
 function writePracticeAnswer(no,item,record){
   const key=practiceKey(no)+item.id;
@@ -5065,83 +5110,78 @@ function historyLessonCheckSummary(no,practices=lessonPractice(no)){
   const coreVerified=core.length===2&&core.every(value=>value!=='unanswered'&&value!=='retry');
   return {core,state,retry,coreVerified};
 }
-function historyEvidenceTask(evidence){
-  return evidence+'<button type="button" class="history-evidence-mark" data-mark-history-evidence aria-pressed="false">标记这条线索</button>';
-}
-function bindHistoryEvidence(root,record,mark){
-  const button=root.querySelector('[data-mark-history-evidence]');
-  button.setAttribute('aria-pressed',String(record.evidenceMarked));
-  button.textContent=record.evidenceMarked?'已标记线索':'标记这条线索';
-  button.onclick=()=>{
-    const updated=mark();
-    button.setAttribute('aria-pressed',String(updated.evidenceMarked));
-    button.textContent=updated.evidenceMarked?'已标记线索':'标记这条线索';
-  };
-}
 function renderHistoryPractice(no,item,index){
   historyPractice.hidden=false;
   const heading=index===0?'核对开场的判断':'把同样的办法再用一次';
-  const preview=index===0?historyPreview.choices[readPracticeAnswer(no,historyPreview).selected]:null;
+  const previewIndex=index===0?readPracticeAnswer(no,historyPreview).selected:null;
+  const preview=currentBookId==='g7a'&&no===12?empowermentPreview[previewIndex]:historyPreview.choices[previewIndex]?.text;
   historyPractice.innerHTML='<h3 id="historyPracticeTitle" data-study-heading tabindex="-1">'+heading+'</h3>'+
     '<p class="history-practice-step">第 '+(index+1)+' / 2 题 · '+item.kind+'</p>'+
-    (preview?'<p class="history-instruction">开场你选了「'+practiceText(preview.text)+'」。现在根据史料核对。</p>':'')+
+    (preview?'<p class="history-instruction">开场你选了「'+practiceText(preview)+'」。现在根据材料核对。</p>':'')+
     '<div class="history-practice-data"><fieldset><legend>'+practiceText(item.title)+'</legend><div class="history-practice-choices'+(item.kind==='判断题'?' is-judgment':'')+'">'+
     item.choices.map((choice,i)=>'<button type="button" data-practice-choice="'+i+'" aria-pressed="false">'+practiceText(choice.text)+'</button>').join('')+
     '</div></fieldset><p class="history-practice-feedback" role="status" aria-atomic="true"></p></div>'+
-    '<button type="button" class="history-secondary" data-practice-evidence aria-expanded="false" aria-controls="historyQuestionMaterial">看这题的史料</button>'+
-    '<section class="history-question-material" id="historyQuestionMaterial" aria-label="这题的史料" hidden><h4>'+practiceText(item.card)+'</h4>'+historyEvidenceTask(item.evidence)+'</section>'+
-    '<p class="history-instruction" data-practice-retry hidden>先标记想核对的线索，再回到原题重选。</p>'+
-    '<details class="history-explanation" data-practice-explanation hidden><summary>看完整解释</summary><p></p></details>';
+    '<button type="button" class="history-secondary" data-practice-evidence aria-expanded="false" aria-controls="historyQuestionMaterial">看本题材料</button>'+
+    '<section class="history-question-material" id="historyQuestionMaterial" aria-label="这题的材料" hidden><h4>'+practiceText(item.card)+'</h4>'+
+    '<p class="history-attribution">根据本课内容整理</p><fieldset><legend>哪条线索最直接？</legend><div class="history-practice-choices">'+
+    item.evidenceOptions.map((text,i)=>'<button type="button" data-history-evidence-choice="'+i+'" aria-pressed="false">'+practiceText(text)+'</button>').join('')+
+    '</div></fieldset><p class="history-instruction" data-practice-retry role="status" hidden></p></section>';
   const practiceData=historyPractice.querySelector('.history-practice-data');
   const feedback=historyPractice.querySelector('.history-practice-feedback');
   const options=[...historyPractice.querySelectorAll('[data-practice-choice]')];
   const opener=historyPractice.querySelector('[data-practice-evidence]');
   const material=historyPractice.querySelector('#historyQuestionMaterial');
+  const evidenceOptions=[...material.querySelectorAll('[data-history-evidence-choice]')];
   const retry=historyPractice.querySelector('[data-practice-retry]');
-  const explanation=historyPractice.querySelector('[data-practice-explanation]');
   function showMaterial(show){
     material.hidden=!show;
     opener.setAttribute('aria-expanded',String(show));
-    opener.textContent=show?'收起这题的史料':'看这题的史料';
-    retry.hidden=!show||practiceData.dataset.result!=='retry';
+    opener.textContent=show?'收起本题材料':'看本题材料';
+    retry.hidden=!show;
   }
   function paint(record){
     const choice=item.choices[record.selected];
+    const evidenceFound=record.evidenceChoice===item.evidenceAnswer;
     options.forEach((button,i)=>{
       button.setAttribute('aria-pressed',String(i===record.selected));
-      button.disabled=Boolean(choice&&!choice.correct&&!record.evidenceMarked);
+      button.disabled=Boolean(choice&&!choice.correct&&!evidenceFound);
     });
-    bindHistoryEvidence(material,record,()=>{
-      const latest=readPracticeAnswer(no,item);
-      latest.evidenceMarked=true;
-      writePracticeAnswer(no,item,latest);
-      retry.textContent='线索已标记。回到原题，比较它和你的选项。';
-      options.forEach(button=>{button.disabled=false;});
-      return latest;
+    evidenceOptions.forEach((button,i)=>{
+      button.setAttribute('aria-pressed',String(i===record.evidenceChoice));
+      button.disabled=Boolean(choice?.correct||evidenceFound&&choice);
     });
+    retry.textContent=evidenceFound?'已找到直接线索。回到原题，比较它和你的选项。':
+      record.evidenceChoice==null?'先找一条能直接核对题目说法的记录。':
+      (item.evidenceHint||'这句话交代了相关背景。再找一条能直接核对题目说法的记录。');
     if(!choice)return;
     const result=choice.correct?'correct':'retry';
     practiceData.dataset.result=result;
     feedback.dataset.result=result;
     const state=historyCheckState(no,item);
     feedback.textContent=choice.correct?historyCheckLabels[state]+'。'+choice.reply
-      :'再核对一次。先在展开的材料中标记线索，想想你的选项能不能解释它。';
-    explanation.hidden=choice.correct;
-    explanation.open=false;
-    explanation.querySelector('p').textContent=choice.correct?'':choice.reply;
-    if(record.evidenceMarked)retry.textContent='线索已标记。回到原题，比较它和你的选项。';
+      :'再核对一次。'+choice.reply;
     showMaterial(!choice.correct||!material.hidden);
   }
   paint(readPracticeAnswer(no,item));
+  evidenceOptions.forEach((button,i)=>button.addEventListener('click',()=>{
+    const record=readPracticeAnswer(no,item);
+    if(record.first===null)record.checkedBeforeAnswer=true;
+    record.evidenceChoice=i;
+    writePracticeAnswer(no,item,record);
+    paint(record);
+    if(i===item.evidenceAnswer&&record.selected!=null&&!item.choices[record.selected]?.correct){
+      options[record.selected]?.focus({preventScroll:true});
+    }
+  }));
   options.forEach((button,i)=>button.addEventListener('click',()=>{
     const record=readPracticeAnswer(no,item);
     noteHistoryAnswer(record,i);
-    if(!item.choices[i].correct)record.evidenceMarked=false;
+    if(!item.choices[i].correct)record.evidenceChoice=null;
     writePracticeAnswer(no,item,record);
     paint(record);
     const next=lessonFoot.querySelector('[data-study-next]');
     updateHistoryForward(next,item.choices[i].correct);
-    if(!item.choices[i].correct)material.querySelector('[data-mark-history-evidence]').focus({preventScroll:true});
+    if(!item.choices[i].correct)evidenceOptions[0]?.focus({preventScroll:true});
     feedback.scrollIntoView({block:'nearest',behavior:'instant'});
   }));
   opener.addEventListener('click',()=>{
@@ -5426,7 +5466,7 @@ function openHistoryChallenge(unit){
   historyChallengeView.dataset.unit=unit.no;
   historyChallengeView.innerHTML='<a class="challenge-back" href="#/book/g7a">← 本册目录</a><p role="status">正在准备'+unit.challenge+'…</p>';
   const route=location.hash;
-  import('./history-challenge.js?v=3')
+  import('./history-challenge.js?v=4')
     .then(({prepareHistoryChallenge})=>prepareHistoryChallenge(unit))
     .then(mount=>{
       if(location.hash===route&&!historyChallengeView.hidden&&!closeHistoryChallenge){

@@ -1,7 +1,7 @@
 export const CHALLENGE_STORAGE_KEY = 'zg_challenge_v1';
 
 function freshState() {
-  return {version: 1, runs: {}, variants: {}};
+  return {version: 1, runs: {}, variants: {}, repractices: {}};
 }
 
 function record(value) {
@@ -31,6 +31,12 @@ function normalizeState(value) {
     } : null),
     variants: entriesOf(data.variants, variant => typeof variant.passed === 'boolean' &&
       Number.isSafeInteger(variant.choice) && variant.choice >= 0 ? {...variant} : null),
+    repractices: entriesOf(data.repractices, practice => typeof practice.questionId === 'string' ? {
+      ...practice,
+      first: Number.isSafeInteger(practice.first) && practice.first >= 0 ? practice.first : null,
+      choice: Number.isSafeInteger(practice.choice) && practice.choice >= 0 ? practice.choice : null,
+      passed: practice.passed === true,
+    } : null),
   };
 }
 
@@ -70,7 +76,20 @@ function keepProgress(primary, other) {
   for (const [slot, variant] of Object.entries(other.variants)) {
     variants[slot] = Object.hasOwn(variants, slot) ? keepEarlier(variants[slot], variant) : variant;
   }
-  return {...primary, runs, variants};
+  const repractices = {...primary.repractices};
+  for (const [slot, previous] of Object.entries(other.repractices)) {
+    const current = repractices[slot];
+    if (!current || current.questionId !== previous.questionId) {
+      repractices[slot] = current ? keepEarlier(current, previous) : previous;
+      continue;
+    }
+    const resolved = current.passed || previous.passed;
+    const earlier = keepEarlier(current, previous);
+    repractices[slot] = {...earlier, first: earlier.first ?? current.first ?? previous.first,
+      choice: resolved && previous.passed ? previous.choice : current.choice ?? previous.choice,
+      passed: resolved};
+  }
+  return {...primary, runs, variants, repractices};
 }
 
 function browserStorage() {
@@ -152,6 +171,11 @@ export function createChallengeStore(storage = browserStorage(), storageKey = CH
     }
     for (const [slot, variant] of Object.entries(next.variants)) {
       next.variants[slot] = Object.hasOwn(state.variants, slot) ? state.variants[slot] : {...variant, submission};
+    }
+    for (const [slot, practice] of Object.entries(next.repractices)) {
+      const existing = state.repractices[slot];
+      next.repractices[slot] = existing ? {...practice, questionId: existing.questionId,
+        first: existing.first ?? practice.first, submission: existing.submission} : {...practice, submission};
     }
     state = keepProgress(next, state);
     dirty = true;

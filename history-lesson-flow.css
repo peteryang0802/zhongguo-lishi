@@ -232,6 +232,10 @@ body:is(.lesson-focused, .history-companion-focused, .history-directory-focused)
 }
 .history-question-material h4 { margin: 0; }
 .history-question-material p { margin: 4px 0 0; }
+.history-attribution { margin: 8px 0; color: inherit; opacity: .83; font-size: .875rem; }
+.history-material-check { margin-block-start: 12px; }
+.history-material-check fieldset, .history-question-material fieldset { margin: 10px 0 0; padding: 0; border: 0; min-width: 0; }
+.history-material-check legend, .history-question-material legend { margin-block-end: 6px; font-weight: 650; }
 .history-question-material mark { background: transparent; color: inherit; font-weight: 700; text-decoration: underline; }
 #lessonView [data-practice-evidence] { color: var(--study-blue-ink); }
 
