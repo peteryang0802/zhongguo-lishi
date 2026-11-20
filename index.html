@@ -1012,13 +1012,6 @@ button:focus:not(:focus-visible){outline:none}
 .extra-card[hidden]{display:none}
 
 /* ===== 课视图 ===== */
-.lesson-topbar{display:flex;align-items:center;gap:12px;padding:6px 0 12px}
-.lesson-topbar .back-btn{
-  display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 14px;
-  border-radius:12px;background:var(--card);border:1px solid var(--line);font-size:14px;font-weight:700;
-}
-.lesson-topbar .back-btn svg{width:18px;height:18px}
-.lesson-crumb{font-size:13.5px;color:var(--sub);font-weight:700}
 .lesson-intro{margin-bottom:14px}
 .li-title{font-size:22px;margin-bottom:7px}
 @media(min-width:1024px){.app-home{max-width:1080px}}
@@ -1027,7 +1020,7 @@ button:focus:not(:focus-visible){outline:none}
   .hc-grid{grid-template-columns:1fr}
 }
 </style>
-<link rel="stylesheet" href="./history-lesson-flow.css?v=1">
+<link rel="stylesheet" href="./history-lesson-flow.css?v=2">
 <link rel="stylesheet" href="./parent-settings.css?v=1">
 </head>
 <body>
@@ -1065,6 +1058,7 @@ button:focus:not(:focus-visible){outline:none}
   <button class="icon-btn" id="muteBtn" aria-label="声音开关">
     <svg viewBox="0 0 24 24" fill="none" stroke="#2b2620" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="16" y1="9" x2="22" y2="15"></line><line x1="22" y1="9" x2="16" y2="15"></line></svg>
   </button>
+  <button class="history-directory-exit" id="lessonBack" type="button"><span aria-hidden="true">←</span> 本册目录</button>
 </header>
 
 <!-- ===== 总门户：选册 ===== -->
@@ -1116,18 +1110,19 @@ button:focus:not(:focus-visible){outline:none}
 
   <!-- 按课内容视图 -->
   <section class="lesson-view" id="lessonView" hidden>
-    <div class="lesson-topbar">
-      <button class="back-btn" id="lessonBack" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-        本册目录
-      </button>
-      <span class="lesson-crumb" id="historyStepLabel"></span>
-    </div>
-    <hr>
     <div class="lesson-intro" id="lessonIntro"></div>
-    <div id="historyStudy"></div>
-    <section id="historyPractice" class="history-practice" aria-labelledby="historyPracticeTitle" hidden></section>
-    <div class="lesson-foot" id="lessonFoot"></div>
+    <div class="history-layout">
+      <aside class="history-progress" aria-label="本课进度">
+        <h3>本课进度</h3>
+        <p class="history-position"><span id="historyStepLabel"></span><span id="historyCurrentLabel"></span></p>
+        <ol id="historyProgressList" role="list"></ol>
+      </aside>
+      <div class="history-content">
+        <div id="historyStudy"></div>
+        <section id="historyPractice" class="history-practice" aria-labelledby="historyPracticeTitle" hidden></section>
+        <div class="lesson-foot" id="lessonFoot"></div>
+      </div>
+    </div>
   </section>
 </main>
 <!-- OLD_HOME_MARKER
@@ -1522,7 +1517,7 @@ button:focus:not(:focus-visible){outline:none}
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg>
 </button>
 
-<script src="./history-lesson-flow.js?v=1"></script>
+<script src="./history-lesson-flow.js?v=2"></script>
 <script id="historyPracticeData" async src="./history-lesson-practice.js" onerror="this.dataset.failed='true'"></script>
 <script>
 /* ===== 册注册表：初中六册，初三两册先锁定 ===== */
@@ -4968,18 +4963,29 @@ function practiceSummary(no){
 }
 function renderHistoryPractice(no,item,index){
   historyPractice.hidden=false;
-  historyPractice.innerHTML='<h3 id="historyPracticeTitle" data-study-heading tabindex="-1">用史料判断</h3>'+
+  const heading=index===0?'核对开场的判断':'把同样的办法再用一次';
+  const preview=index===0?historyPreview.choices[readPracticeAnswer(no,historyPreview).selected]:null;
+  historyPractice.innerHTML='<h3 id="historyPracticeTitle" data-study-heading tabindex="-1">'+heading+'</h3>'+
     '<p class="history-practice-step">第 '+(index+1)+' / 2 题 · '+item.kind+'</p>'+
+    (preview?'<p class="history-instruction">开场你选了「'+practiceText(preview.text)+'」。现在根据史料核对。</p>':'')+
     '<div class="history-practice-data"><fieldset><legend>'+practiceText(item.title)+'</legend><div class="history-practice-choices'+(item.kind==='判断题'?' is-judgment':'')+'">'+
     item.choices.map((choice,i)=>'<button type="button" data-practice-choice="'+i+'" aria-pressed="false">'+practiceText(choice.text)+'</button>').join('')+
     '</div></fieldset><p class="history-practice-feedback" role="status" aria-atomic="true"></p></div>'+
     '<button type="button" class="history-secondary" data-practice-evidence aria-expanded="false" aria-controls="historyQuestionMaterial">看这题的史料</button>'+
-    '<section class="history-question-material" id="historyQuestionMaterial" aria-label="这题的史料" hidden><h4>'+practiceText(item.card)+'</h4>'+item.evidence+'</section>';
+    '<section class="history-question-material" id="historyQuestionMaterial" aria-label="这题的史料" hidden><h4>'+practiceText(item.card)+'</h4>'+item.evidence+'</section>'+
+    '<p class="history-instruction" data-practice-retry hidden>核对这条史料，再选一个答案。</p>';
   const practiceData=historyPractice.querySelector('.history-practice-data');
   const feedback=historyPractice.querySelector('.history-practice-feedback');
   const options=[...historyPractice.querySelectorAll('[data-practice-choice]')];
   const opener=historyPractice.querySelector('[data-practice-evidence]');
   const material=historyPractice.querySelector('#historyQuestionMaterial');
+  const retry=historyPractice.querySelector('[data-practice-retry]');
+  function showMaterial(show){
+    material.hidden=!show;
+    opener.setAttribute('aria-expanded',String(show));
+    opener.textContent=show?'收起这题的史料':'看这题的史料';
+    retry.hidden=!show||practiceData.dataset.result!=='retry';
+  }
   function paint(record){
     const choice=item.choices[record.selected];
     options.forEach((button,i)=>button.setAttribute('aria-pressed',String(i===record.selected)));
@@ -4989,9 +4995,10 @@ function renderHistoryPractice(no,item,index){
     feedback.dataset.result=result;
     const message=choice.correct
       ? (item.choices[record.first]?.correct
-        ? (record.checkedBeforeAnswer?'查证后答对。':'首答独立答对。'):'看过解释后改对。')
+        ? (index===0?'这次核对对了。':record.checkedBeforeAnswer?'查证后答对。':'首答独立答对。'):'看过解释后改对。')
       : '再核对一次。';
     feedback.textContent=message+choice.reply;
+    showMaterial(!choice.correct||!material.hidden);
   }
   paint(readPracticeAnswer(no,item));
   options.forEach((button,i)=>button.addEventListener('click',()=>{
@@ -5001,8 +5008,7 @@ function renderHistoryPractice(no,item,index){
     writePracticeAnswer(no,item,record);
     paint(record);
     const next=lessonFoot.querySelector('[data-study-next]');
-    next.classList.toggle('history-skip',!item.choices[i].correct);
-    next.textContent=item.choices[i].correct?next.dataset.nextLabel:'暂时跳过';
+    updateHistoryForward(next,item.choices[i].correct);
     feedback.scrollIntoView({block:'nearest',behavior:'instant'});
   }));
   opener.addEventListener('click',()=>{
@@ -5012,9 +5018,7 @@ function renderHistoryPractice(no,item,index){
       record.checkedBeforeAnswer=true;
       writePracticeAnswer(no,item,record);
     }
-    material.hidden=!show;
-    opener.setAttribute('aria-expanded',String(show));
-    opener.textContent=show?'收起这题的史料':'看这题的史料';
+    showMaterial(show);
   });
 }
 function renderUnavailableHistoryPractice(no){
@@ -5043,7 +5047,7 @@ function refreshHistoryPractice(){
   historyPracticeData.dataset.failed=String(typeof HISTORY_LESSON_PRACTICE==='undefined');
   if(homeView.hidden)return;
   if(!lessonView.hidden&&currentLessonNo!=null){
-    if(historyStep>lessonByNo(currentLessonNo).nodes.length&&historyPractice.hidden)renderHistoryStage(currentLessonNo);
+    if(historyStep===0||historyStep>lessonByNo(currentLessonNo).nodes.length&&historyPractice.hidden)renderHistoryStage(currentLessonNo);
   }else if(!appHome.hidden&&typeof HISTORY_LESSON_PRACTICE!=='undefined'){
     renderHomeCatalog();
   }
@@ -5131,7 +5135,8 @@ function openLesson(no){
   currentLessonNo=no;
   warmScope='lesson';
   warmList=null;warmPos=0;
-  lessonIntro.innerHTML='<h2 class="li-title">第 '+no+' 课 · '+lesson.title+'</h2>';
+  const book=bookById(currentBookId);
+  lessonIntro.innerHTML='<p class="history-book-label">'+book.grade+book.term+' · 第 '+no+' 课</p><h2 class="li-title">'+practiceText(lesson.title)+'</h2>';
   appHome.hidden=true;
   lessonView.hidden=false;
   showView('home');
