@@ -150,6 +150,7 @@ function bindHistoryTry(stage, no, item, draw) {
     record.first ??= index;
     record.selected = index;
     writePracticeAnswer(no,item,record);
+    if (item === historyPreview) P.setLast({type:'lesson',no});
     paint(record);
   }));
 }

@@ -1020,7 +1020,7 @@ button:focus:not(:focus-visible){outline:none}
   .hc-grid{grid-template-columns:1fr}
 }
 </style>
-<link rel="stylesheet" href="./history-lesson-flow.css?v=2">
+<link rel="stylesheet" href="./history-lesson-flow.css?v=3">
 <link rel="stylesheet" href="./parent-settings.css?v=1">
 </head>
 <body>
@@ -1059,6 +1059,8 @@ button:focus:not(:focus-visible){outline:none}
     <svg viewBox="0 0 24 24" fill="none" stroke="#2b2620" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="16" y1="9" x2="22" y2="15"></line><line x1="22" y1="9" x2="16" y2="15"></line></svg>
   </button>
   <button class="history-directory-exit" id="lessonBack" type="button"><span aria-hidden="true">←</span> 本册目录</button>
+  <button class="history-directory-exit" id="historyBookExit" type="button"><span aria-hidden="true">←</span> 选册目录</button>
+  <div id="historyCompanionExit"></div>
 </header>
 
 <!-- ===== 总门户：选册 ===== -->
@@ -1089,23 +1091,17 @@ button:focus:not(:focus-visible){outline:none}
   <section class="app-home" id="appHome">
     <div class="home-hero">
       <h2>今天学哪一课？</h2>
-      <p id="homeHeroDesc">按统编教材七年级上册排好，从史前到东汉共 15 课。点课名直接进，不用先猜朝代。</p>
+      <p id="homeHeroDesc"></p>
       <div class="home-actions">
         <button class="btn primary big" id="startBtn" type="button">开始第 1 课</button>
-        <button class="btn ghost big" id="continueBtn" type="button" hidden>继续上次</button>
+        <button class="btn primary big" id="continueBtn" type="button" hidden>继续上次</button>
       </div>
     </div>
+    <details class="history-catalog-extras" id="historyCatalogExtras" hidden>
+      <summary>专题、跨课话题和 3D 观察</summary>
+      <div id="historyExtrasList"></div>
+    </details>
     <div class="home-catalog" id="homeCatalog"></div>
-    <div class="home-extras">
-      <button class="extra-card" id="extraThreads" type="button">
-        <span class="ec-title">跨课话题</span>
-        <span class="ec-sub">把不同年代的同一件事串起来看</span>
-      </button>
-      <button class="extra-card" id="extraMystery" type="button">
-        <span class="ec-title">历史谜题</span>
-        <span class="ec-sub">先猜，再用证据检验</span>
-      </button>
-    </div>
   </section>
 
   <!-- 按课内容视图 -->
@@ -1159,7 +1155,7 @@ button:focus:not(:focus-visible){outline:none}
   <div class="topic-topbar">
     <button class="back-btn" id="backBtn" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-      时间轴
+      <span id="backTopicText">本册目录</span>
     </button>
     <span class="topic-crumb" id="topicCrumb"></span>
   </div>
@@ -1422,7 +1418,7 @@ button:focus:not(:focus-visible){outline:none}
   <div class="topic-topbar">
     <button class="back-btn" id="threadBack" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y12="12"/><polyline points="12 19 5 12 12 5"/></svg>
-      时间轴
+      <span id="backThreadText">本册目录</span>
     </button>
     <span class="topic-crumb" id="threadCrumb"></span>
   </div>
@@ -1434,7 +1430,7 @@ button:focus:not(:focus-visible){outline:none}
   <div class="topic-topbar">
     <button class="back-btn" id="back3d" type="button">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-      <span id="back3dText">时间轴</span>
+      <span id="back3dText">本册目录</span>
     </button>
     <span class="topic-crumb" id="crumb3d"></span>
     <button class="back-btn s3d-related" id="back3dLesson" type="button" hidden></button>
@@ -1446,13 +1442,13 @@ button:focus:not(:focus-visible){outline:none}
         <p id="fail3dText">这台设备暂时跑不动 3D。</p>
         <div class="fail3d-actions">
           <button class="btn" id="fail3dRetry" type="button">再试一次</button>
-          <button class="btn ghost" id="fail3dBack" type="button">回到时间轴</button>
         </div>
       </div>
     </div>
+    <img class="history-scene-fallback" id="historySceneFallback" alt="">
     <div class="s3d-hint" id="hint3d">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11.5a3 3 0 1 1 4 2.8c-.6.3-1 .9-1 1.7v.5"/><circle cx="12" cy="19" r=".6" fill="currentColor"/><rect x="3.5" y="3.5" width="17" height="17" rx="4"/></svg>
-      <p id="hint3dText">用手指拖动就能转着看；捏合或滚轮可以拉近拉远。</p>
+      <p id="hint3dText">拖动模型旋转。鼠标用滚轮缩放，触屏用双指缩放。</p>
     </div>
     <div class="s3d-viewbtns" id="viewBtns3d"></div>
     <div class="s3d-notes" id="notes3d"></div>
@@ -1517,7 +1513,8 @@ button:focus:not(:focus-visible){outline:none}
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg>
 </button>
 
-<script src="./history-lesson-flow.js?v=2"></script>
+<script src="./history-lesson-flow.js?v=3"></script>
+<script src="./history-companion-flow.js?v=1"></script>
 <script id="historyPracticeData" async src="./history-lesson-practice.js" onerror="this.dataset.failed='true'"></script>
 <script>
 /* ===== 册注册表：初中六册，初三两册先锁定 ===== */
@@ -2119,7 +2116,8 @@ const homeView=document.getElementById('homeView'),topicView=document.getElement
 const invalidView=document.getElementById('invalidView');
 /* 无效深链：藏起所有正常视图，给解释和返回入口，焦点落到卡片 */
 function showInvalidRoute(text){
-  document.body.classList.remove('lesson-focused');
+  document.body.classList.remove('lesson-focused','history-companion-focused','history-book-directory');
+  document.body.classList.add('history-directory-focused');
   historySupplement=null;
   [portalView,homeView,topicView,threadViewEl,view3dEl].forEach(function(el){
     el.classList.remove('active');el.hidden=true;
@@ -2132,7 +2130,11 @@ function showInvalidRoute(text){
 }
 let currentTopic=null;
 function showView(v){
-  document.body.classList.toggle('lesson-focused',v==='home'&&!lessonView.hidden);
+  const bookDirectory=v==='home'&&lessonView.hidden;
+  document.body.classList.toggle('lesson-focused',v==='home'&&!bookDirectory);
+  document.body.classList.toggle('history-companion-focused',['topic','thread','3d'].includes(v));
+  document.body.classList.toggle('history-directory-focused',v==='portal'||bookDirectory);
+  document.body.classList.toggle('history-book-directory',bookDirectory);
   /* 切到任何正常视图，都收掉无效深链卡片，避免两个视图叠在一起 */
   invalidView.classList.remove('active');
   invalidView.hidden=true;
@@ -2146,25 +2148,33 @@ function showView(v){
   topicView.classList.toggle('active',v==='topic');
   threadViewEl.classList.toggle('active',v==='thread');
   view3dEl.classList.toggle('active',v==='3d');
-  /* 焦点管理：进新视图把焦点放到顶部返回按钮，键盘和读屏不会迷路；preventScroll 不抢滚动 */
+  /* 进入延伸内容时，把焦点落在当前任务。 */
   const focusMap={topic:'backBtn',thread:'threadBack','3d':'back3d'};
   const fid=focusMap[v];
+  const exit=document.getElementById('historyCompanionExit');
+  exit.querySelectorAll('button').forEach(button=>{button.hidden=button.id!==fid;});
   if(fid){
-    setTimeout(()=>{
-      const el=document.getElementById(fid);
-      if(el)el.focus({preventScroll:true});
-    },0);
+    const scope={topic:topicView,thread:threadViewEl,'3d':view3dEl}[v];
+    requestAnimationFrame(()=>{
+      if(!scope.classList.contains('active'))return;
+      const section=scope.querySelector('.topic-pane.active')||scope;
+      focusHistoryCompanion(section.querySelector('.companion-stage-heading'));
+    });
   }
 }
 function saveTopicStep(){
   if(currentTopic==='silk'){
-    store.setTopicStepOf('silk',{level:silkLevel,mainPos:silkMainPos,picked:silkPicked,trials:silkTrials});
+    store.setTopicStepOf('silk',{
+      level:silkLevel,mainPos:silkMainPos,picked:silkPicked,trials:silkTrials,
+      inTransit:!silkReturn.classList.contains('show')
+    });
   }else if(currentTopic==='tuen'){
-    store.setTopicStepOf('tuen',{seenKing:seenKing,seenHou:seenHou,tuenJudge:tuenJudge});
+    store.setTopicStepOf('tuen',{split:splitBtn.disabled,seenKing:seenKing,seenHou:seenHou,tuenJudge:tuenJudge});
   }else if(currentTopic==='paper'){
     store.setTopicStepOf('paper',{
       cailunDeep:cailunDeep.classList.contains('show'),
       paperEv:paperEv,paperQ1:paperQ1,paperQ2:paperQ2,
+      paperTransferReplies:paperTransferReplies.slice(),
       paperResult:paperResult.classList.contains('show'),
       paperResultHTML:paperResult.classList.contains('show')?paperResult.innerHTML:null,
       paperSummary:paperSummary.classList.contains('show')
@@ -2180,16 +2190,19 @@ function restoreTopicStep(key){
     if(s.picked)Object.assign(silkPicked,s.picked);
     silkTrials.length=0;
     if(Array.isArray(s.trials))s.trials.forEach(t=>silkTrials.push(t));
+    silkReturn.classList.remove('show');
+    silkGan.classList.remove('show');
+    silkCompare.classList.remove('show');
     renderSilk();
     /* 走完至少一趟：重建回程、甘英和对照区，刷新不丢 */
-    if(silkTrials.length>0){
+    if(silkTrials.length>0&&s.inTransit!==true){
       const last=silkTrials[silkTrials.length-1];
       silkReturn.innerHTML=silkReturnHTML(last.back,last.supplies||[]);
       silkReturn.classList.add('show');
-      document.getElementById('silkAlt').addEventListener('click',resetForAnother);
       showGan();
       renderCompare();
     }
+    saveTopicStep();
   }else if(key==='tuen'){
     applyTuenRestore(s);
   }else if(key==='paper'){
@@ -2198,6 +2211,7 @@ function restoreTopicStep(key){
 }
 /* 造纸专题刷新恢复：首题、迁移两问、热身，各自回到刷新前的状态 */
 function applyPaperRestore(s){
+  if(Array.isArray(s.paperTransferReplies))paperTransferReplies=s.paperTransferReplies.slice(0,2);
   if(s.paperEv===true||s.paperEv===false){
     paperEv=s.paperEv;
     const evs=document.querySelectorAll('.ev-answer');
@@ -2207,7 +2221,7 @@ function applyPaperRestore(s){
     evFeedback.className='ev-feedback show '+(s.paperEv?'ok':'no');
     evFeedback.textContent=s.paperEv
       ?'对了。放马滩纸是西汉的，比蔡伦早两百多年，它一出现，“蔡伦以前没有纸”这句话就被推翻了。'
-      :'再想想：蔡伦的记载是东汉的，它只能说明东汉怎么造纸，不能证明西汉有没有纸。点放马滩纸看看它的年代。';
+      :'蔡伦的记载是东汉的。要检验这句话，再核对左边放马滩纸的年代。';
   }
   if(s.cailunDeep)cailunDeep.classList.add('show');
   if(s.paperQ1===true||s.paperQ1===false){
@@ -2251,8 +2265,10 @@ function enterActivity(key){
   document.querySelectorAll('.topic-pane').forEach(p=>p.classList.remove('active'));
   document.getElementById(TOPIC_PANE[key]).classList.add('active');
   document.getElementById('topicCrumb').textContent=TOPIC_NAME[key];
+  document.getElementById('backTopicText').textContent=historySupplement?'回原课':'本册目录';
   showView('topic');
   restoreTopicStep(key);
+  enterHistoryCompanionTopic(key);
   beep(500);
   window.scrollTo(0,0);
 }
@@ -2260,10 +2276,7 @@ function closeTopic(){
   const key=currentTopic;
   saveTopicStep();
   if(returnHistorySupplement())return;
-  /* 返回这节专题所在的课，落在原课而不是整条时间轴中段 */
-  const lessonNo=ACTIVITY_LESSON[key];
-  if(lessonNo!=null)go('/lesson/'+lessonNo);
-  else go('/');
+  go('/');
 }
 document.getElementById('backBtn').addEventListener('click',closeTopic);
 
@@ -2407,27 +2420,29 @@ class DragOrbit{
 }
 
 /* ===== 钱币场景：秦半两 vs 汉五铢 ===== */
-function coinInscription(THREE,text,baseRgb){
+function coinInscription(THREE,text,baseRgb,holeWidth){
   const size=512;
   const cv=document.createElement('canvas');cv.width=size;cv.height=size;
   let ctx=cv.getContext('2d');
   const grd=ctx.createRadialGradient(size/2,size/2,size*0.1,size/2,size/2,size*0.5);
   grd.addColorStop(0,baseRgb.light);grd.addColorStop(1,baseRgb.base);
   ctx.fillStyle=grd;ctx.beginPath();ctx.arc(size/2,size/2,size/2,0,Math.PI*2);ctx.fill();
-  ctx.font='bold 150px "STKaiti","KaiTi","SimSun",serif';
+  ctx.font='bold 118px "STKaiti","KaiTi","SimSun",serif';
   ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.fillStyle=baseRgb.text;
-  ctx.fillText(text.charAt(0),size*0.66,size*0.53);
-  ctx.fillText(text.charAt(1),size*0.34,size*0.53);
+  ctx.fillText(text.charAt(0),size*0.73,size*0.53);
+  ctx.fillText(text.charAt(1),size*0.27,size*0.53);
+  const cut=(size-holeWidth)/2;
+  ctx.clearRect(cut,cut,holeWidth,holeWidth);
   const map=new THREE.CanvasTexture(cv);map.anisotropy=8;map.colorSpace=THREE.SRGBColorSpace;
   const cv2=document.createElement('canvas');cv2.width=size;cv2.height=size;
   const g=cv2.getContext('2d');g.fillStyle='#000';g.beginPath();g.arc(size/2,size/2,size/2,0,Math.PI*2);g.fill();
-  g.font='bold 150px "STKaiti","KaiTi","SimSun",serif';g.textAlign='center';g.textBaseline='middle';
-  g.fillStyle='#fff';g.fillText(text.charAt(0),size*0.66,size*0.53);g.fillText(text.charAt(1),size*0.34,size*0.53);
+  g.font='bold 118px "STKaiti","KaiTi","SimSun",serif';g.textAlign='center';g.textBaseline='middle';
+  g.fillStyle='#fff';g.fillText(text.charAt(0),size*0.73,size*0.53);g.fillText(text.charAt(1),size*0.27,size*0.53);
   return {map,bump:new THREE.CanvasTexture(cv2)};
 }
 function makeCoin(THREE,o){
-  const {radius,thick,hole,text,color,face,rgb}=o;
+  const {radius,thick,hole,text,color,rgb}=o;
   const shape=new THREE.Shape();
   shape.absarc(0,0,radius,0,Math.PI*2,false);
   const h=hole/2,hp=new THREE.Path();
@@ -2440,13 +2455,13 @@ function makeCoin(THREE,o){
   const mat=new THREE.MeshStandardMaterial({color:color,metalness:0.92,roughness:0.46,envMapIntensity:1.15});
   const mesh=new THREE.Mesh(geo,mat);
   mesh.castShadow=true;mesh.receiveShadow=true;
-  const ins=coinInscription(THREE,text,rgb);
+  const ins=coinInscription(THREE,text,rgb,512*hole/(radius*1.88));
   const faceMat=new THREE.MeshStandardMaterial({
-    color:face,metalness:0.92,roughness:0.4,envMapIntensity:1.15,
-    map:ins.map,bumpMap:ins.bump,bumpScale:0.07
+    color:0xf0e0c9,metalness:0.42,roughness:0.56,envMapIntensity:1.15,
+    map:ins.map,bumpMap:ins.bump,bumpScale:0.07,alphaTest:0.5
   });
   const faceMesh=new THREE.Mesh(new THREE.CircleGeometry(radius*0.94,72),faceMat);
-  faceMesh.position.z=thick/2+0.012;
+  faceMesh.position.z=thick*0.7+0.012;
   mesh.add(faceMesh);
   return mesh;
 }
@@ -2462,8 +2477,9 @@ function buildCoins(THREE,stage,onReady){
   const scene=new THREE.Scene();
   scene.environment=makeEnvMap(THREE,renderer);
   const camera=new THREE.PerspectiveCamera(42,w/h,0.1,100);
+  const fitRadius=aspect=>Math.max(8.6,4.2/(Math.tan(THREE.MathUtils.degToRad(21))*aspect));
   const controls=new DragOrbit(THREE,camera,stage,{
-    radius:7.4,minRadius:4.6,maxRadius:11.5,phi:Math.PI/2.35,theta:Math.PI/2
+    radius:fitRadius(w/h),minRadius:4.6,maxRadius:19,phi:Math.PI/2.35,theta:Math.PI/2
   });
   const key=new THREE.DirectionalLight(0xfff1da,2.3);
   key.position.set(5,8,6);key.castShadow=true;
@@ -2474,12 +2490,12 @@ function buildCoins(THREE,stage,onReady){
 
   const group=new THREE.Group();scene.add(group);
   const banliang=makeCoin(THREE,{
-    radius:1.55,thick:0.2,hole:0.62,text:'半两',color:0x7d5f38,face:0x8a6a40,
+    radius:1.55,thick:0.2,hole:0.62,text:'半两',color:0x7d5f38,
     rgb:{base:'#7d5f38',light:'#9c7a4c',text:'#e8c98f'}
   });
   banliang.position.x=-2.05;group.add(banliang);
   const wuzhu=makeCoin(THREE,{
-    radius:1.18,thick:0.17,hole:0.46,text:'五铢',color:0xa87f43,face:0xb58c4d,
+    radius:1.18,thick:0.17,hole:0.46,text:'五铢',color:0xa87f43,
     rgb:{base:'#a87f43',light:'#c49c5c',text:'#f0d49a'}
   });
   wuzhu.position.x=2.0;group.add(wuzhu);
@@ -2488,7 +2504,7 @@ function buildCoins(THREE,stage,onReady){
 
   const VIEWS={
     front:{phi:Math.PI/2.35,theta:Math.PI/2},
-    edge:{phi:Math.PI/2,theta:0},
+    edge:{phi:Math.PI/2,theta:0.46},
     back:{phi:Math.PI/2.35,theta:3*Math.PI/2}
   };
   let raf,visible=true,firstFrame=true;
@@ -2506,7 +2522,7 @@ function buildCoins(THREE,stage,onReady){
   }
   window.addEventListener('resize',onResize);
   return {
-    setView:id=>{const v=VIEWS[id];if(v)controls.setView(v.phi,v.theta);},
+    setView:id=>{const v=VIEWS[id];if(v)controls.setView(v.phi,v.theta,fitRadius(camera.aspect));},
     destroy(){
       cancelAnimationFrame(raf);
       document.removeEventListener('visibilitychange',onVis);
@@ -2624,8 +2640,8 @@ function buildDujiangyan(THREE,stage,onReady){
   const dummy=new THREE.Object3D();
   const VIEWS={
     overall:{tgt:[0,0,-0.5],phi:0.7,theta:0.6,r:'fit'},
-    yuzui:{tgt:[0,0,-3.2],phi:1.05,theta:Math.PI/2,r:6},
-    baoping:{tgt:[0.9,0,1.5],phi:1.0,theta:Math.PI/2,r:5}
+    yuzui:{tgt:[0,0,-2.2],phi:0.63,theta:1.2,r:10.8},
+    baoping:{tgt:[0.9,0,1.5],phi:0.62,theta:1.1,r:9.2}
   };
   let currentViewId='overall';
   let raf,visible=true,firstFrame=true,last=performance.now();
@@ -2716,7 +2732,9 @@ function open3D(key,fromIdx){
   go('/3d/'+key);
 }
 async function enter3D(key){
+  const preserve=view3dEl.classList.contains('active')&&current3dKey===key;
   if(!view3dEl.classList.contains('active'))pauseWarmup();
+  if(current3d){current3d.destroy();current3d=null;}
   const myToken=++s3dToken;
   current3dKey=key;
   const stage=document.getElementById('stage3d');
@@ -2728,34 +2746,18 @@ async function enter3D(key){
   /* 返回文案：从卡片进，标明回哪张卡；直达，给相关课入口 */
   var backText=document.getElementById('back3dText');
   var relatedBtn=document.getElementById('back3dLesson');
-  if(fromNode3d!=null){
-    backText.textContent='回'+NODES[fromNode3d].title+'卡片';
+  if(historySupplement||fromNode3d!=null){
+    backText.textContent='回原课';
     relatedBtn.hidden=true;
   }else{
-    backText.textContent='回时间轴';
+    backText.textContent='本册目录';
     var bl=S3D_META[key].backLesson;
     if(bl){
-      relatedBtn.hidden=false;
       relatedBtn.textContent='去第'+bl+'课：'+lessonByNo(bl).title;
       relatedBtn.onclick=function(){go('/lesson/'+bl);};
     }else{relatedBtn.hidden=true;}
   }
-  const vb=document.getElementById('viewBtns3d');
-  vb.innerHTML='';
-  S3D_UI[key].views.forEach((v,i)=>{
-    const b=document.createElement('button');
-    b.type='button';b.className='s3d-vbtn'+(i===0?' active':'');b.textContent=v[1];
-    b.addEventListener('click',()=>{
-      vb.querySelectorAll('.s3d-vbtn').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
-      if(current3d)current3d.setView(v[0]);
-    });
-    vb.appendChild(b);
-  });
-  document.getElementById('notes3d').innerHTML=S3D_UI[key].notes.map(n=>
-    '<div class="s3d-note"><h4><span class="dot" style="background:'+n.color+'"></span>'+n.title+'</h4><p>'+n.text+'</p>'+
-    (n.cmp?'<div class="cmp">'+n.cmp.map(c=>'<span>'+c+'</span>').join('')+'</div>':'')+'</div>'
-  ).join('');
+  startHistoryCompanionScene(key,preserve);
   showView('3d');
   s3dClearTimer();
   let ready=false;
@@ -2764,7 +2766,7 @@ async function enter3D(key){
     if(myToken!==s3dToken||ready)return;
     s3dToken++;
     if(current3d){current3d.destroy();current3d=null;}
-    document.getElementById('fail3dText').textContent='这次加载太慢，3D 没出来。可以再试一次，或先回到时间轴。';
+    document.getElementById('fail3dText').textContent='3D 加载超时。你可以继续读右侧的观察材料。';
     document.getElementById('fail3dRetry').style.display='';
     stage.classList.add('is-fail');
   },8000);
@@ -2772,14 +2774,15 @@ async function enter3D(key){
     const THREE=await loadThree();
     if(myToken!==s3dToken)return;
     current3d=key==='coins'?buildCoins(THREE,stage,onReady):buildDujiangyan(THREE,stage,onReady);
+    current3d.setView(S3D_UI[key].views[companionSceneStep][0]);
   }catch(err){
     if(myToken!==s3dToken)return;
     s3dClearTimer();
     const msg=(err&&err.message)||'';
     const isDevice=/webgl|context|shader|gpu|graphics/i.test(msg)||/webgl|context/i.test((err&&err.name)||'');
     document.getElementById('fail3dText').textContent=isDevice
-      ? '这台设备的浏览器暂时不支持 WebGL，看不了 3D。可以回到时间轴，用文字和图片学。'
-      : '3D 文件这次没加载好。可以再试一次，或先回到时间轴。';
+      ? '这台设备暂时无法显示 3D。你可以继续看图文材料。'
+      : '3D 文件没有加载成功。你可以继续看图文材料。';
     document.getElementById('fail3dRetry').style.display=isDevice?'none':'';
     stage.classList.add('is-fail');
   }
@@ -2800,7 +2803,6 @@ function close3D(){
   else go('/');
 }
 document.getElementById('back3d').addEventListener('click',close3D);
-document.getElementById('fail3dBack').addEventListener('click',close3D);
 document.getElementById('fail3dRetry').addEventListener('click',()=>enter3D(current3dKey));
 
 /* ===== 详情卡内 2D 动手观察：先看实物证据，3D 作为补充 ===== */
@@ -2919,28 +2921,11 @@ function enterThread(key){
   const t=THREADS.find(x=>x.id===key);
   currentThread=t;
   document.getElementById('threadCrumb').textContent='话题 · '+t.name;
-  if(t.classify){renderClassify(t);}else{renderBeads(t);}
+  document.getElementById('backThreadText').textContent=historySupplement?'回原课':'本册目录';
+  if(t.classify){renderClassify(t);}else{startHistoryCompanionThread(t);}
   showView('thread');
   beep(520);
   window.scrollTo(0,0);
-}
-function renderBeads(t){
- let html='<div class="thread-ask" style="background:'+t.color+'">'+
-  '<div class="th-name">'+THREAD_ICONS[t.icon]+t.name+'</div><p>'+t.ask+'</p></div>';
- html+='<div class="bead-track" style="--th-color:'+t.color+'">';
- t.beads.forEach((b,i)=>{
-  const n=NODES[nodeIndexById(b.node)],im=IMG_META[b.node];
-  html+='<div class="bead">'+beadDot(b.node)+
-   '<div class="bead-card">'+
-   (im?'<div class="bead-head"><img class="bead-img" src="'+im.img+'" alt="'+im.name+'" loading="lazy"><div class="bead-info">':'')+
-   '<div class="bead-top"><span class="bead-year">'+n.yearLabel+'</span>'+
-   '<span class="bead-title">'+n.title+'</span></div>'+
-   '<div class="bead-change">'+(i===0?'<b>起点：</b>':'<b>变了：</b>')+b.change+'</div>'+
-   (im?'</div></div>':'')+
-   '</div></div>';
- });
- html+='</div>';
- threadBody.innerHTML=html;
 }
 function closeThread(){
   if(!returnHistorySupplement())go('/');
@@ -2965,23 +2950,21 @@ function renderClassify(t){
  paintClassify(t);
 }
 function paintClassify(t){
- let html='<div class="thread-ask" style="background:'+t.color+'">'+
-  '<div class="th-name">'+THREAD_ICONS[t.icon]+t.name+'</div><p>'+t.ask+'</p></div>';
+ let html='';
  if(warStage==='brief'){
-  html+='<div class="wc-brief" style="--th-color:'+t.color+'"><p class="wc-lead">先认识这五个筐。这次只挑三场证据最清楚的仗来练：每场先读两条材料，再判断它属于哪一类，并说清是哪条材料支持你的判断。</p><ul class="wc-cats">';
+  html+='<div class="wc-brief" style="--th-color:'+t.color+'"><h3 class="companion-stage-heading">怎么用线索判断一场战争？</h3><p class="wc-lead">每场仗有两条线索。先找发生了什么变化，再挑最贴近的类别。</p><details><summary>看五种常见变化</summary><ul class="wc-cats">';
   t.cats.forEach(c=>{html+='<li><b>'+c.name+'</b><span>'+c.hint+'</span></li>';});
-  html+='</ul><button class="btn primary wc-start" type="button">开始看第一场</button></div>';
+  html+='</ul></details><button class="history-action wc-start" type="button">开始看第一场</button></div>';
   threadBody.innerHTML=html;
-  document.querySelector('.wc-start').addEventListener('click',()=>{warStage='cases';warIdx=0;saveWarStep();beep(500);paintClassify(t);});
+  document.querySelector('.wc-start').addEventListener('click',()=>{warStage='cases';warIdx=0;saveWarStep();beep(500);paintClassify(t);focusHistoryCompanion(threadBody.querySelector('.companion-stage-heading'));});
+  paintHistoryWarProgress(t);
   return;
  }
  if(warStage==='cases'){
   const b=warBeads[warIdx],n=NODES[nodeIndexById(b.node)];
-  html+='<div class="wc-progress"><span>第 '+(warIdx+1)+' / '+warBeads.length+' 场</span>'+
-   '<div class="wc-bar"><i style="width:'+Math.round(warIdx/warBeads.length*100)+'%"></i></div></div>';
-  html+='<div class="wc-case" style="--th-color:'+t.color+'"><h3>'+n.title+'</h3><ul class="wc-ev" tabindex="-1" aria-label="这场战争的两条线索">';
+  html+='<div class="wc-case" style="--th-color:'+t.color+'"><h3 class="companion-stage-heading">'+n.title+'</h3><ul class="wc-ev" tabindex="-1" aria-label="这场战争的两条线索">';
   b.ev.forEach(e=>{html+='<li>'+e+'</li>';});
-  html+='</ul><p class="wc-q">这场仗最直接改变了什么？选一个筐：</p><div class="wc-bins">';
+  html+='</ul><p class="wc-q">这场仗最直接改变了什么？</p><div class="wc-bins">';
   t.cats.forEach(c=>{html+='<button class="wc-bin" type="button" data-cat="'+c.id+'" aria-pressed="false"><b>'+c.name+'</b><small>'+c.hint+'</small></button>';});
   html+='</div><div class="wc-fb" id="wcFb" role="status"></div></div>';
   threadBody.innerHTML=html;
@@ -2999,9 +2982,9 @@ function paintClassify(t){
     fb.className='wc-fb ok';
     fb.innerHTML='对了！材料里“'+b.ev[1]+'”，正好说明它是<b>'+catName+'</b>。';
     const isLast=warIdx===warBeads.length-1;
-    const nx=document.createElement('button');nx.type='button';nx.className='btn primary wc-next';
-    nx.textContent=isLast?'看分类总览':'下一场';
-    nx.addEventListener('click',()=>{warIdx++;warChoice=null;if(warIdx>=warBeads.length)warStage='done';saveWarStep();beep(600);paintClassify(t);});
+    const nx=document.createElement('button');nx.type='button';nx.className='history-action wc-next';
+    nx.textContent=isLast?'整理判断方法':'看下一场';
+    nx.addEventListener('click',()=>{warIdx++;warChoice=null;if(warIdx>=warBeads.length)warStage='done';saveWarStep();beep(600);paintClassify(t);focusHistoryCompanion(threadBody.querySelector('.companion-stage-heading'));});
     fb.appendChild(nx);
    }else{
     btn.classList.add('wrong');
@@ -3009,8 +2992,8 @@ function paintClassify(t){
     fb.textContent=b.wrong[cid];
     const revisit=document.createElement('button');
     revisit.type='button';
-    revisit.className='btn ghost wc-next';
-    revisit.textContent='重看这两条线索 ↑';
+    revisit.className='history-secondary wc-next';
+    revisit.textContent='重读两条线索';
     revisit.addEventListener('click',()=>{
      const lines=threadBody.querySelector('.wc-ev');
      lines.scrollIntoView({block:'nearest'});
@@ -3026,9 +3009,10 @@ function paintClassify(t){
    showChoice(warChoice,true);
   }));
   if(warChoice)showChoice(warChoice,false);
+  paintHistoryWarProgress(t);
   return;
  }
- html+='<div class="wc-done" style="--th-color:'+t.color+'"><p class="wc-lead">三场仗都分好了，看看它们各归哪一类——</p>';
+ html+='<div class="wc-done" style="--th-color:'+t.color+'"><h3 class="companion-stage-heading">按最直接的变化归类</h3><p class="history-method">先找参战的双方，再用两条线索看战争直接改变了什么。同一场仗涉及多种变化时，优先用题目所给材料能支持的类别。</p>';
  t.cats.forEach(c=>{
   const members=warBeads.filter(b=>b.cat===c.id);
   if(!members.length)return;
@@ -3040,6 +3024,7 @@ function paintClassify(t){
  html+='<button class="btn ghost wc-reset" type="button">重新玩一次</button></div>';
  threadBody.innerHTML=html;
  document.querySelector('.wc-reset').addEventListener('click',()=>{store.warStep=null;renderClassify(t);});
+ paintHistoryWarProgress(t);
 }
 
 /* 回顶部浮标（桌面与手机都保留）*/
@@ -4325,7 +4310,7 @@ let tuenJudge=null; /* 末尾判断题：null未答、true答对、false答错 *
 const hintAfterEl=document.getElementById('hintAfter');
 const btnRowEl=document.querySelector('.btn-row');
 function bindPlots(){
-  kingdomEl.querySelectorAll('.plot').forEach(p=>{
+  kingdomEl.querySelectorAll('button.plot').forEach(p=>{
     p.addEventListener('click',()=>{
       kingdomEl.querySelectorAll('.plot').forEach(x=>x.classList.remove('picked'));
       p.classList.add('picked');
@@ -4359,8 +4344,7 @@ function bindPlots(){
 }
 function renderWhole(){
   kingdomEl.className='kingdom';
-  kingdomEl.innerHTML='<button class="plot whole" data-whole="1">'+crownSVG+'<div>国王的封地</div><div class="role">整块都归国王一个人管</div></button>';
-  bindPlots();
+  kingdomEl.innerHTML='<div class="plot whole">'+crownSVG+'<div>国王的封地</div><div class="role">整块都归国王一个人管</div></div>';
 }
 function renderSplit(){
   kingdomEl.className='kingdom split';
@@ -4371,13 +4355,17 @@ function renderSplit(){
 /* 续读：不经过点击，直接把分封后的画面和选中态恢复出来，不发声、不滚动 */
 function applyTuenRestore(s){
   seenKing=!!s.seenKing;seenHou=!!s.seenHou;
-  if(!seenKing&&!seenHou)return;
+  if(!s.split&&!seenKing&&!seenHou)return;
   renderSplit();
   stageLabel.textContent='分封后 · 点一块看看';
   beforeChip.textContent='1 王国 + 3 侯国（大小示意）';
   splitBtn.disabled=true;
   btnRowEl.classList.add('split-on');
   ruleCompare.classList.add('show');
+  if(!seenKing&&!seenHou){
+    hintAfterEl.classList.add('show');
+    return;
+  }
   if(seenKing){const k=kingdomEl.querySelector('.plot[data-king]');if(k)k.classList.add('picked');}
   if(seenHou){const h=kingdomEl.querySelector('.plot[data-hou="0"]');if(h)h.classList.add('picked');}
   let head;
@@ -4403,7 +4391,7 @@ function applyTuenRestore(s){
   if(tuenJudge!==null){
     const ans=document.querySelectorAll('.rc-answer')[tuenJudge?1:0];
     if(ans)ans.classList.add(tuenJudge?'right':'wrong');
-    rcFeedback.classList.add('show');
+    rcFeedback.className='rc-feedback show '+(tuenJudge?'ok':'no');
     rcFeedback.textContent=tuenJudge
       ?'对了。关键不在地切没切开，而在新分的侯国归谁管。改归汉郡，王直接管的地才真少了，这就是推恩令的作用。'
       :'再想想：这一画面里四块地还都归王管，他能直接管的地一块没少。切画面二看看管辖线指到了哪里。';
@@ -4419,6 +4407,7 @@ splitBtn.addEventListener('click',()=>{
   btnRowEl.classList.add('split-on');
   ruleCompare.classList.add('show');
   beep(520);
+  saveTopicStep();
 });
 resetBtn.addEventListener('click',()=>{
   renderWhole();
@@ -4462,7 +4451,7 @@ document.querySelectorAll('.rc-answer').forEach(a=>{
     document.querySelectorAll('.rc-answer').forEach(x=>x.classList.remove('right','wrong'));
     const ok=a.getAttribute('data-ok')==='1';
     a.classList.add(ok?'right':'wrong');
-    rcFeedback.classList.add('show');
+    rcFeedback.className='rc-feedback show '+(ok?'ok':'no');
     tuenJudge=ok;
     if(ok){
       rcFeedback.textContent='对了。关键不在地切没切开，而在新分的侯国归谁管。改归汉郡，王直接管的地才真少了，这就是推恩令的作用。';
@@ -4555,9 +4544,10 @@ function renderSilk(){
   SILK_PATH.forEach((lv,li)=>{
     html+='<div class="silk-level '+lv.type+'">'+lv.nodes.map((n,ni)=>{
       const st=nodeState(li,ni);
+      const unavailable=st==='skip'||st==='locked';
       const skipTag=st==='skip'?'<small class="skip-tag">没走这条</small>':'';
       const holdTag=(st==='current'||st==='picked')?'<span class="silk-hold">'+SILK_ICON+'丝绸在这</span>':'';
-      return '<button class="silk-node '+st+'" data-li="'+li+'" data-ni="'+ni+'" type="button"><b>'+n.name+'</b><small>'+n.sub+'</small>'+skipTag+holdTag+'</button>';
+      return '<button class="silk-node '+st+'" data-li="'+li+'" data-ni="'+ni+'" type="button"'+(unavailable?' disabled':'')+'><b>'+n.name+'</b><small>'+n.sub+'</small>'+skipTag+holdTag+'</button>';
     }).join('')+'</div>';
     if(li<SILK_PATH.length-1)html+='<div class="silk-link'+(li<silkLevel?' done':'')+'"></div>';
   });
@@ -4565,8 +4555,6 @@ function renderSilk(){
   silkMap.querySelectorAll('.silk-node').forEach(b=>{
     b.addEventListener('click',()=>{
       const li=+b.getAttribute('data-li'),ni=+b.getAttribute('data-ni'),st=nodeState(li,ni);
-      if(st==='locked'){toast('还没到这一站，先往前走');beep(260);return;}
-      if(st==='skip'){toast('这趟没走这条，它在另一条路上');beep(300);return;}
       if(li===silkLevel&&SILK_PATH[li].type==='fork'&&!silkPicked[li]){
         silkPicked[li]=SILK_PATH[li].nodes[ni].id;beep(500);renderSilk();return;
       }
@@ -4616,8 +4604,7 @@ function silkReturnHTML(back,supplies){
     (supplies.length?supplies.map(g=>'<span class="chip">'+g+'</span>').join(''):'<span class="chip">这趟没另领补给</span>')+'</div>'+
     '<div class="silk-flow"><div class="f west"><b>往西去</b>丝绸、漆器，还有铸铁、凿井的技术，经商人一站站转手到欧洲。</div>'+
     '<div class="f east"><b>往东来</b>'+(back.length?back.join('、'):'种子、香料、乐舞')+'，还有文化和技艺。</div></div>'+
-    '<p class="conclude">货靠人接力才走那么远，你选的路不同，带回的东西也不一样。长安到安息这一段，有《史记》《汉书》和出土文物支持；安息再往西到大秦，汉朝没人直接走到，是模拟路线，丝绸有机会经商人接力到达，但不保证每趟都到。</p>'+
-    '<button class="choice" id="silkAlt" type="button">试另一条走法，保留这趟对照</button>';
+    '<p class="conclude">货靠人接力才走那么远，你选的路不同，带回的东西也不一样。长安到安息这一段，有《史记》《汉书》和出土文物支持；安息再往西到大秦，汉朝没人直接走到，是模拟路线，丝绸有机会经商人接力到达，但不保证每趟都到。</p>';
 }
 function showSilkReturn(){
   const route=pathNodes(),back=[],supplies=[];
@@ -4626,14 +4613,11 @@ function showSilkReturn(){
     (n.supply||[]).forEach(g=>{if(!supplies.includes(g))supplies.push(g);});
   });
   silkTrials.push({route:route.map(n=>n.name).join(' → '),back:back.slice(),supplies:supplies.slice()});
-  /* 每趟完成立即落盘，不等下一次 renderSilk，否则刷新会丢这趟 */
-  saveTopicStep();
   silkReturn.innerHTML=silkReturnHTML(back,supplies);
   silkReturn.classList.add('show');beep(420);
   markTopicDone('silk');
   showGan();renderCompare();
-  setTimeout(()=>silkReturn.scrollIntoView({behavior:'auto',block:'nearest'}),60);
-  document.getElementById('silkAlt').addEventListener('click',resetForAnother);
+  saveTopicStep();
 }
 function showGan(){
   silkGan.innerHTML='<h4>追问：汉使没到大秦，丝绸为什么还可能到？</h4>'+
@@ -4660,6 +4644,7 @@ function resetForAnother(){
   for(const k in silkPicked)delete silkPicked[k];
   silkReturn.classList.remove('show');silkGan.classList.remove('show');
   beep(360);renderSilk();
+  saveTopicStep();
 }
 document.getElementById('silkReset').addEventListener('click',()=>{
   silkLevel=0;silkMainPos=0;
@@ -4700,7 +4685,7 @@ document.querySelectorAll('.ev-answer').forEach(b=>{
       beep(560);
       /* 就地展开，不自动滚动，保证反馈留在同一屏，孩子自己往下看 */
     }else{
-      evFeedback.textContent='再想想：蔡伦的记载是东汉的，它只能说明东汉怎么造纸，不能证明西汉有没有纸。点放马滩纸看看它的年代。';
+      evFeedback.textContent='蔡伦的记载是东汉的。要检验这句话，再核对左边放马滩纸的年代。';
       beep(280);
     }
     saveTopicStep();
@@ -4738,7 +4723,7 @@ document.getElementById('paperReset').addEventListener('click',()=>{
   tFeedback.classList.remove('show');
   tq2.hidden=true;
   document.querySelectorAll('.t-answer').forEach(x=>x.classList.remove('right','wrong'));
-  paperEv=null;paperQ1=null;paperQ2=null;
+  paperEv=null;paperQ1=null;paperQ2=null;paperTransferReplies=[null,null];
   beep(360);
   /* 只清当前专题：步骤键和完成状态都复位，不影响别的专题 */
   store.setTopicStepOf('paper',null);
@@ -4774,6 +4759,7 @@ document.querySelectorAll('.t-answer').forEach(b=>{
         tFeedback.textContent='再想想：它就是麻纸残片，“是不是纸”这一点已经能确定了。';beep(280);
       }
     }
+    paperTransferReplies[Number(q)-1]=tFeedback.textContent;
     saveTopicStep();
   });
 });
@@ -5171,11 +5157,8 @@ function enterBook(bookId){
 function applyBookChrome(){
   var b=bookById(currentBookId);
   var desc=document.getElementById('homeHeroDesc');
-  if(desc&&b)desc.textContent='按统编教材'+b.grade+b.term+'排好，'+b.span+'，共 '+LESSONS.length+' 课。点课名直接进，不用先猜朝代。';
-  var et=document.getElementById('extraThreads');
-  if(et)et.hidden=!(THREADS&&THREADS.length);
-  var em=document.getElementById('extraMystery');
-  if(em)em.hidden=!(MYSTERIES&&MYSTERIES.length);
+  if(desc&&b)desc.textContent=b.grade+b.term+' · '+b.span+' · 共 '+LESSONS.length+' 课';
+  updateHistoryCatalogExtras();
   var st=document.getElementById('sidebarThreads');
   if(st)st.hidden=!(THREADS&&THREADS.length);
 }
@@ -5220,6 +5203,11 @@ function go(path){
   else if(path.indexOf('/book/')===0){target=path;}
   else{target='/book/'+currentBookId+path;}
   if(location.hash==='#'+target)return;
+  if(historySupplement&&!homeView.hidden&&!lessonView.hidden&&/^\/(activity|thread|3d)\//.test(path)){
+    history.pushState({historySupplement},'','#'+target);
+    renderRoute();
+    return;
+  }
   location.hash=target;
 }
 function parseRoute(){
@@ -5239,7 +5227,9 @@ function parseRoute(){
 function updateContinueButton(){
   var btn=document.getElementById('continueBtn');
   var last=P.getLast();
-  if(last&&last.type==='lesson'&&lessonByNo(last.no)){
+  const canResume=last&&last.type==='lesson'&&lessonByNo(last.no);
+  document.getElementById('startBtn').hidden=Boolean(canResume);
+  if(canResume){
     var label='继续第 '+last.no+' 课 · '+lessonByNo(last.no).title;
     btn.hidden=false;btn.textContent=label;
   }else{
@@ -5274,6 +5264,10 @@ function renderRoute(){
   if(r.book&&b.locked){showInvalidRoute(b.grade+b.term+'还没开放，先看前面四册吧。');return;}
   if(r.book&&!BOOK_DATA[r.book]){showInvalidRoute('这一册的内容还没做好。');return;}
   if(r.book&&currentBookId!==r.book){enterBook(r.book);}
+  if(['activity','thread','3d'].includes(r.name)){
+    const context=history.state?.historySupplement;
+    historySupplement=context?.book===currentBookId&&lessonByNo(context.no)?context:null;
+  }
   if(r.name==='book'){showHome();return;}
   if(r.name==='lesson'){
     var no=parseInt(r.id,10);
@@ -5355,14 +5349,9 @@ function doContinue(){
   go('/lesson/'+last.no);
 }
 document.getElementById('continueBtn').addEventListener('click',doContinue);
-document.getElementById('extraThreads').addEventListener('click',function(){go('/thread/'+THREADS[0].id);});
+document.getElementById('historyBookExit').addEventListener('click',()=>go('/portal'));
 document.getElementById('sidebarThreads').addEventListener('click',function(){go('/thread/'+THREADS[0].id);closeSidebar();});
 document.getElementById('sidebarPortal').addEventListener('click',function(){go('/portal');closeSidebar();});
-document.getElementById('extraMystery').addEventListener('click',function(){
-  var order=['paper','tuen','silk'];
-  var next=order.find(function(k){return !P.isActivityDone(k);});
-  go('/activity/'+(next||'paper'));
-});
 
 /* ===== 启动：迁移旧进度 → 进入默认册（对齐数据并刷新文案）→ 走当前路由 → 预热图片 ===== */
 if(!storageOK){var rb=document.getElementById('readonlyBanner');if(rb)rb.hidden=false;}
@@ -5370,6 +5359,10 @@ migrateOldProgress();
 enterBook(currentBookId);
 historyPracticeData.addEventListener('load',refreshHistoryPractice);
 historyPracticeData.addEventListener('error',refreshHistoryPractice);
+bindHistoryCompanionTopics();
+['backBtn','threadBack','back3d'].forEach(id=>{
+  document.getElementById('historyCompanionExit').append(document.getElementById(id));
+});
 renderRoute();
 setTimeout(startWarmup,1500);
 
