@@ -1072,6 +1072,7 @@ button:focus:not(:focus-visible){outline:none}
   background:#275f79;border-color:#275f79;color:#fff;font-weight:750;
 }
 .history-practice-jump{display:inline-flex;align-items:center;min-height:44px;margin-top:5px;color:#245a76;font-weight:750}
+.history-practice-loading{margin:4px 0;color:var(--sub);font-size:14px}
 .practice-evidence{margin:0 0 9px;padding:11px 12px;border-left:3px solid var(--event);background:#e5eef3;border-radius:0 10px 10px 0}
 .practice-evidence h4{margin:0;font-size:16px}
 .practice-evidence p{margin:5px 0 0;font-size:15px}
@@ -1592,6 +1593,7 @@ button:focus:not(:focus-visible){outline:none}
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg>
 </button>
 
+<script id="historyPracticeData" async src="./history-lesson-practice.js" onerror="this.dataset.failed='true'"></script>
 <script>
 /* ===== 册注册表：初中六册，初三两册先锁定 ===== */
 const BOOKS=[
@@ -2085,12 +2087,30 @@ let THREADS=[
   beads:[
    {node:15,cat:'overthrow',
     ev:['周军打败商军，商军阵前倒戈','商王朝结束，周建立了自己的统治'],
+    wrong:{
+     unify:'这两条材料没有列出多个并立政权被逐一合并。读第二条，找出消失的王朝和接着掌权的是谁。',
+     fight:'争霸通常是在现有格局里争谁为首。这里第二条说“商王朝结束”，变化比争一个霸主的位置更深。',
+     rebel:'倒戈的是商军，组织这场决战的是周军。材料没有说它由遭到压迫的农民自己发动。',
+     nation:'这两条材料没有交代族群矛盾。第二条明确交代了一个王朝结束、另一个政权接手。',
+    },
     change:'周武王牧野伐商，商军倒戈，商亡周立。'},
    {node:26,cat:'unify',
     ev:['秦国一个接一个灭掉六国','几百年的分裂，合成了一个国家'],
+    wrong:{
+     fight:'“一个接一个灭掉六国”意味着各国的政权不再并立。再看末句，还能只说秦争到了霸主地位吗？',
+     rebel:'第一条写的是秦国进攻六个国家，材料没有写农民因生计揭竿而起。',
+     nation:'材料描述的是秦国兼并六个政权。判断这题要核对政权数目的变化，不必猜任何一方的族群。',
+     overthrow:'后来确有秦朝建立，但题目问的是这组战争最直接的变化。第二条突出“几百年的分裂”变成什么。',
+    },
     change:'秦灭六国，几百年分裂合成一个国家。'},
    {node:29,cat:'rebel',
     ev:['戍边的农民遇雨误期，被逼揭竿而起','是底层百姓活不下去，自己起来反秦'],
+    wrong:{
+     unify:'材料没有列出谁吞并多个国家。看第一条，发动行动的人原来在做什么？',
+     fight:'事情不是由几个强国争夺霸主地位引起的。第一条给出了戍边农民的处境和起事原因。',
+     nation:'材料没有给出两个族群对抗的线索。它明确写了底层百姓起身反抗秦朝。',
+     overthrow:'这场起义动摇了秦朝，但这两条材料没有说起义者当场建立新王朝。此处先按发动者和起事原因归类。',
+    },
     change:'大泽乡揭竿而起，第一次农民大起义。'}
   ]},
  {id:'reform',name:'制度',color:'#5a6bb0',icon:'scroll',
@@ -3050,18 +3070,19 @@ function closeThread(){
 document.getElementById('threadBack').addEventListener('click',closeThread);
 
 /* ===== 战争分类：一屏一案，先读材料再判断，错了只改当前这一场 ===== */
-let warBeads=[],warIdx=0,warStage='brief';
+let warBeads=[],warIdx=0,warStage='brief',warChoice=null;
 function saveWarStep(){
- store.warStep={stage:warStage,idx:warIdx,beadCount:warBeads.length};
+ store.warStep={stage:warStage,idx:warIdx,beadCount:warBeads.length,choice:warChoice};
 }
 function renderClassify(t){
  warBeads=t.beads;
  const saved=store.warStep;
  if(saved&&saved.beadCount===t.beads.length&&(saved.stage==='cases'||saved.stage==='done')){
   warStage=saved.stage;
-  warIdx=Math.min(saved.idx||0,t.beads.length-1);
+  warIdx=Number.isInteger(saved.idx)?Math.max(0,Math.min(saved.idx,t.beads.length-1)):0;
+  warChoice=t.cats.some(cat=>cat.id===saved.choice)?saved.choice:null;
  }else{
-  warIdx=0;warStage='brief';
+  warIdx=0;warStage='brief';warChoice=null;
  }
  paintClassify(t);
 }
@@ -3080,15 +3101,20 @@ function paintClassify(t){
   const b=warBeads[warIdx],n=NODES[nodeIndexById(b.node)];
   html+='<div class="wc-progress"><span>第 '+(warIdx+1)+' / '+warBeads.length+' 场</span>'+
    '<div class="wc-bar"><i style="width:'+Math.round(warIdx/warBeads.length*100)+'%"></i></div></div>';
-  html+='<div class="wc-case" style="--th-color:'+t.color+'"><h3>'+n.title+'</h3><ul class="wc-ev">';
+  html+='<div class="wc-case" style="--th-color:'+t.color+'"><h3>'+n.title+'</h3><ul class="wc-ev" tabindex="-1" aria-label="这场战争的两条线索">';
   b.ev.forEach(e=>{html+='<li>'+e+'</li>';});
   html+='</ul><p class="wc-q">这场仗最直接改变了什么？选一个筐：</p><div class="wc-bins">';
-  t.cats.forEach(c=>{html+='<button class="wc-bin" type="button" data-cat="'+c.id+'"><b>'+c.name+'</b><small>'+c.hint+'</small></button>';});
-  html+='</div><div class="wc-fb" id="wcFb"></div></div>';
+  t.cats.forEach(c=>{html+='<button class="wc-bin" type="button" data-cat="'+c.id+'" aria-pressed="false"><b>'+c.name+'</b><small>'+c.hint+'</small></button>';});
+  html+='</div><div class="wc-fb" id="wcFb" role="status"></div></div>';
   threadBody.innerHTML=html;
-  threadBody.querySelectorAll('[data-cat]').forEach(btn=>btn.addEventListener('click',()=>{
-   const cid=btn.getAttribute('data-cat'),fb=document.getElementById('wcFb');
-   threadBody.querySelectorAll('.wc-bin').forEach(x=>x.classList.remove('picked','wrong'));
+  const choices=[...threadBody.querySelectorAll('[data-cat]')];
+  const fb=document.getElementById('wcFb');
+  function showChoice(cid,play){
+   const btn=choices.find(x=>x.dataset.cat===cid);
+   choices.forEach(x=>{
+    x.classList.remove('picked','wrong');
+    x.setAttribute('aria-pressed',String(x===btn));
+   });
    if(cid===b.cat){
     btn.classList.add('picked');
     const catName=t.cats.find(c=>c.id===cid).name;
@@ -3097,15 +3123,31 @@ function paintClassify(t){
     const isLast=warIdx===warBeads.length-1;
     const nx=document.createElement('button');nx.type='button';nx.className='btn primary wc-next';
     nx.textContent=isLast?'看分类总览':'下一场';
-    nx.addEventListener('click',()=>{warIdx++;if(warIdx>=warBeads.length)warStage='done';saveWarStep();beep(600);paintClassify(t);});
+    nx.addEventListener('click',()=>{warIdx++;warChoice=null;if(warIdx>=warBeads.length)warStage='done';saveWarStep();beep(600);paintClassify(t);});
     fb.appendChild(nx);
    }else{
     btn.classList.add('wrong');
     fb.className='wc-fb no';
-    fb.textContent='再读一遍两条材料，看看这场仗为了什么、改变了什么，然后换一个筐试试。';
-    beep(260);
+    fb.textContent=b.wrong[cid];
+    const revisit=document.createElement('button');
+    revisit.type='button';
+    revisit.className='btn ghost wc-next';
+    revisit.textContent='重看这两条线索 ↑';
+    revisit.addEventListener('click',()=>{
+     const lines=threadBody.querySelector('.wc-ev');
+     lines.scrollIntoView({block:'nearest'});
+     lines.focus({preventScroll:true});
+    });
+    fb.appendChild(revisit);
+    if(play)beep(260);
    }
+  }
+  choices.forEach(btn=>btn.addEventListener('click',()=>{
+   warChoice=btn.dataset.cat;
+   saveWarStep();
+   showChoice(warChoice,true);
   }));
+  if(warChoice)showChoice(warChoice,false);
   return;
  }
  html+='<div class="wc-done" style="--th-color:'+t.color+'"><p class="wc-lead">三场仗都分好了，看看它们各归哪一类——</p>';
@@ -4963,7 +5005,8 @@ var lessonRuler=document.getElementById('lessonRuler');
 var lessonIntro=document.getElementById('lessonIntro');
 var lessonFoot=document.getElementById('lessonFoot');
 const historyPractice=document.getElementById('historyPractice');
-const evidencePractice=[
+const historyPracticeData=document.getElementById('historyPracticeData');
+const firstLessonPractice=[
   {
     id:'yuanmou-charcoal',
     node:0,
@@ -4991,14 +5034,45 @@ const evidencePractice=[
     ],
   },
 ];
-const historyPracticeStorage='zg_practice_g7a_1:';
 const unsavedPracticeAnswers=new Map();
-let evidencePracticeStep=safeGet(historyPracticeStorage+'step')==='1'?1:0;
-function hasEvidencePractice(no){return currentBookId==='g7a'&&no===1;}
-function readPracticeAnswer(item){
-  if(unsavedPracticeAnswers.has(item.id))return unsavedPracticeAnswers.get(item.id);
+const unsavedPracticeSteps=new Map();
+const generatedHistoryPractice=new Map();
+function practiceKey(no){return 'zg_practice_'+currentBookId+'_'+no+':';}
+function practiceText(text){
+  return String(text).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch]);
+}
+function lessonPractice(no){
+  if(currentBookId==='g7a'&&no===1)return firstLessonPractice;
+  const key=practiceKey(no);
+  if(generatedHistoryPractice.has(key))return generatedHistoryPractice.get(key);
+  const lesson=lessonByNo(no);
+  const rows=typeof HISTORY_LESSON_PRACTICE==='undefined'?null:HISTORY_LESSON_PRACTICE[currentBookId]?.[no];
+  if(!lesson||!rows)return [];
+  const practice=rows.map(([cardIndex,pointIndex,title,answer,feedback])=>{
+    const node=lesson.nodes[cardIndex];
+    const card=NODES[node];
+    const passage=pointIndex===-1?card?.story:card?.points[pointIndex];
+    if(!passage)return null;
+    const judgment=typeof answer==='boolean';
+    const options=judgment?[
+      ['对',feedback],['错',feedback],
+    ]:feedback;
+    const answerIndex=judgment?(answer?0:1):answer;
+    return {
+      id:judgment?'judgment':'choice',
+      node,card:card.title,kind:judgment?'判断题':'选择题',title,
+      evidence:'<p><b>卡片材料</b> '+practiceText(passage)+'</p>',
+      choices:options.map(([text,reply],choice)=>({text,reply,correct:choice===answerIndex})),
+    };
+  }).filter(Boolean);
+  generatedHistoryPractice.set(key,practice);
+  return practice;
+}
+function readPracticeAnswer(no,item){
+  const key=practiceKey(no)+item.id;
+  if(unsavedPracticeAnswers.has(key))return unsavedPracticeAnswers.get(key);
   try{
-    const record=JSON.parse(safeGet(historyPracticeStorage+item.id)||'null');
+    const record=JSON.parse(safeGet(key)||'null');
     if(record){
       const valid=index=>Number.isInteger(index)&&Boolean(item.choices[index]);
       return {
@@ -5010,32 +5084,40 @@ function readPracticeAnswer(item){
   }catch(e){}
   return {first:null,selected:null,checkedBeforeAnswer:false};
 }
-function writePracticeAnswer(item,record){
-  if(safeSet(historyPracticeStorage+item.id,JSON.stringify(record)))unsavedPracticeAnswers.delete(item.id);
-  else unsavedPracticeAnswers.set(item.id,record);
+function writePracticeAnswer(no,item,record){
+  const key=practiceKey(no)+item.id;
+  if(safeSet(key,JSON.stringify(record)))unsavedPracticeAnswers.delete(key);
+  else unsavedPracticeAnswers.set(key,record);
 }
-function practiceSummary(){
-  const answered=evidencePractice.filter(item=>readPracticeAnswer(item).first!==null).length;
-  return answered?'小练习已答 '+answered+'/'+evidencePractice.length+' 题':'小练习未做';
+function practiceSummary(no){
+  const practice=lessonPractice(no);
+  const answered=practice.filter(item=>readPracticeAnswer(no,item).first!==null).length;
+  return answered?'小练习已答 '+answered+'/'+practice.length+' 题':'小练习未做';
 }
 function focusHistoryPractice(){
   const title=document.getElementById('historyPracticeTitle');
+  if(!title)return;
   title.focus({preventScroll:true});
   title.scrollIntoView({block:'start'});
 }
 function renderHistoryPractice(no){
-  historyPractice.hidden=!hasEvidencePractice(no);
+  const practice=lessonPractice(no);
+  historyPractice.hidden=!practice.length;
   if(historyPractice.hidden){historyPractice.replaceChildren();return;}
-  const item=evidencePractice[evidencePracticeStep];
-  const isFirst=evidencePracticeStep===0;
+  const stepKey=practiceKey(no)+'step';
+  const savedStep=Number(unsavedPracticeSteps.get(stepKey)??safeGet(stepKey));
+  const step=Number.isInteger(savedStep)&&practice[savedStep]?savedStep:0;
+  const item=practice[step];
+  const isFirst=step===0;
+  const nextText=practice[1]?.node!==practice[0].node?'换份材料试一题 →':'再判断一个说法 →';
   historyPractice.innerHTML='<h3 id="historyPracticeTitle" tabindex="-1">史料能告诉我们什么？</h3>'+
-    '<p class="history-practice-step">第 '+(evidencePracticeStep+1)+' / '+evidencePractice.length+' 题 · '+item.kind+'</p>'+
-    '<fieldset><legend>'+item.title+'</legend><div class="history-practice-choices'+(isFirst?' is-judgment':'')+'">'+
-    item.choices.map((choice,index)=>'<button type="button" data-practice-choice="'+index+'" aria-pressed="false">'+choice.text+'</button>').join('')+
+    '<p class="history-practice-step">第 '+(step+1)+' / '+practice.length+' 题 · '+item.kind+'</p>'+
+    '<fieldset><legend>'+practiceText(item.title)+'</legend><div class="history-practice-choices'+(item.kind==='判断题'?' is-judgment':'')+'">'+
+    item.choices.map((choice,index)=>'<button type="button" data-practice-choice="'+index+'" aria-pressed="false">'+practiceText(choice.text)+'</button>').join('')+
     '</div></fieldset><p class="history-practice-feedback" role="status" aria-atomic="true"></p>'+
-    '<div class="history-practice-actions"><button type="button" data-practice-evidence>核对'+item.card+'材料</button>'+
-    '<button class="history-practice-next" type="button" data-practice-switch>'+
-    (isFirst?'换份材料试一题 →':'← 回到第一题')+'</button></div>';
+    '<div class="history-practice-actions"><button type="button" data-practice-evidence>核对'+practiceText(item.card)+'材料</button>'+
+    (practice.length>1?'<button class="history-practice-next" type="button" data-practice-switch>'+
+    (isFirst?nextText:'← 回到第一题')+'</button>':'')+'</div>';
   const feedback=historyPractice.querySelector('.history-practice-feedback');
   const options=[...historyPractice.querySelectorAll('[data-practice-choice]')];
   const opener=historyPractice.querySelector('[data-practice-evidence]');
@@ -5050,28 +5132,77 @@ function renderHistoryPractice(no){
       : '再核对一次。';
     feedback.textContent=result+choice.reply;
   }
-  paint(readPracticeAnswer(item));
+  paint(readPracticeAnswer(no,item));
   options.forEach((button,index)=>button.addEventListener('click',()=>{
-    const record=readPracticeAnswer(item);
+    const record=readPracticeAnswer(no,item);
     record.first??=index;
     record.selected=index;
-    writePracticeAnswer(item,record);
+    writePracticeAnswer(no,item,record);
     paint(record);
+    feedback.scrollIntoView({block:'nearest'});
   }));
   opener.addEventListener('click',()=>{
-    const record=readPracticeAnswer(item);
+    const record=readPracticeAnswer(no,item);
     if(record.first===null&&!record.checkedBeforeAnswer){
       record.checkedBeforeAnswer=true;
-      writePracticeAnswer(item,record);
+      writePracticeAnswer(no,item,record);
     }
     openSheet(item.node,{item,opener});
   });
-  historyPractice.querySelector('[data-practice-switch]').addEventListener('click',()=>{
-    evidencePracticeStep=isFirst?1:0;
-    safeSet(historyPracticeStorage+'step',String(evidencePracticeStep));
+  historyPractice.querySelector('[data-practice-switch]')?.addEventListener('click',()=>{
+    const nextStep=isFirst?1:0;
+    if(safeSet(stepKey,String(nextStep)))unsavedPracticeSteps.delete(stepKey);
+    else unsavedPracticeSteps.set(stepKey,nextStep);
     renderHistoryPractice(no);
     focusHistoryPractice();
   });
+}
+function renderPracticeEntry(no){
+  lessonIntro.querySelector('.history-practice-jump, .history-practice-loading')?.remove();
+  if(lessonPractice(no).length){
+    const jump=document.createElement('button');
+    jump.type='button';
+    jump.className='history-practice-jump';
+    jump.textContent='试两道史料小题 ↓';
+    jump.addEventListener('click',focusHistoryPractice);
+    lessonIntro.appendChild(jump);
+  }else if(typeof HISTORY_LESSON_PRACTICE==='undefined'){
+    const status=document.createElement('div');
+    status.className='history-practice-loading';
+    const message=document.createElement('p');
+    message.setAttribute('role','status');
+    const failed=historyPracticeData.dataset.failed==='true';
+    message.textContent=failed?'小题暂时打不开。可以继续看下面的史料。':'正在加载史料小题…';
+    status.appendChild(message);
+    if(failed){
+      const retryButton=document.createElement('button');
+      retryButton.type='button';
+      retryButton.className='history-practice-jump';
+      retryButton.textContent='重新加载小题';
+      retryButton.addEventListener('click',()=>{
+        const retry=document.createElement('script');
+        retry.async=true;
+        retry.src='./history-lesson-practice.js?retry='+Date.now();
+        retry.addEventListener('load',refreshHistoryPractice);
+        retry.addEventListener('error',refreshHistoryPractice);
+        historyPracticeData.dataset.failed='false';
+        renderPracticeEntry(no);
+        document.head.appendChild(retry);
+      },{once:true});
+      status.appendChild(retryButton);
+    }
+    lessonIntro.appendChild(status);
+  }
+  renderHistoryPractice(no);
+}
+function refreshHistoryPractice(){
+  historyPracticeData.dataset.failed=String(typeof HISTORY_LESSON_PRACTICE==='undefined');
+  if(homeView.hidden)return;
+  if(!lessonView.hidden&&currentLessonNo!=null){
+    if(currentBookId!=='g7a'||currentLessonNo!==1)renderPracticeEntry(currentLessonNo);
+  }else if(!appHome.hidden&&typeof HISTORY_LESSON_PRACTICE!=='undefined'){
+    renderHomeCatalog();
+  }
 }
 var lessonCrumb=document.getElementById('lessonCrumb');
 var sidebar=document.getElementById('sidebar');
@@ -5132,7 +5263,7 @@ function renderHomeCatalog(){
         var l=lessonByNo(no);
         var act=lessonActivity(no);
         var actTxt=act?(' · 动手'+(P.isActivityDone(act)?'已做':'未做')):'';
-        if(hasEvidencePractice(no))actTxt+=' · '+practiceSummary();
+        if(lessonPractice(no).length)actTxt+=' · '+practiceSummary(no);
         h+='<button class="hc-card '+lessonStatus(no)+'" data-lesson="'+no+'" type="button">'+
           '<span class="hc-no">第 '+no+' 课</span>'+
           '<span class="hc-title">'+l.title+'</span>'+
@@ -5196,16 +5327,8 @@ function openLesson(no){
   var orderText=lesson.themeOrder?'按主题分好了':'按年代排好了';
   lessonIntro.innerHTML='<h2 class="li-title">第 '+no+' 课 · '+lesson.title+'</h2>'+
     '<p class="li-sub">这一课有 '+lesson.nodes.length+' 个知识点，'+orderText+'。点卡片看细节，先自己想，再看证据。</p>'+noteHtml;
-  if(hasEvidencePractice(no)){
-    const jump=document.createElement('button');
-    jump.type='button';
-    jump.className='history-practice-jump';
-    jump.textContent='试两道史料小题 ↓';
-    jump.addEventListener('click',focusHistoryPractice);
-    lessonIntro.appendChild(jump);
-  }
+  renderPracticeEntry(no);
   renderLessonJourney(no);
-  renderHistoryPractice(no);
   var fh='';
   if(no>1)fh+='<button class="lf-btn" data-foot="'+(no-1)+'" type="button">上一课：'+lessonByNo(no-1).title+'</button>';
   if(no<LESSONS.length)fh+='<button class="lf-btn primary" data-foot="'+(no+1)+'" type="button">下一课：'+lessonByNo(no+1).title+'</button>';
@@ -5444,6 +5567,8 @@ document.getElementById('extraMystery').addEventListener('click',function(){
 if(!storageOK){var rb=document.getElementById('readonlyBanner');if(rb)rb.hidden=false;}
 migrateOldProgress();
 enterBook(currentBookId);
+historyPracticeData.addEventListener('load',refreshHistoryPractice);
+historyPracticeData.addEventListener('error',refreshHistoryPractice);
 renderRoute();
 setTimeout(startWarmup,1500);
 
