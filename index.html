@@ -1020,7 +1020,7 @@ button:focus:not(:focus-visible){outline:none}
   .hc-grid{grid-template-columns:1fr}
 }
 </style>
-<link rel="stylesheet" href="./history-lesson-flow.css?v=5">
+<link rel="stylesheet" href="./history-lesson-flow.css?v=6">
 <link rel="stylesheet" href="./parent-settings.css?v=1">
 </head>
 <body>
@@ -1063,11 +1063,14 @@ button:focus:not(:focus-visible){outline:none}
   <div id="historyCompanionExit"></div>
 </header>
 
+<p id="historyBoot" role="status">正在准备历史课…</p>
+
 <!-- ===== 总门户：选册 ===== -->
 <section class="view portal-view" id="portalView" hidden>
-  <div class="portal-head">
-    <h2>初中历史，选一册开始</h2>
-    <p>课后复习、课前预习，顺着时间往下走。先选册，再选课。</p>
+  <div class="portal-head history-portal-hook">
+    <h2>只找到炭屑，能证明古人会用火吗？</h2>
+    <p>做一次历史调查，从一条出土记录开始。</p>
+    <button class="btn primary" id="historyPortalStart" type="button">拿一份证据试试</button>
   </div>
   <div class="portal-grid" id="portalGrid"></div>
   <div id="historyParentSettings"></div>
@@ -1519,9 +1522,10 @@ button:focus:not(:focus-visible){outline:none}
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg>
 </button>
 
-<script src="./history-lesson-flow.js?v=4"></script>
-<script src="./history-companion-flow.js?v=2"></script>
-<script id="historyPracticeData" async src="./history-lesson-practice.js" onerror="this.dataset.failed='true'"></script>
+<script src="./history-transfer-practice.js?v=1"></script>
+<script src="./history-lesson-flow.js?v=5"></script>
+<script src="./history-companion-flow.js?v=3"></script>
+<script id="historyPracticeData" src="./history-lesson-practice.js?v=2" onerror="this.dataset.failed='true'"></script>
 <script>
 /* ===== 册注册表：初中六册，初三两册先锁定 ===== */
 const BOOKS=[
@@ -4688,7 +4692,6 @@ function showSilkReturn(){
   silkTrials.push({route:route.map(n=>n.name).join(' → '),back:back.slice(),supplies:supplies.slice()});
   silkReturn.innerHTML=silkReturnHTML(back,supplies);
   silkReturn.classList.add('show');beep(420);
-  markTopicDone('silk');
   showGan();renderCompare();
   saveTopicStep();
 }
@@ -4754,7 +4757,6 @@ document.querySelectorAll('.ev-answer').forEach(b=>{
     if(ok){
       evFeedback.textContent='对了。放马滩纸是西汉的，比蔡伦早两百多年，它一出现，“蔡伦以前没有纸”这句话就被推翻了。';
       cailunDeep.classList.add('show');
-      markTopicDone('paper');
       beep(560);
       /* 就地展开，不自动滚动，保证反馈留在同一屏，孩子自己往下看 */
     }else{
@@ -5001,17 +5003,20 @@ function readPracticeAnswer(no,item){
     const record=JSON.parse(safeGet(key)||'null');
     if(record){
       const valid=index=>Number.isInteger(index)&&Boolean(item.choices[index]);
+      const validProof=index=>Number.isInteger(index)&&Boolean(item.proofs?.[index]);
       return {
         first:valid(record.first)?record.first:null,
         selected:valid(record.selected)?record.selected:null,
         checkedBeforeAnswer:record.checkedBeforeAnswer===true,
         firstMode:['independent','with-help','repeat'].includes(record.firstMode)?record.firstMode:null,
-        presented:record.presented===true,
+        proof:validProof(record.proof)?record.proof:null,
+        firstProof:validProof(record.firstProof)?record.firstProof:null,
+        awaitingProof:record.awaitingProof===true,
         evidenceMarked:record.evidenceMarked===true,
       };
     }
   }catch(e){}
-  return {first:null,selected:null,checkedBeforeAnswer:false,firstMode:null,presented:false,evidenceMarked:false};
+  return {first:null,selected:null,checkedBeforeAnswer:false,firstMode:null,proof:null,firstProof:null,awaitingProof:false,evidenceMarked:false};
 }
 function writePracticeAnswer(no,item,record){
   const key=practiceKey(no)+item.id;
@@ -5030,6 +5035,12 @@ function historyCheckState(no,item){
   const current=item.choices[record.selected];
   if(!current)return 'unanswered';
   if(!current.correct)return 'retry';
+  if(item.proofs){
+    const proof=item.proofs[record.proof];
+    if(!proof)return 'unanswered';
+    if(!proof.correct)return 'retry';
+    if(!item.proofs[record.firstProof]?.correct)return 'supported';
+  }
   if(!item.choices[record.first]?.correct||record.checkedBeforeAnswer||record.firstMode==='with-help')return 'supported';
   if(record.firstMode==='repeat')return 'repeat';
   return record.firstMode==='independent'?'independent':'previous';
@@ -5088,12 +5099,16 @@ function renderHistoryPractice(no,item,index){
   }
   function paint(record){
     const choice=item.choices[record.selected];
-    options.forEach((button,i)=>button.setAttribute('aria-pressed',String(i===record.selected)));
+    options.forEach((button,i)=>{
+      button.setAttribute('aria-pressed',String(i===record.selected));
+      button.disabled=Boolean(choice&&!choice.correct&&!record.evidenceMarked);
+    });
     bindHistoryEvidence(material,record,()=>{
       const latest=readPracticeAnswer(no,item);
       latest.evidenceMarked=true;
       writePracticeAnswer(no,item,latest);
       retry.textContent='线索已标记。回到原题，比较它和你的选项。';
+      options.forEach(button=>{button.disabled=false;});
       return latest;
     });
     if(!choice)return;
@@ -5113,10 +5128,12 @@ function renderHistoryPractice(no,item,index){
   options.forEach((button,i)=>button.addEventListener('click',()=>{
     const record=readPracticeAnswer(no,item);
     noteHistoryAnswer(record,i);
+    if(!item.choices[i].correct)record.evidenceMarked=false;
     writePracticeAnswer(no,item,record);
     paint(record);
     const next=lessonFoot.querySelector('[data-study-next]');
     updateHistoryForward(next,item.choices[i].correct);
+    if(!item.choices[i].correct)material.querySelector('[data-mark-history-evidence]').focus({preventScroll:true});
     feedback.scrollIntoView({block:'nearest',behavior:'instant'});
   }));
   opener.addEventListener('click',()=>{
@@ -5155,7 +5172,8 @@ function refreshHistoryPractice(){
   historyPracticeData.dataset.failed=String(typeof HISTORY_LESSON_PRACTICE==='undefined');
   if(homeView.hidden)return;
   if(!lessonView.hidden&&currentLessonNo!=null){
-    if(historyStep===0||historyStep>lessonByNo(currentLessonNo).nodes.length&&historyPractice.hidden)renderHistoryStage(currentLessonNo);
+    if(lessonPractice(currentLessonNo).length===2)enterHistoryStage(lessonByNo(currentLessonNo));
+    else renderHistoryStage(currentLessonNo);
   }else if(!appHome.hidden&&typeof HISTORY_LESSON_PRACTICE!=='undefined'){
     renderHomeCatalog();
   }
@@ -5173,7 +5191,7 @@ function historyCatalogStatus(no,summary){
   const lesson=lessonByNo(no);
   const count=P.lessonSeenCount(no);
   const core=summary.core;
-  if(!count&&core.every(state=>state==='unanswered')&&summary.state==='unanswered')return '还没开始';
+  if(!count&&core.every(state=>state==='unanswered')&&summary.state==='unanswered'&&!historyReviewOldTransfer(no))return '还没开始';
   let reading;
   if(count===lesson.nodes.length)reading='材料已看 '+count+'/'+lesson.nodes.length+' 张';
   else if(count)reading='已看 '+count+'/'+lesson.nodes.length+' 张';
@@ -5181,7 +5199,7 @@ function historyCatalogStatus(no,summary){
   const checked=core.filter(state=>state!=='unanswered'&&state!=='retry').length;
   const needsRetry=core.includes('retry');
   const coreStatus=needsRetry?'有题待重试':checked===2?'两题已核对':checked===1?'还差一题':'未核对';
-  const transferStatus=summary.state==='unanswered'?'待验证':historyCheckLabels[summary.state];
+  const transferStatus=summary.state==='unanswered'?(historyReviewOldTransfer(no)?'旧题已答，本题待验证':'待验证'):historyCheckLabels[summary.state];
   return reading+' · 课内 '+coreStatus+' · 新材料 '+transferStatus;
 }
 function maybeLessonDone(no){
@@ -5229,8 +5247,8 @@ function renderHomeCatalog(){
       u.lessons.forEach(function(no){
         var l=lessonByNo(no);
         var act=lessonActivity(no);
-        const activityState=act==='tuen'?tuenTransferState(store.topicStepOf('tuen')?.tuenTransfer):null;
-        const activityCheck=activityState&&activityState!=='unanswered'?historyCheckLabels[activityState]:P.isActivityDone(act)?(act==='tuen'?'旧版已做，待验证':'已做'):'待验证';
+        const activityState=act==='tuen'?tuenTransferState(store.topicStepOf('tuen')?.tuenTransfer):act?historyTopicEvidenceState(act):null;
+        const activityCheck=activityState&&activityState!=='unanswered'?historyCheckLabels[activityState]:P.isActivityDone(act)?'旧版已做，待验证':'待验证';
         var actTxt=act?' · 动手 '+activityCheck:'';
         const summary=historyLessonCheckSummary(no);
         h+='<button class="hc-card '+lessonStatus(no,summary)+'" data-lesson="'+no+'" type="button">'+
@@ -5485,6 +5503,7 @@ function doContinue(){
   go('/lesson/'+last.no);
 }
 document.getElementById('continueBtn').addEventListener('click',doContinue);
+document.getElementById('historyPortalStart').addEventListener('click',()=>go('/book/g7a/lesson/1'));
 document.getElementById('historyBookExit').addEventListener('click',()=>go('/portal'));
 document.getElementById('sidebarThreads').addEventListener('click',function(){go('/thread/'+THREADS[0].id);closeSidebar();});
 document.getElementById('sidebarPortal').addEventListener('click',function(){go('/portal');closeSidebar();});
@@ -5500,6 +5519,7 @@ bindHistoryCompanionTopics();
   document.getElementById('historyCompanionExit').append(document.getElementById(id));
 });
 renderRoute();
+document.getElementById('historyBoot').hidden=true;
 setTimeout(startWarmup,1500);
 
 </script>

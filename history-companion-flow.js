@@ -94,15 +94,16 @@ function focusHistoryCompanion(element) {
 const HISTORY_TOPIC_STEPS = {
   paper: {
     title: '蔡伦以前，汉朝人真的没有纸吗？',
-    labels: ['挑一件能作证的材料','分清有纸与改进造纸','用新残片判断有没有纸','说清一张纸不能证明什么','记下辨证办法'],
+    labels: ['挑一件能作证的材料','分清有纸与改进造纸','用新残片判断有没有纸','说清一张纸不能证明什么','记下辨证办法','核对另一份出土档案'],
     parts: [
       ['.paper-claim','.evidence-grid','.ev-ask','.ev-answers','#evFeedback'],
       ['#cailunDeep'],
       ['#paperTransfer'],
       ['#paperTransfer'],
       ['#paperWarmup','#paperReset','.companion-method'],
+      ['#paperEvidencePair'],
     ],
-    limit: () => paperEv !== true ? 0 : paperQ1 !== true ? 2 : paperQ2 !== true ? 3 : 4,
+    limit: () => paperEv !== true ? 0 : paperQ1 !== true ? 2 : paperQ2 !== true ? 3 : 5,
     method: '先辨认东西是什么，再核对它的年代。出土一张麻纸，可以说明那个时期已有纸；要证明纸张是否普及，还要找不同地方的出土记录。',
   },
   tuen: {
@@ -119,13 +120,14 @@ const HISTORY_TOPIC_STEPS = {
   },
   silk: {
     title: '一匹丝绸，怎么走到欧洲？',
-    labels: ['送丝绸走一条路','辨认两方向的交换','用另一条路验证'],
+    labels: ['送丝绸走一条路','辨认两方向的交换','对照两趟路线','用一页新商路记录验证'],
     parts: [
       ['.companion-map-details','#silkMap','#silkNow','#silkChoices'],
       ['#silkReturn'],
       ['#silkCompare','#silkGan','#silkReset','.companion-method'],
+      ['#silkEvidencePair'],
     ],
-    limit: () => silkTrials.length && document.getElementById('silkReturn').classList.contains('show') ? 2 : 0,
+    limit: () => silkTrials.length && document.getElementById('silkReturn').classList.contains('show') ? silkTrials.length >= 2 ? 3 : 2 : 0,
     method: '看贸易路线时，逐站追踪谁把货交给了谁，再分开看往西去与往东来的东西。换一条路线，对比哪些环节相同，哪些不同。',
   },
 };
@@ -155,6 +157,11 @@ function prepareHistoryTopic(pane, key) {
     const explanation = pane.querySelector('.silk-schematic');
     orientation.before(details);
     details.append(summary, pane.querySelector('#silkExp > p'), orientation, explanation);
+  }
+  if (key === 'silk' || key === 'paper') {
+    const transfer = document.createElement('section');
+    transfer.id = key + 'EvidencePair';
+    foot.before(transfer);
   }
   if (key === 'tuen') {
     foot.after(pane.querySelector('#resetBtn'));
@@ -220,24 +227,23 @@ function updateHistoryCompanionTopic() {
   }
   historyCompanionLayout(document.getElementById('topicView'), pane.parentElement, spec.title, spec.labels, step);
   const finalStep = step === spec.labels.length - 1;
-  const replay = key === 'silk' && finalStep && silkTrials.length < 2;
+  const replay = key === 'silk' && step === 2 && silkTrials.length < 2;
+  const actions = pane.querySelector('.companion-actions');
+  const back = step > 0 ? () => changeHistoryCompanionTopic(step - 1) : null;
+  if ((key === 'silk' || key === 'paper') && finalStep) {
+    renderHistoryEvidencePair(pane.querySelector('#' + key + 'EvidencePair'), HISTORY_TOPIC_TRANSFER[key], key + '-evidence', done => {
+      historyCompanionActions(actions, back, '完成专题', done ? () => { markTopicDone(key); closeTopic(); } : null);
+    });
+    return;
+  }
   const tuenPass = key === 'tuen' && finalStep && ['independent','supported'].includes(tuenTransferState(tuenTransfer));
-  const next = finalStep ? replay ? () => {
+  const next = replay ? () => {
     resetForAnother();
     changeHistoryCompanionTopic(0);
-  } : key==='tuen' ? tuenPass ? () => { markTopicDone('tuen'); closeTopic(); } : null : closeTopic
+  } : finalStep ? key === 'tuen' ? tuenPass ? () => { markTopicDone('tuen'); closeTopic(); } : null : closeTopic
     : step < spec.limit() ? () => changeHistoryCompanionTopic(step + 1) : null;
-  const actions = pane.querySelector('.companion-actions');
-  historyCompanionActions(actions, step > 0 ? () => changeHistoryCompanionTopic(step - 1) : null,
-    finalStep ? replay ? '试另一条路线' : '完成专题' : spec.labels[step + 1], next);
-  if (key === 'tuen' && finalStep && !tuenPass) {
-    const skip = document.createElement('button');
-    skip.type = 'button';
-    skip.className = 'history-secondary';
-    skip.textContent = '暂时跳过';
-    skip.addEventListener('click', closeTopic);
-    actions.prepend(skip);
-  }
+  historyCompanionActions(actions, back, replay ? '试另一条路线' : finalStep ? '完成专题' : spec.labels[step + 1], next);
+
 }
 
 function bindHistoryCompanionTopics() {
@@ -321,11 +327,88 @@ function paintHistoryCompanionScene(key) {
 }
 
 let companionThreadStep = 0;
-const HISTORY_THREAD_METHOD = {
-  money: {criterion:'先选同一个角度，如形状或谁能铸钱。再用每一段材料里相同的项目，说明它怎样变。',question:'两枚钱都是圆形方孔，能仅凭形状判断它们由同一个朝代铸造吗？',choices:['能，看起来一样就够了','还要对照钱文、年代和铸造记录'],answer:1,reply:'相同的形制跨越了多个朝代。判断铸造时间需要钱文、年代等更多线索。'},
-  reform: {criterion:'先看哪项权力，再比较改革前后由谁掌握。任命、管理和监督，需要分开看。',question:'想判断一项改革有没有收回任命地方官的权力，优先对照什么？',choices:['改革前后地方官分别由谁任命','改革前后官服的颜色'],answer:0,reply:'任命人与题目的权力同一项，官服颜色无法说明任命权的变化。'},
-  writing: {criterion:'分开观察写字用的材料、字的形状和实际用途。一个方面变了，另一个方面还需要证据。',question:'新出土的木片有墨书，能用它直接断定这种字已经在全国通用吗？',choices:['木片证明这种字当时全国通用','还要找别处的文字记录来比较'],answer:1,reply:'一件木片能说明那一处写过这种字。普及范围还要结合其他地点的材料。'},
+const HISTORY_TOPIC_TRANSFER = {
+  silk:{question:'看另一份商站记录。丝帛和远来香料有没有沿同一方向移动？',
+    choices:['两样货都自东向西','两样货沿相反方向移动'],answer:1,
+    proofs:['商站账册记羊毛与皮革的估价。','换运簿记丝帛交西去队，香料交给东去的队。','展柜标签记两种货物的现代拍摄日期。'],proof:1},
+  paper:{question:'出土麻纸的新展签应写「西汉某处已有纸」，还是「西汉普遍用纸」？',
+    choices:['支持西汉某处已有纸','支持西汉全国已普遍用纸'],answer:0,
+    proofs:['留存旧图显示发掘区域很大。','修复记录写纸片边缘破损。','纤维检验确认是麻纸，同层材料能核对为西汉，现有记录仅这一处。'],proof:2},
 };
+
+function historyTopicEvidenceState(key) {
+  const study=HISTORY_TOPIC_TRANSFER[key];
+  const state=store.topicStepOf(key + '-evidence');
+  if (!study || !Number.isInteger(state?.answer)) return 'unanswered';
+  if (state.answer !== study.answer || (Number.isInteger(state.proof) && state.proof !== study.proof)) return 'retry';
+  if (state.proof !== study.proof) return 'unanswered';
+  return state.firstAnswer === study.answer && state.firstProof === study.proof ? 'independent' : 'supported';
+}
+
+const HISTORY_THREAD_METHOD = {
+  money: {question:'两枚方孔铜钱，凭什么能知道它们的铸造时间不同？',choices:['方孔形状能说明年代不同','要比较各自的钱文和有日期的记录'],answer:1,
+    proofs:['两枚钱都是圆形方孔，穿绳方式相近。','分别有可辨的钱文，与两个时期的出土层位记录一一对应。','展台给两枚钱标了不同大小的展示框。'],proof:1},
+  reform: {question:'新旧两册官制簿放在一起，哪种结论能从它们得出？',choices:['地方官的任命权转到中枢','地方官自己改了朝服服色'],answer:0,
+    proofs:['新旧两册在同一个官署收藏。','官员画像只有一处服色不同。','旧册由地方长官签署任命，新册同职由中央官署批任。'],proof:2},
+  writing: {question:'新出土的木片有墨书，一处出土能推到全国通用吗？',choices:['可以，墨书所在木片年代久','还需比较同一时期别处的文字记录'],answer:1,
+    proofs:['木片都来自一处驿站，其他地区尚没有同一时期的记录。','木片边缘留下水渍。','同一片木板上有三行墨书。'],proof:0},
+};
+
+function renderHistoryEvidencePair(root, study, key, onReady) {
+  const read = () => store.topicStepOf(key) || {};
+  root.innerHTML = '<div class="history-practice-data history-transfer companion-thread-task">' +
+    '<p class="history-instruction">课堂模拟资料。先判断，再从三条记录里点能作证的一条。</p>' +
+    '<fieldset><legend class="companion-stage-heading">' + practiceText(study.question) +
+    '</legend><div class="history-practice-choices history-transfer-claims">' + historyTryButtons({choices:study.choices.map(text=>({text}))}) +
+    '</div></fieldset><fieldset class="history-transfer-proofs"><legend>三条记录</legend><div class="history-practice-choices">' +
+    study.proofs.map((text,index) => '<button type="button" data-companion-proof="'+index+'" aria-pressed="false">'+practiceText(text)+'</button>').join('') +
+    '</div></fieldset><p class="history-practice-feedback" role="status"></p></div>';
+  const task=root.firstElementChild;
+  const choices=[...task.querySelectorAll('[data-history-try]')];
+  const proofs=[...task.querySelectorAll('[data-companion-proof]')];
+  function paint(s) {
+    const ready=s.answer===study.answer&&s.proof===study.proof;
+    const wrongAnswer=Number.isInteger(s.answer)&&s.answer!==study.answer;
+    const wrongProof=Number.isInteger(s.proof)&&s.proof!==study.proof;
+    const needsProof=wrongAnswer&&s.proof!==study.proof;
+    choices.forEach((button,index)=>{
+      button.setAttribute('aria-pressed',String(index===s.answer));
+      button.disabled=needsProof;
+    });
+    proofs.forEach((button,index)=>{
+      button.setAttribute('aria-pressed',String(index===s.proof));
+      button.disabled=!Number.isInteger(s.answer)||(wrongAnswer&&!needsProof);
+    });
+    const feedback=task.querySelector('[role="status"]');
+    if(ready){
+      task.dataset.result='correct';
+      feedback.textContent=(s.firstAnswer===study.answer&&s.firstProof===study.proof?'首答独立做对。':'有帮助后做对。')+'你选出的记录直接支持这个判断。';
+    }else if(wrongAnswer||wrongProof){
+      task.dataset.result='retry';
+      feedback.textContent=wrongProof?'先看看题目问的是什么，再点一条直接写了这件事的记录。'
+        :needsProof?'先不换答案。从三条记录里找涉及题目所问的那条。':'找到线索了。回到原题，用它重选。';
+    }else{
+      delete task.dataset.result;
+      feedback.textContent=Number.isInteger(s.answer)?'请再点一条支持你判断的记录。':'';
+    }
+    onReady(ready);
+  }
+  choices.forEach((button,index)=>button.addEventListener('click',()=>{
+    const state=read();
+    state.firstAnswer??=index;
+    state.answer=index;
+    store.setTopicStepOf(key,state);
+    paint(state);
+  }));
+  proofs.forEach((button,index)=>button.addEventListener('click',()=>{
+    const state=read();
+    state.firstProof??=index;
+    state.proof=index;
+    store.setTopicStepOf(key,state);
+    paint(state);
+  }));
+  paint(read());
+}
 
 function startHistoryCompanionThread(t) {
   const saved = store.topicStepOf('companion:thread:' + t.id)?.step;
@@ -346,10 +429,7 @@ function paintHistoryCompanionThread(t) {
       '</p><h3 class="companion-stage-heading">' + practiceText(node.title) + '</h3><p>' + practiceText(bead.change) + '</p></div>' +
       (image ? '<figure><img src="' + practiceText(image.img) + '" alt="' + practiceText(image.name) + '"><figcaption>' + practiceText(image.name) + '</figcaption></figure>' : '') + '</article>';
   } else {
-    threadBody.innerHTML = '<p class="history-method">' + practiceText(study.criterion) + '</p>' +
-      '<div class="history-practice-data companion-thread-task"><fieldset><legend class="companion-stage-heading">' + practiceText(study.question) +
-      '</legend><div class="history-practice-choices">' + historyTryButtons({choices:study.choices.map(text=>({text}))}) +
-      '</div></fieldset><p class="history-practice-feedback" role="status"></p></div>';
+    threadBody.innerHTML = '<section class="history-thread-evidence"></section>';
   }
   const foot = document.createElement('div');
   foot.className = 'lesson-foot companion-actions';
@@ -367,22 +447,9 @@ function paintHistoryCompanionThread(t) {
     historyCompanionActions(foot, back, nextLabel, () => move(1));
     return;
   }
-  const task = threadBody.querySelector('.companion-thread-task');
-  const key = 'companion:thread:' + t.id;
-  const show = index => {
-    const selected = study.choices[index];
-    task.querySelectorAll('button').forEach((button,i)=>button.setAttribute('aria-pressed',String(index===i)));
-    if (selected) {
-      task.dataset.result = index === study.answer ? 'correct' : 'retry';
-      task.querySelector('[role="status"]').textContent = (index === study.answer ? '对了。' : '再核对一次。') + study.reply;
-    }
-    historyCompanionActions(foot, back, '完成比较', index === study.answer ? closeThread : null);
-  };
-  task.querySelectorAll('button').forEach((button,index)=>button.addEventListener('click',()=>{
-    store.setTopicStepOf(key,{step:companionThreadStep,answer:index});
-    show(index);
-  }));
-  show(store.topicStepOf(key)?.answer);
+  renderHistoryEvidencePair(threadBody.querySelector('.history-thread-evidence'), study, 'thread-evidence:' + t.id, done => {
+    historyCompanionActions(foot, back, '完成比较', done ? closeThread : null);
+  });
 }
 
 function paintHistoryWarProgress(t) {

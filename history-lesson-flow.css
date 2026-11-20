@@ -248,7 +248,7 @@ body:is(.lesson-focused, .history-companion-focused, .history-directory-focused)
   color: var(--study-action-ink);
   text-align: start;
 }
-:is(#lessonView, .history-companion-layout) :is(.history-secondary, .history-skip) {
+:is(#lessonView, .history-companion-layout) .history-secondary {
   padding: 5px 0;
   background: transparent;
   color: var(--study-muted);
@@ -613,3 +613,21 @@ body:is(.lesson-focused, .history-companion-focused, .history-directory-focused)
 @media (max-width: 650px) {
   .tuen-comparison-grid { grid-template-columns: 1fr; }
 }
+
+.history-portal-hook {
+  padding: 14px 17px;
+  border-inline-start: 3px solid var(--study-purple-line);
+  border-radius: 0 8px 8px 0;
+  background: var(--study-purple);
+}
+.history-portal-hook h2 { color: var(--study-purple-ink); }
+.history-portal-hook .primary { margin-block-start: 9px; background: var(--study-action); color: var(--study-action-ink); }
+.history-transfer-claims { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.history-transfer .history-transfer-proofs { margin-block-start: 9px; }
+.history-transfer .history-practice-choices button:disabled,
+.history-practice .history-practice-choices button:disabled {
+  color: var(--study-muted);
+  cursor: default;
+}
+.history-transfer button[aria-pressed="true"],
+.history-practice button[aria-pressed="true"] { outline-offset: 2px; }
