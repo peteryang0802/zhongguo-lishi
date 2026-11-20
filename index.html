@@ -1044,6 +1044,38 @@ button:focus:not(:focus-visible){outline:none}
   background:var(--card);font-size:14px;font-weight:700;color:#4a4030;
 }
 .lf-btn.primary{background:var(--person);color:#fff;border-color:var(--person)}
+.history-practice{
+  max-width:640px;margin:18px 0 0;padding:16px;border:1px solid var(--line);
+  border-top:3px solid var(--event);border-radius:16px;background:var(--card);
+}
+.history-practice h3{font-size:19px;scroll-margin-top:86px}
+.history-practice-step{margin:4px 0 10px;font-size:14px;color:var(--sub)}
+.history-practice fieldset{min-width:0;border:0;padding:0;margin:0}
+.history-practice legend{padding:0;margin-bottom:9px;font-size:16px;font-weight:700}
+.history-practice-choices{display:grid;gap:7px}
+.history-practice-choices.is-judgment{grid-template-columns:1fr 1fr}
+.history-practice button,.practice-evidence-return{
+  min-height:44px;padding:8px 12px;border:1px solid #b9aa95;border-radius:10px;
+  background:var(--card);font-size:15px;color:var(--ink);
+}
+.history-practice-choices button{text-align:left}
+.history-practice-choices.is-judgment button{text-align:center}
+.history-practice-choices button[aria-pressed="true"]{
+  border-color:var(--event);background:#e5eef3;color:#1d4c66;font-weight:750;
+}
+.history-practice-feedback[data-result]{
+  margin:10px 0 0;padding:9px 12px;border-radius:10px;background:#fbecdb;color:#593719;font-size:15px;
+}
+.history-practice-feedback[data-result="correct"]{background:#e8f0e5;color:#264d34}
+.history-practice-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}
+.history-practice .history-practice-next,.practice-evidence-return{
+  background:#275f79;border-color:#275f79;color:#fff;font-weight:750;
+}
+.history-practice-jump{display:inline-flex;align-items:center;min-height:44px;margin-top:5px;color:#245a76;font-weight:750}
+.practice-evidence{margin:0 0 9px;padding:11px 12px;border-left:3px solid var(--event);background:#e5eef3;border-radius:0 10px 10px 0}
+.practice-evidence h4{margin:0;font-size:16px}
+.practice-evidence p{margin:5px 0 0;font-size:15px}
+.practice-evidence-return{margin-bottom:14px}
 
 /* 桌面课视图：节点卡可两列，利用大屏 */
 @media(min-width:1024px){
@@ -1159,6 +1191,7 @@ button:focus:not(:focus-visible){outline:none}
     </div>
     <div class="lesson-intro" id="lessonIntro"></div>
     <div class="journey" id="journey"></div>
+    <section id="historyPractice" class="history-practice" aria-labelledby="historyPracticeTitle" hidden></section>
     <div class="lesson-foot" id="lessonFoot"></div>
   </section>
 </main>
@@ -1516,6 +1549,11 @@ button:focus:not(:focus-visible){outline:none}
   <span class="s-tag" id="sTag"></span>
   <h3 id="sTitle"></h3>
   <div class="s-year" id="sYear"></div>
+  <section id="practiceEvidence" class="practice-evidence" aria-labelledby="practiceEvidenceTitle" hidden>
+    <h4 id="practiceEvidenceTitle" tabindex="-1">核对这道题的材料</h4>
+    <div id="practiceEvidenceBody"></div>
+  </section>
+  <button id="practiceEvidenceReturn" class="practice-evidence-return" type="button" hidden>回到刚才那题</button>
   <div class="story" id="sStory"></div>
   <figure class="s-figure" id="sFigure">
     <span class="ev-badge" id="evBadge"></span>
@@ -4142,7 +4180,8 @@ function setEvBadge(ev){
   badge.textContent=ev.label;
   badge.className='ev-badge '+ev.cls;
 }
-function openSheet(i){
+let practiceEvidenceOpener=null;
+function openSheet(i,evidenceRequest){
   const wasOpen=sheet.classList.contains('show');
   if(!wasOpen){
     pauseWarmup();
@@ -4151,6 +4190,7 @@ function openSheet(i){
     sheetPushed=true;
     /* 打开：移出 inert，卡片内控件可聚焦 */
     sheet.inert=false;
+    practiceEvidenceOpener=evidenceRequest?.opener??null;
   }
   currentIndex=i;
   /* 最近视图只用于"继续"，记录当前课和具体卡，不自动弹专题 */
@@ -4163,6 +4203,10 @@ function openSheet(i){
   document.getElementById('sTag').style.background=meta.color;
   document.getElementById('sTitle').textContent=n.title;
   document.getElementById('sYear').textContent=n.yearLabel+(n.approx?'（约）':'');
+  const evidence=document.getElementById('practiceEvidence');
+  evidence.hidden=!evidenceRequest;
+  document.getElementById('practiceEvidenceBody').innerHTML=evidenceRequest?.item.evidence??'';
+  document.getElementById('practiceEvidenceReturn').hidden=!practiceEvidenceOpener;
   const im=IMG_META[n.id];
   const sImg=document.getElementById('sImg');
   const sFigure=document.getElementById('sFigure');
@@ -4232,7 +4276,12 @@ function openSheet(i){
   document.getElementById('prevNode').disabled=!lessonNodes||posInLesson<=0;
   document.getElementById('nextNode').disabled=!lessonNodes||posInLesson>=lessonNodes.length-1;
   /* 焦点移入详情卡，键盘不再落到背后卡片 */
-  setTimeout(()=>{document.getElementById('sheetClose').focus({preventScroll:true});},60);
+  const focusId=evidenceRequest?'practiceEvidenceTitle':'sheetClose';
+  setTimeout(()=>{
+    if(sheet.classList.contains('show')&&currentIndex===i){
+      document.getElementById(focusId).focus({preventScroll:true});
+    }
+  },60);
 }
 let sheetPushed=false;
 /* 纯 DOM 收卡，不碰历史记录 */
@@ -4242,10 +4291,13 @@ function closeSheetDom(){
  sheet.inert=true;
  /* 用全局节点索引稳定定位触发卡，覆盖第一课以外和翻页场景 */
  const ri=returnNodeIndex;
- if(ri!==null){
+ if(practiceEvidenceOpener?.isConnected){
+  practiceEvidenceOpener.focus({preventScroll:true});
+ }else if(ri!==null){
   const target=document.querySelector('.j-node[data-node-index="'+ri+'"]');
   if(target){target.focus({preventScroll:true});}
  }
+ practiceEvidenceOpener=null;
  returnNodeIndex=null;
  resumeWarmup();
 }
@@ -4264,6 +4316,7 @@ function closeSheetForNav(){
 let returnNodeIndex=null;
 document.getElementById('sheetClose').addEventListener('click',closeSheet);
 document.getElementById('sheetCloseBottom').addEventListener('click',closeSheet);
+document.getElementById('practiceEvidenceReturn').addEventListener('click',closeSheet);
 backdrop.addEventListener('click',closeSheet);
 document.getElementById('prevNode').addEventListener('click',()=>{
   var ln=lessonByNo(LESSON_OF_NODE[currentIndex]).nodes,p=ln.indexOf(currentIndex);
@@ -4909,6 +4962,117 @@ var lessonView=document.getElementById('lessonView');
 var lessonRuler=document.getElementById('lessonRuler');
 var lessonIntro=document.getElementById('lessonIntro');
 var lessonFoot=document.getElementById('lessonFoot');
+const historyPractice=document.getElementById('historyPractice');
+const evidencePractice=[
+  {
+    id:'yuanmou-charcoal',
+    node:0,
+    kind:'判断题',
+    title:'遗址发现炭屑，足以断定元谋人会用火。这句话对吗？',
+    card:'元谋人',
+    evidence:'<p><b>出土记录</b> 遗址发现过炭屑和几块可能烧过的骨头。</p>'+
+      '<p><b>一种解释</b> 雷电等引发的自然野火也可能留下这些痕迹。</p>',
+    choices:[
+      {text:'对',reply:'炭屑可以是用火的线索。雷电引发的野火也会留下炭屑，只凭这一条还不足以确定火是人用的。'},
+      {text:'错',correct:true,reply:'炭屑是出土记录。它来自人使用的火还是自然野火，需要更多证据。'},
+    ],
+  },
+  {
+    id:'shandingdong-wording',
+    node:2,
+    kind:'选择题',
+    title:'换看山顶洞人的材料，哪句话说得有根据？',
+    card:'山顶洞人',
+    evidence:'<p><b>课内材料</b> 山顶洞人掌握磨光和钻孔技术，<mark>可能</mark>已经知道人工取火，会用骨针缝衣服。</p>',
+    choices:[
+      {text:'可能已经知道人工取火',correct:true,reply:'材料保留了“可能”这个词。它指出一种有线索支持的解释，仍需进一步考证。'},
+      {text:'已经证实会人工取火',reply:'你把“可能”说成了“已经证实”。请再看材料写取火的那一句，找出它保留的余地。'},
+      {text:'已经证实不会用火',reply:'取火方式还无法确认，也无法据此排除他们会用火。再看看材料中的“可能”说的是哪一种能力。'},
+    ],
+  },
+];
+const historyPracticeStorage='zg_practice_g7a_1:';
+const unsavedPracticeAnswers=new Map();
+let evidencePracticeStep=safeGet(historyPracticeStorage+'step')==='1'?1:0;
+function hasEvidencePractice(no){return currentBookId==='g7a'&&no===1;}
+function readPracticeAnswer(item){
+  if(unsavedPracticeAnswers.has(item.id))return unsavedPracticeAnswers.get(item.id);
+  try{
+    const record=JSON.parse(safeGet(historyPracticeStorage+item.id)||'null');
+    if(record){
+      const valid=index=>Number.isInteger(index)&&Boolean(item.choices[index]);
+      return {
+        first:valid(record.first)?record.first:null,
+        selected:valid(record.selected)?record.selected:null,
+        checkedBeforeAnswer:record.checkedBeforeAnswer===true,
+      };
+    }
+  }catch(e){}
+  return {first:null,selected:null,checkedBeforeAnswer:false};
+}
+function writePracticeAnswer(item,record){
+  if(safeSet(historyPracticeStorage+item.id,JSON.stringify(record)))unsavedPracticeAnswers.delete(item.id);
+  else unsavedPracticeAnswers.set(item.id,record);
+}
+function practiceSummary(){
+  const answered=evidencePractice.filter(item=>readPracticeAnswer(item).first!==null).length;
+  return answered?'小练习已答 '+answered+'/'+evidencePractice.length+' 题':'小练习未做';
+}
+function focusHistoryPractice(){
+  const title=document.getElementById('historyPracticeTitle');
+  title.focus({preventScroll:true});
+  title.scrollIntoView({block:'start'});
+}
+function renderHistoryPractice(no){
+  historyPractice.hidden=!hasEvidencePractice(no);
+  if(historyPractice.hidden){historyPractice.replaceChildren();return;}
+  const item=evidencePractice[evidencePracticeStep];
+  const isFirst=evidencePracticeStep===0;
+  historyPractice.innerHTML='<h3 id="historyPracticeTitle" tabindex="-1">史料能告诉我们什么？</h3>'+
+    '<p class="history-practice-step">第 '+(evidencePracticeStep+1)+' / '+evidencePractice.length+' 题 · '+item.kind+'</p>'+
+    '<fieldset><legend>'+item.title+'</legend><div class="history-practice-choices'+(isFirst?' is-judgment':'')+'">'+
+    item.choices.map((choice,index)=>'<button type="button" data-practice-choice="'+index+'" aria-pressed="false">'+choice.text+'</button>').join('')+
+    '</div></fieldset><p class="history-practice-feedback" role="status" aria-atomic="true"></p>'+
+    '<div class="history-practice-actions"><button type="button" data-practice-evidence>核对'+item.card+'材料</button>'+
+    '<button class="history-practice-next" type="button" data-practice-switch>'+
+    (isFirst?'换份材料试一题 →':'← 回到第一题')+'</button></div>';
+  const feedback=historyPractice.querySelector('.history-practice-feedback');
+  const options=[...historyPractice.querySelectorAll('[data-practice-choice]')];
+  const opener=historyPractice.querySelector('[data-practice-evidence]');
+  function paint(record){
+    const choice=item.choices[record.selected];
+    options.forEach((button,index)=>button.setAttribute('aria-pressed',String(index===record.selected)));
+    if(!choice)return;
+    feedback.dataset.result=choice.correct?'correct':'retry';
+    const result=choice.correct
+      ? (item.choices[record.first]?.correct
+        ? (record.checkedBeforeAnswer?'查证后答对。':'首答独立答对。'):'看过解释后改对。')
+      : '再核对一次。';
+    feedback.textContent=result+choice.reply;
+  }
+  paint(readPracticeAnswer(item));
+  options.forEach((button,index)=>button.addEventListener('click',()=>{
+    const record=readPracticeAnswer(item);
+    record.first??=index;
+    record.selected=index;
+    writePracticeAnswer(item,record);
+    paint(record);
+  }));
+  opener.addEventListener('click',()=>{
+    const record=readPracticeAnswer(item);
+    if(record.first===null&&!record.checkedBeforeAnswer){
+      record.checkedBeforeAnswer=true;
+      writePracticeAnswer(item,record);
+    }
+    openSheet(item.node,{item,opener});
+  });
+  historyPractice.querySelector('[data-practice-switch]').addEventListener('click',()=>{
+    evidencePracticeStep=isFirst?1:0;
+    safeSet(historyPracticeStorage+'step',String(evidencePracticeStep));
+    renderHistoryPractice(no);
+    focusHistoryPractice();
+  });
+}
 var lessonCrumb=document.getElementById('lessonCrumb');
 var sidebar=document.getElementById('sidebar');
 var sidebarBackdrop=document.getElementById('sidebarBackdrop');
@@ -4968,6 +5132,7 @@ function renderHomeCatalog(){
         var l=lessonByNo(no);
         var act=lessonActivity(no);
         var actTxt=act?(' · 动手'+(P.isActivityDone(act)?'已做':'未做')):'';
+        if(hasEvidencePractice(no))actTxt+=' · '+practiceSummary();
         h+='<button class="hc-card '+lessonStatus(no)+'" data-lesson="'+no+'" type="button">'+
           '<span class="hc-no">第 '+no+' 课</span>'+
           '<span class="hc-title">'+l.title+'</span>'+
@@ -5031,7 +5196,16 @@ function openLesson(no){
   var orderText=lesson.themeOrder?'按主题分好了':'按年代排好了';
   lessonIntro.innerHTML='<h2 class="li-title">第 '+no+' 课 · '+lesson.title+'</h2>'+
     '<p class="li-sub">这一课有 '+lesson.nodes.length+' 个知识点，'+orderText+'。点卡片看细节，先自己想，再看证据。</p>'+noteHtml;
+  if(hasEvidencePractice(no)){
+    const jump=document.createElement('button');
+    jump.type='button';
+    jump.className='history-practice-jump';
+    jump.textContent='试两道史料小题 ↓';
+    jump.addEventListener('click',focusHistoryPractice);
+    lessonIntro.appendChild(jump);
+  }
   renderLessonJourney(no);
+  renderHistoryPractice(no);
   var fh='';
   if(no>1)fh+='<button class="lf-btn" data-foot="'+(no-1)+'" type="button">上一课：'+lessonByNo(no-1).title+'</button>';
   if(no<LESSONS.length)fh+='<button class="lf-btn primary" data-foot="'+(no+1)+'" type="button">下一课：'+lessonByNo(no+1).title+'</button>';
