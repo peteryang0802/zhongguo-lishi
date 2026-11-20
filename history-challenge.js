@@ -23,7 +23,7 @@ const runKey = (round, pace) => pace === 'practice' ? `${round.id}-practice` : r
 const minuteSeconds = (question, pace) => (question.material ? 60 : 30) * (pace === 'extended' ? 1.5 : 1);
 const paceLabels = {standard: '标准限时', extended: '延长限时', practice: '不限时练习'};
 
-function mountHistoryChallenge(root, unit, {rounds, sources, collection, hook}, storageKey) {
+function mountHistoryChallenge(root, unit, {rounds, collection, hook}, storageKey) {
   const store = createChallengeStore(undefined, storageKey);
   let state = store.read();
   let screen = 'hub';
@@ -94,11 +94,7 @@ function mountHistoryChallenge(root, unit, {rounds, sources, collection, hook}, 
       ${visited.length ? `<details class="challenge-fold"><summary>回看已做完的关卡</summary>
         <label class="challenge-review-select">选择关卡 <select aria-label="选择关卡">${visited.join('')}</select></label>
         ${tag('open-summary', '查看答题结果', true)}</details>` : ''}
-      ${collectionPanel(points)}
-      <details class="challenge-fold"><summary>题目从哪里来</summary>
-        <p>本单元题目为自编。部分题目参考北京初中学考的考点或考查方法。使用馆藏等实物资料的题目也会标注出处。答题后可在反馈下方查看来源。</p>
-        <ul>${Object.values(sources).map(([label, url]) => `<li><a href="${escape(url)}" target="_blank" rel="noopener noreferrer">${escape(label)}<span class="challenge-sr">（新标签页）</span></a></li>`).join('')}</ul>
-      </details></div></div>`);
+      ${collectionPanel(points)}</div></div>`);
     updateStartButton();
   }
 
@@ -162,11 +158,6 @@ function mountHistoryChallenge(root, unit, {rounds, sources, collection, hook}, 
     </aside>`;
   }
 
-  function questionSource(question, item) {
-    const source = (question.source ? sources[question.source] : null);
-    return `<p class="challenge-source">${source ? `参考 ${escape(source[0])} · 自编` : '据本单元内容自编'} · 第 ${item.lesson} 课</p>`;
-  }
-
   function renderQuestion(phase, index) {
     screen = phase;
     reviewIndex = index;
@@ -200,8 +191,7 @@ function mountHistoryChallenge(root, unit, {rounds, sources, collection, hook}, 
       ${question.material ? `<aside class="challenge-material" aria-label="材料"><strong>材料</strong><p>${escape(question.material)}</p></aside>` : ''}
       ${feedback ? `<div id="challenge-feedback">${feedback}</div>` : ''}
       <fieldset class="challenge-choices${correcting ? ' is-correcting' : ''}" aria-labelledby="challenge-question"><legend class="challenge-sr">选择一项答案</legend>${choices}</fieldset>
-      <p class="challenge-input-message" role="status" hidden></p><div class="challenge-actions">${actions}</div>
-      ${result ? questionSource(question, item) : ''}</section></div>`, '← 暂停回关卡');
+      <p class="challenge-input-message" role="status" hidden></p><div class="challenge-actions">${actions}</div></section></div>`, '← 暂停回关卡');
     if (phase === 'run' && run.mode === 'timed' && !first) startTimer(index);
   }
 

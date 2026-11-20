@@ -1022,7 +1022,7 @@ button:focus:not(:focus-visible){outline:none}
 </style>
 <link rel="stylesheet" href="./history-lesson-flow.css?v=6">
 <link rel="stylesheet" href="./parent-settings.css?v=1">
-<link rel="stylesheet" href="./history-challenge.css?v=2">
+<link rel="stylesheet" href="./history-challenge.css?v=3">
 </head>
 <body>
 
@@ -5426,7 +5426,7 @@ function openHistoryChallenge(unit){
   historyChallengeView.dataset.unit=unit.no;
   historyChallengeView.innerHTML='<a class="challenge-back" href="#/book/g7a">← 本册目录</a><p role="status">正在准备'+unit.challenge+'…</p>';
   const route=location.hash;
-  import('./history-challenge.js?v=2')
+  import('./history-challenge.js?v=3')
     .then(({prepareHistoryChallenge})=>prepareHistoryChallenge(unit))
     .then(mount=>{
       if(location.hash===route&&!historyChallengeView.hidden&&!closeHistoryChallenge){
