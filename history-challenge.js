@@ -1,26 +1,19 @@
-import {foundations} from './history-challenge-qh-a.js?v=1';
-import {applications} from './history-challenge-qh-b.js?v=1';
-import {createChallengeStore, challengePoints, earnedRewards, CHALLENGE_STORAGE_KEY} from './history-challenge-store.js?v=1';
+import {createChallengeStore, challengePoints, earnedRewards, CHALLENGE_STORAGE_KEY} from './history-challenge-store.js?v=2';
 
-const rounds = [...foundations, ...applications];
-const directory = '#/book/g7a';
-const sources = {
-  'bj24-03': ['2024 北京初中学考第 3 题 · 秦巩固统一', 'https://peking.bjd.com.cn/content/s667d5505e4b064178156d525.html'],
-  'bj24-04': ['2024 北京初中学考第 4 题 · 西域都护', 'https://peking.bjd.com.cn/content/s667d5505e4b064178156d525.html'],
-  'bj22-04': ['2022 北京初中学考第 4 题 · 文景之治', 'https://www.gaokzx.com/c/202206/62262.html'],
+const loadBank = {
+  1: () => import('./history-challenge-prehistory.js?v=1'),
+  2: () => import('./history-challenge-xia-shang-zhou.js?v=1'),
+  3: () => import('./history-challenge-qin-han.js?v=1'),
+  4: () => import('./history-challenge-three-kingdoms.js?v=1'),
 };
-const collection = [
-  ['秦制权衡', '统一度量衡后，用同一把尺和同一套砝码，跨地区交易才容易对账。'],
-  ['秦小篆', '同一份公文发往不同地方，统一文字让各地官吏可以读懂和执行。'],
-  ['陈胜吴广起义', '秦末起义声势迅速扩大。遇到记载，先分清起义、秦亡和西汉建立的先后。'],
-  ['文景之治', '判断休养生息，可以留意减轻赋役的政策，以及生产恢复的证据。'],
-  ['推恩令', '诸侯王的封地可以分给更多子弟。几代之后，原来大块的封地会分得更小。'],
-  ['张骞出使西域', '张骞的出使促进了汉朝与西域的了解，为后来更频繁的往来创造条件。'],
-  ['西域都护', '公元前 60 年设置西域都护，是判断西汉对西域行使管理的重要证据。'],
-  ['东汉豪强', '土地、依附人口和地方势力集中，有助于解释东汉后期社会矛盾为何加重。'],
-  ['蔡伦改进造纸术', '分清造纸术的早期出现和东汉蔡伦的改进，就能读准材料里不同时间的证据。'],
-  ['司马迁与《史记》', '用人物传记等方式把史事写进书中，是《史记》纪传体的一大特点。'],
-];
+const directory = '#/book/g7a';
+
+export async function prepareHistoryChallenge(unit) {
+  const bank = await loadBank[unit.no]();
+  const storageKey = unit.no === 3 ? CHALLENGE_STORAGE_KEY : `${CHALLENGE_STORAGE_KEY}_g7a_${unit.no}`;
+  return root => mountHistoryChallenge(root, unit, bank, storageKey);
+}
+
 const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
 })[char]);
@@ -30,8 +23,8 @@ const runKey = (round, pace) => pace === 'practice' ? `${round.id}-practice` : r
 const minuteSeconds = (question, pace) => (question.material ? 60 : 30) * (pace === 'extended' ? 1.5 : 1);
 const paceLabels = {standard: '标准限时', extended: '延长限时', practice: '不限时练习'};
 
-export function mountHistoryChallenge(root) {
-  const store = createChallengeStore();
+function mountHistoryChallenge(root, unit, {rounds, sources, collection, hook}, storageKey) {
+  const store = createChallengeStore(undefined, storageKey);
   let state = store.read();
   let screen = 'hub';
   let roundIndex = 0;
@@ -64,7 +57,7 @@ export function mountHistoryChallenge(root) {
     const back = screen === 'hub'
       ? `<a class="challenge-back" href="${directory}">${backLabel}</a>`
       : `<button type="button" class="challenge-back" data-action="hub">${backLabel}</button>`;
-    root.innerHTML = `<div class="challenge-bar">${back}<span>七年级上册 · 秦汉时期</span></div>
+    root.innerHTML = `<div class="challenge-bar">${back}<span>七年级上册 · ${escape(unit.name)}</span></div>
       <p class="challenge-storage" role="status"${store.persisted() ? ' hidden' : ''}>浏览器暂时无法保存闯关记录。你可以继续做题，关闭或刷新后本次记录可能丢失。</p>${body}`;
     const heading = root.querySelector('[data-focus]');
     window.scrollTo({top: 0, behavior: 'instant'});
@@ -74,8 +67,8 @@ export function mountHistoryChallenge(root) {
   function collectionPanel(points) {
     const cards = collection.slice(0, earnedRewards(state));
     return `<details class="challenge-fold"><summary>历史收藏卡 · ${cards.length} / ${collection.length}</summary>
-      ${cards.length ? `<ol class="challenge-cards">${cards.map(([title, text]) => `<li><strong>${title}</strong><p>${text}</p></li>`).join('')}</ol>` : '<p>每攒满 10 分，收藏一张秦汉历史卡。</p>'}
-      ${points < 100 && cards.length ? `<p>再得 ${10 - points % 10} 分解锁下一张。</p>` : ''}</details>`;
+      ${cards.length ? `<ol class="challenge-cards">${cards.map(([title, text]) => `<li><strong>${escape(title)}</strong><p>${escape(text)}</p></li>`).join('')}</ol>` : '<p>在这个单元每攒满 10 分，收藏一张历史卡。</p>'}
+      ${cards.length > 0 && cards.length < collection.length ? `<p>再得 ${10 - points % 10} 分解锁下一张。</p>` : ''}</details>`;
   }
 
   function renderHub() {
@@ -90,21 +83,21 @@ export function mountHistoryChallenge(root) {
       const choices = ['standard', 'practice'].filter(mode => state.runs[runKey(candidate, mode)]?.index >= candidate.items.length);
       return choices.map(mode => `<option value="${index}:${mode}">${index + 1}. ${escape(candidate.title)}${mode === 'practice' ? '（不限时）' : '（限时）'}</option>`);
     });
-    display(`<div class="challenge-hub"><aside class="challenge-rounds" aria-label="关卡进度"><h2>10 个关卡</h2><ol>${roundsMarkup}</ol></aside><div class="challenge-hub-intro">
-      <h1 data-focus tabindex="-1">秦汉闯关</h1>
-      <p class="challenge-lede">一把秦尺、一封汉朝公文，能帮你查清哪些历史问题？</p>
-      <p>每关 10 题。每题最多得 1 分，攒满 10 分领一张收藏卡。答错时可以在原题旁看线索，再选一次。</p>
+    display(`<div class="challenge-hub"><aside class="challenge-rounds" aria-label="关卡进度"><h2>${rounds.length} 个关卡</h2><ol>${roundsMarkup}</ol></aside><div class="challenge-hub-intro">
+      <h1 data-focus tabindex="-1">${escape(unit.challenge)}</h1>
+      <p class="challenge-lede">${escape(hook)}</p>
+      <p>每关 10 题，每题最多得 1 分。本单元每积满 10 分，领一张收藏卡。答错时可以在原题旁看线索，再选一次。</p>
       <p class="challenge-points"><strong>${points}</strong> 分 · 已完成 ${rounds.filter((_, index) => complete(index)).length} / ${rounds.length} 关</p>
       <fieldset class="challenge-modes"><legend>做题节奏</legend>${modeFields}<p>标准限时每题 30 秒，材料题 60 秒。延长限时多一半时间。不限时练习可解锁下一关。已开始的题会保留剩余时间。</p></fieldset>
       ${tag('start', '开始第 1 关')}
-      <p class="challenge-all-done" hidden>这个模式的 10 关已经做完了。</p>
+      <p class="challenge-all-done" hidden>这个模式的 ${rounds.length} 关已经做完了。</p>
       ${visited.length ? `<details class="challenge-fold"><summary>回看已做完的关卡</summary>
         <label class="challenge-review-select">选择关卡 <select aria-label="选择关卡">${visited.join('')}</select></label>
         ${tag('open-summary', '查看答题结果', true)}</details>` : ''}
       ${collectionPanel(points)}
       <details class="challenge-fold"><summary>题目从哪里来</summary>
-        <p>本单元题目为自编。标注北京初中学考的题，参考对应真题的考点或考查方法。其余题目按本单元内容编写。题目来源在答题反馈下方。</p>
-        <ul>${Object.values(sources).map(([label, url]) => `<li><a href="${url}" target="_blank" rel="noopener noreferrer">${label}<span class="challenge-sr">（新标签页）</span></a></li>`).join('')}</ul>
+        <p>本单元题目为自编。部分题目参考北京初中学考的考点或考查方法。使用馆藏等实物资料的题目也会标注出处。答题后可在反馈下方查看来源。</p>
+        <ul>${Object.values(sources).map(([label, url]) => `<li><a href="${escape(url)}" target="_blank" rel="noopener noreferrer">${escape(label)}<span class="challenge-sr">（新标签页）</span></a></li>`).join('')}</ul>
       </details></div></div>`);
     updateStartButton();
   }
@@ -171,7 +164,7 @@ export function mountHistoryChallenge(root) {
 
   function questionSource(question, item) {
     const source = (question.source ? sources[question.source] : null);
-    return `<p class="challenge-source">${source ? `参考 ${source[0]} · 自编` : '据本单元内容自编'} · 第 ${item.lesson} 课</p>`;
+    return `<p class="challenge-source">${source ? `参考 ${escape(source[0])} · 自编` : '据本单元内容自编'} · 第 ${item.lesson} 课</p>`;
   }
 
   function renderQuestion(phase, index) {
@@ -243,7 +236,7 @@ export function mountHistoryChallenge(root) {
       <p class="challenge-lede">${firstRight} / ${items().length} 题首答正确${pending ? ` · ${pending} 题待订正` : ''}${needsCheck ? ` · ${needsCheck} 题可换题验证` : ''}</p>
       <p>${run.mode === 'timed' ? `单元累计 ${challengePoints(state)} 分，已收藏 ${earnedRewards(state)} 张历史卡。` : '这是不限时练习，做题记录已和限时闯关分开保存。'}</p>
       <div class="challenge-actions">${reviewButton}${continueButton}</div>
-      <details class="challenge-fold"><summary>查看本关 10 题记录</summary><ol class="challenge-review-list">${results}</ol></details>
+      <details class="challenge-fold"><summary>查看本关 ${items().length} 题记录</summary><ol class="challenge-review-list">${results}</ol></details>
       ${collectionPanel(challengePoints(state))}</section></div>`, '← 回关卡');
   }
 
@@ -415,7 +408,7 @@ export function mountHistoryChallenge(root) {
   }
 
   function onStorage(event) {
-    if (event.key !== CHALLENGE_STORAGE_KEY && event.key !== null) return;
+    if (event.key !== storageKey && event.key !== null) return;
     const previous = activeRun()?.answers[items()[reviewIndex]?.id];
     const previousState = state;
     refresh();

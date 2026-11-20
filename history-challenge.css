@@ -155,6 +155,7 @@ body.history-challenge-open {
   border-inline-start: 4px solid currentColor;
 }
 .challenge-material { background: var(--challenge-blue); color: var(--challenge-blue-ink); }
+.challenge-material p { white-space: pre-line; }
 .challenge-material p, .challenge-feedback p { margin-block: .15em !important; }
 .challenge-feedback.is-right { background: var(--challenge-correct); color: var(--challenge-correct-ink); }
 .challenge-feedback.is-hint, .challenge-storage { background: var(--challenge-hint); color: var(--challenge-hint-ink); }

@@ -81,7 +81,7 @@ function browserStorage() {
   }
 }
 
-export function createChallengeStore(storage = browserStorage()) {
+export function createChallengeStore(storage = browserStorage(), storageKey = CHALLENGE_STORAGE_KEY) {
   let state = freshState();
   let lastRaw;
   let saved = false;
@@ -93,7 +93,7 @@ export function createChallengeStore(storage = browserStorage()) {
   function sync() {
     if (!storage) return;
     try {
-      const raw = storage.getItem(CHALLENGE_STORAGE_KEY);
+      const raw = storage.getItem(storageKey);
       if (raw === null && lastRaw != null) {
         state = freshState();
         dirty = false;
@@ -117,7 +117,7 @@ export function createChallengeStore(storage = browserStorage()) {
     if (!storage || !writable) return;
     try {
       const raw = JSON.stringify(state);
-      storage.setItem(CHALLENGE_STORAGE_KEY, raw);
+      storage.setItem(storageKey, raw);
       lastRaw = raw;
       dirty = false;
       saved = true;
@@ -161,7 +161,7 @@ export function createChallengeStore(storage = browserStorage()) {
   }
 
   function onStorage(event) {
-    if (event.storageArea !== storage || (event.key !== null && event.key !== CHALLENGE_STORAGE_KEY)) return;
+    if (event.storageArea !== storage || (event.key !== null && event.key !== storageKey)) return;
     sync();
     if (dirty) save();
   }

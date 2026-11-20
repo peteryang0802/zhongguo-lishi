@@ -1022,7 +1022,7 @@ button:focus:not(:focus-visible){outline:none}
 </style>
 <link rel="stylesheet" href="./history-lesson-flow.css?v=6">
 <link rel="stylesheet" href="./parent-settings.css?v=1">
-<link rel="stylesheet" href="./history-challenge.css?v=1">
+<link rel="stylesheet" href="./history-challenge.css?v=2">
 </head>
 <body>
 
@@ -2081,12 +2081,12 @@ THREADS.forEach(t=>t.beads.forEach(b=>{
  THREAD_MAP[b.node].push(t.id);
 }));
 
-/* ===== 课次组织：2024 统编七上，本期开放第 1–15 课（史前到东汉）===== */
+/* ===== 课次组织：2024 统编七上 ===== */
 let UNITS_G7A=[
- {no:1,name:'史前时期',range:'原始社会与中华文明的起源',lessons:[1,2,3]},
- {no:2,name:'夏商周时期',range:'奴隶制王朝更替与向封建社会过渡',lessons:[4,5,6,7,8]},
- {no:3,name:'秦汉时期',range:'统一多民族封建国家的建立和巩固',lessons:[9,10,11,12,13,14,15]},
- {no:4,name:'三国两晋南北朝',range:'政权分立与民族交融',lessons:[16,17,18,19,20,21]}
+ {no:1,name:'史前时期',challenge:'史前闯关',range:'原始社会与中华文明的起源',lessons:[1,2,3]},
+ {no:2,name:'夏商周时期',challenge:'夏商周闯关',range:'奴隶制王朝更替与向封建社会过渡',lessons:[4,5,6,7,8]},
+ {no:3,name:'秦汉时期',challenge:'秦汉闯关',range:'统一多民族封建国家的建立和巩固',lessons:[9,10,11,12,13,14,15]},
+ {no:4,name:'三国两晋南北朝',challenge:'三国两晋南北朝闯关',range:'政权分立与民族交融',lessons:[16,17,18,19,20,21]}
 ];
 /* nodes 为 NODES 数组索引（0 起）；执行时已逐课核对 */
 let LESSONS=[
@@ -5248,8 +5248,9 @@ function renderHomeCatalog(){
   UNITS_G7A.forEach(function(u){
     const heading='<h3 class="hc-unit-name">第 '+u.no+' 单元 · '+u.name+'</h3>';
     h+='<div class="hc-unit'+(u.locked?' locked':'')+'">';
-    if(currentBookId==='g7a'&&u.no===3){
-      h+='<div class="hc-unit-heading">'+heading+'<a id="historyChallengeEntry" class="hc-challenge-link" href="#/book/g7a/unit/3/challenge">秦汉闯关 <span aria-hidden="true">→</span></a></div>';
+    if(u.challenge){
+      h+='<div class="hc-unit-heading">'+heading+
+        '<a class="hc-challenge-link" data-challenge-unit="'+u.no+'" href="#/book/g7a/unit/'+u.no+'/challenge">'+u.challenge+' <span aria-hidden="true">→</span></a></div>';
     }else{
       h+=heading;
     }
@@ -5419,24 +5420,27 @@ function showHome(){
   startWarmup();
   window.scrollTo(0,0);
 }
-function openHistoryChallenge(){
+function openHistoryChallenge(unit){
   showView('challenge');
   window.scrollTo({top:0,behavior:'instant'});
-  historyChallengeView.innerHTML='<a class="challenge-back" href="#/book/g7a">← 本册目录</a><p role="status">正在准备秦汉闯关…</p>';
+  historyChallengeView.dataset.unit=unit.no;
+  historyChallengeView.innerHTML='<a class="challenge-back" href="#/book/g7a">← 本册目录</a><p role="status">正在准备'+unit.challenge+'…</p>';
   const route=location.hash;
-  import('./history-challenge.js?v=1').then(({mountHistoryChallenge})=>{
-    if(location.hash===route&&!historyChallengeView.hidden&&!closeHistoryChallenge){
-      closeHistoryChallenge=mountHistoryChallenge(historyChallengeView);
-    }
-  }).catch(error=>{
-    console.error(error);
-    if(location.hash!==route||historyChallengeView.hidden)return;
-    historyChallengeView.innerHTML='<a class="challenge-back" href="#/book/g7a">← 本册目录</a><p role="alert">闯关暂时没有加载成功。可以刷新后再试。</p><button class="challenge-primary" type="button">刷新页面</button>';
-    historyChallengeView.querySelector('button').onclick=()=>location.reload();
-  });
+  import('./history-challenge.js?v=2')
+    .then(({prepareHistoryChallenge})=>prepareHistoryChallenge(unit))
+    .then(mount=>{
+      if(location.hash===route&&!historyChallengeView.hidden&&!closeHistoryChallenge){
+        closeHistoryChallenge=mount(historyChallengeView);
+      }
+    }).catch(error=>{
+      console.error(error);
+      if(location.hash!==route||historyChallengeView.hidden)return;
+      historyChallengeView.innerHTML='<a class="challenge-back" href="#/book/g7a">← 本册目录</a><p role="alert">闯关暂时没有加载成功。可以刷新后再试。</p><button class="challenge-primary" type="button">刷新页面</button>';
+      historyChallengeView.querySelector('button').onclick=()=>location.reload();
+    });
 }
 function renderRoute(){
-  const returnFromChallenge=!historyChallengeView.hidden;
+  const challengeUnit=historyChallengeView.hidden?null:historyChallengeView.dataset.unit;
   if(closeHistoryChallenge){
     closeHistoryChallenge();
     closeHistoryChallenge=null;
@@ -5461,10 +5465,14 @@ function renderRoute(){
   }
   if(r.name==='book'){
     showHome();
-    if(returnFromChallenge)document.getElementById('historyChallengeEntry')?.focus();
+    if(challengeUnit)homeCatalog.querySelector('[data-challenge-unit="'+challengeUnit+'"]')?.focus();
     return;
   }
-  if(r.name==='challenge'&&r.book==='g7a'&&r.id==='3'){openHistoryChallenge();return;}
+  if(r.name==='challenge'){
+    const unit=r.book==='g7a'&&UNITS_G7A.find(u=>String(u.no)===r.id&&u.challenge);
+    if(!unit){showInvalidRoute('这个单元的闯关入口打不开。请从七年级上册目录进入。');return;}
+    openHistoryChallenge(unit);return;
+  }
   if(r.name==='lesson'){
     var no=parseInt(r.id,10);
     /* 课号必须是完整合法数字，2abc 这类不能被 parseInt 截成第 2 课 */
@@ -5565,6 +5573,6 @@ document.getElementById('historyBoot').hidden=true;
 setTimeout(startWarmup,1500);
 
 </script>
-<script type="module" src="./history-parent-settings.js?v=2"></script>
+<script type="module" src="./history-parent-settings.js?v=3"></script>
 </body>
 </html>
