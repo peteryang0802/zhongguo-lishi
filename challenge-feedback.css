@@ -1,0 +1,42 @@
+.challenge-sound-toggle {
+  min-height: 44px;
+  width: fit-content;
+  padding: .25em .65em;
+  border: 1px solid currentColor;
+  border-radius: .45rem;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: .85rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.challenge-sound-toggle:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+
+.challenge-flower {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 52px;
+  margin-block: .6rem;
+  padding: .42rem .7rem;
+  border: 1px solid #d8a59c;
+  border-radius: .65rem;
+  background: #f9ede7;
+  color: #6a3538;
+  line-height: 1.35;
+}
+.challenge-flower-bloom { display: inline-block; flex-shrink: 0; font-size: 1.85rem; line-height: 1; }
+.challenge-flower[data-blooming] .challenge-flower-bloom { animation: challenge-flower-bloom .7s ease-out both; }
+
+@keyframes challenge-flower-bloom {
+  0% { opacity: 0; transform: scale(.3) rotate(-18deg); }
+  62% { opacity: 1; transform: scale(1.27) rotate(8deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .challenge-flower[data-blooming] .challenge-flower-bloom { animation: none; }
+}

@@ -58,6 +58,12 @@ body.history-challenge-open {
   color: var(--challenge-muted);
   font-size: .92rem;
 }
+.challenge-bar-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 14px;
+}
 .challenge-back, .challenge-secondary {
   color: var(--challenge-green);
   font-size: .95rem;
