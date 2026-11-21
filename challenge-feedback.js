@@ -1,8 +1,8 @@
 const muteKey = 'challenge-feedback:muted';
 const toggleSelector = '[data-challenge-sound-toggle]';
 const cues = {
-  correct: { text: '耶！', notes: [523.25, 659.25], step: 0.105 },
-  flower: { text: '做得真棒！送你一朵花。', notes: [523.25, 659.25, 783.99, 1046.5], step: 0.15 },
+  correct: { text: 'Nice!', lang: 'en-US', supportedVoice: /^en(?:[-_]|$)/i, notes: [523.25, 659.25], step: 0.105 },
+  flower: { text: '做得真棒！送你一朵花。', lang: 'zh-CN', supportedVoice: /^zh(?:[-_]hans|[-_]tw)?$/i, notes: [523.25, 659.25, 783.99, 1046.5], step: 0.15 },
 };
 
 function savedMute() {
@@ -76,8 +76,8 @@ export function createChallengeFeedback(root) {
     }
 
     const localVoices = synth?.getVoices().filter(candidate => candidate.localService) ?? [];
-    const voice = localVoices.find(candidate => /^zh[-_]cn$/i.test(candidate.lang))
-      ?? localVoices.find(candidate => /^zh(?:[-_]hans|[-_]tw)?$/i.test(candidate.lang));
+    const voice = localVoices.find(candidate => candidate.lang.replace('_', '-').toLowerCase() === cue.lang.toLowerCase())
+      ?? localVoices.find(candidate => cue.supportedVoice.test(candidate.lang));
     if (!voice || !globalThis.SpeechSynthesisUtterance) {
       fallback();
       return;
@@ -86,7 +86,6 @@ export function createChallengeFeedback(root) {
     utterance.voice = voice;
     utterance.lang = voice.lang;
     utterance.volume = 0.62;
-    utterance.rate = cue === cues.correct ? 1.12 : 1;
     utterance.onstart = () => clearTimeout(sound.timer);
     utterance.onend = () => { sound.utterance = null; };
     utterance.onerror = fallback;

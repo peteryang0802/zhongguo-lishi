@@ -5467,7 +5467,7 @@ function openHistoryChallenge(unit){
   historyChallengeView.dataset.unit=unit.no;
   historyChallengeView.innerHTML='<a class="challenge-back" href="#/book/g7a">← 本册目录</a><p role="status">正在准备'+unit.challenge+'…</p>';
   const route=location.hash;
-  import('./history-challenge.js?v=5')
+  import('./history-challenge.js?v=6')
     .then(({prepareHistoryChallenge})=>prepareHistoryChallenge(unit))
     .then(mount=>{
       if(location.hash===route&&!historyChallengeView.hidden&&!closeHistoryChallenge){

@@ -1,5 +1,5 @@
 import {createChallengeStore, challengePoints, earnedRewards, CHALLENGE_STORAGE_KEY} from './history-challenge-store.js?v=3';
-import {createChallengeFeedback} from './challenge-feedback.js?v=1';
+import {createChallengeFeedback} from './challenge-feedback.js?v=2';
 
 const loadBank = {
   1: () => import('./history-challenge-prehistory.js?v=2'),
